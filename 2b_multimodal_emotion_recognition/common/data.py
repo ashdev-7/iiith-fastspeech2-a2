@@ -80,7 +80,10 @@ def build_index(data_dir: Path = DATA_DIR, save: bool = True) -> pd.DataFrame:
 
 def load_index() -> pd.DataFrame:
     path = CACHE_DIR / "index.csv"
-    if not path.exists():
+    if not path.exists():  # fresh clone without the dataset: use the index exported from the Kaggle run
+        from .config import ARTIFACTS_DIR
+        if (ARTIFACTS_DIR / "index.csv").exists() and not DATA_DIR.exists():
+            return pd.read_csv(ARTIFACTS_DIR / "index.csv")
         return build_index()
     return pd.read_csv(path)
 

@@ -14,8 +14,13 @@ Outputs (analysis/):
 from __future__ import annotations
 
 import re
+import sys
 import wave
 from pathlib import Path
+
+for _stream in (sys.stdout, sys.stderr):  # IPA symbols must not crash a cp1252 (Windows) console
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(errors="replace")
 
 import matplotlib
 

@@ -20,7 +20,7 @@ import pandas as pd  # noqa: E402
 from sklearn.manifold import TSNE  # noqa: E402
 from sklearn.metrics import silhouette_score  # noqa: E402
 
-from common.config import (CACHE_DIR, EMOTION_NAMES, EMOTIONS, PLOTS_DIR, RESULTS_DIR,  # noqa: E402
+from common.config import (cached, CACHE_DIR, EMOTION_NAMES, EMOTIONS, PLOTS_DIR, RESULTS_DIR,  # noqa: E402
                            RUNS_DIR, TEXT_PLM_LABEL_MAP)
 from common.data import load_index, make_split  # noqa: E402
 from common.results import collect  # noqa: E402
@@ -55,11 +55,11 @@ def pm(s: pd.Series) -> str:
 def zero_shot_rows(df_idx):
     rows = []
     for name in ("text_gt", "text_asr"):
-        f = CACHE_DIR / f"{name}.zeroshot_probs.npy"
+        f = cached(f"{name}.zeroshot_probs.npy")
         if not f.exists():
             continue
         probs = np.load(f)
-        labels = (CACHE_DIR / f"{name}.zeroshot_labels.txt").read_text().split("\n")
+        labels = cached(f"{name}.zeroshot_labels.txt").read_text().split("\n")
         mapped = np.array([EMOTIONS.index(TEXT_PLM_LABEL_MAP[labels[i]]) for i in probs.argmax(1)])
         from common.config import PROTOCOLS
         for proto, runs in ((k, v["runs"]) for k, v in PROTOCOLS.items()):
@@ -319,7 +319,7 @@ def layer_weight_plot():
 
 # ------------------------------------------------------------------ ASR transcript statistics
 def asr_stats(df_idx):
-    f = CACHE_DIR / "asr_transcripts.csv"
+    f = cached("asr_transcripts.csv")
     if not f.exists():
         return
     from common.data import clean_transcript

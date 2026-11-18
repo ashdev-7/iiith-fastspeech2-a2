@@ -9,7 +9,12 @@ unchanged on another machine:
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+
+for _stream in (sys.stdout, sys.stderr):  # tables contain ±, →, IPA: never crash on a cp1252 console
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(errors="replace")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +24,16 @@ RUNS_DIR = Path(os.environ.get("MER_RUNS_DIR", PROJECT_ROOT / "runs"))
 RESULTS_DIR = PROJECT_ROOT / "Results"
 PLOTS_DIR = RESULTS_DIR / "plots"
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)  # analyses may run before make_results.py creates it
+# small cache files exported from the Kaggle run (index, ASR transcripts, zero-shot predictions), so the
+# analyses can be re-run from a fresh clone without re-extracting features
+ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
+
+
+def cached(name: str) -> Path:
+    """A small cache file: the committed Kaggle artifact if present (exactly what produced Results/),
+    otherwise the local feature cache."""
+    a = ARTIFACTS_DIR / name
+    return a if a.exists() else CACHE_DIR / name
 
 # ---------------------------------------------------------------- labels
 # Order is fixed so that integer labels are identical across all scripts.
