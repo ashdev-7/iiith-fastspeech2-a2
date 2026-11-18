@@ -1,0 +1,4 @@
+$ mfa g2p C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\dictionaries\corpus_wordlist.txt english_us_arpa C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\dictionaries\g2p_custom_arpa.dict --num_pronunciations 2 --clean
+ INFO     Generating pronunciations...                                         
+ 100% --------------------------------- 150/150  [ 0:07:51 < 0:00:00 , 1 it/s ]
+ INFO     Done! Everything took 480.106 seconds                                

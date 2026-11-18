@@ -1,0 +1,55 @@
+$ mfa validate C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\corpus C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\dictionaries\english_us_arpa_plus_g2p.dict --acoustic_model_path english_us_arpa --clean -j 4
+ INFO     Setting up corpus information...                                     
+ INFO     Loading corpus from source files...                                  
+   6% --                                  6/100  [ 0:00:01 < -:--:-- , ? it/s ]
+ INFO     Found 2 speakers across 6 files, average number of utterances per    
+          speaker: 3.0                                                         
+ INFO     Initializing multiprocessing jobs...                                 
+ WARNING  Number of jobs was specified as 4, but due to only having 2 speakers,
+          MFA will only use 2 jobs. Use the --single_speaker flag if you would 
+          like to split utterances across jobs regardless of their speaker.    
+ INFO     Normalizing text...                                                  
+ 100% ------------------------------------- 6/6  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Generating MFCCs...                                                  
+ 100% ------------------------------------- 6/6  [ 0:00:31 < 0:00:00 , 4 it/s ]
+ INFO     Calculating CMVN...                                                  
+ INFO     Generating final features...                                         
+ 100% ------------------------------------- 6/6  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Creating corpus split...                                             
+ 100% ------------------------------------- 6/6  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Creating corpus split...                                             
+ 100% ------------------------------------- 6/6  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Finished initializing!                                               
+ INFO     Corpus                                                               
+ INFO     6 sound files                                                        
+ INFO     6 text files                                                         
+ INFO     2 speakers                                                           
+ INFO     6 utterances                                                         
+ INFO     97.163 seconds total duration                                        
+ INFO     Sound file read errors                                               
+ INFO     There were no issues reading sound files.                            
+ INFO     Feature generation                                                   
+ INFO     There were no utterances missing features.                           
+ INFO     Files without transcriptions                                         
+ INFO     There were no sound files missing transcriptions.                    
+ INFO     Transcriptions without sound files                                   
+ INFO     There were no transcription files missing sound files.               
+ INFO     Dictionary                                                           
+ INFO     Out of vocabulary words                                              
+ INFO     There were no missing words from the dictionary. If you plan on using
+          the a model trained on this dataset to align other datasets in the   
+          future, it is recommended that there be at least some missing words. 
+ INFO     Acoustic model compatibility                                         
+ INFO     There were no phones in the dictionary without acoustic models.      
+ INFO     Compiling training graphs...                                         
+ INFO     Performing first-pass alignment...                                   
+ INFO     Generating alignments...                                             
+ 100% ------------------------------------- 6/6  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Calculating fMLLR for speaker adaptation...                          
+ 100% ------------------------------------- 6/6  [ 0:00:02 < 0:00:00 , ? it/s ]
+ INFO     Performing second-pass alignment...                                  
+ INFO     Generating alignments...                                             
+ 100% ------------------------------------- 6/6  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Collecting phone and word alignments from alignment lattices...      
+ 100% ------------------------------------- 6/6  [ 0:00:08 < 0:00:00 , ? it/s ]
+ ERROR    There was an error in the run, please see the log.                   

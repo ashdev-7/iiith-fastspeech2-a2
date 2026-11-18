@@ -1,0 +1,4 @@
+$ mfa g2p C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\dictionaries\oov_english_us_arpa.txt english_us_arpa C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\dictionaries\g2p_oov_english_us_arpa.dict --num_pronunciations 1 --clean
+ INFO     Generating pronunciations...                                         
+ 100% ------------------------------------- 4/4  [ 0:00:02 < 0:00:00 , 2 it/s ]
+ INFO     Done! Everything took 4.062 seconds                                  
