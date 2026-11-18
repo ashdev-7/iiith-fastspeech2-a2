@@ -1,0 +1,26 @@
+# Error analysis: systematic failures of the gated-fusion model (speaker-independent)
+
+695 of 2800 test clips are misclassified in every seed. Most frequent confusion pairs:
+
+| true              | pred_mode         |   clips |
+|:------------------|:------------------|--------:|
+| Happy             | Angry             |     123 |
+| Pleasant surprise | Happy             |     118 |
+| Angry             | Fear              |      91 |
+| Happy             | Pleasant surprise |      75 |
+| Pleasant surprise | Disgust           |      73 |
+| Happy             | Fear              |      70 |
+| Happy             | Disgust           |      53 |
+| Disgust           | Pleasant surprise |      30 |
+| Disgust           | Happy             |      20 |
+| Angry             | Sad               |      17 |
+
+Selected cases (prosody columns: clip | same speaker's mean for the true class | for the predicted class):
+
+| clip            | speaker   | true              | predicted         | wrong in   |   mean p(pred) |   mean p(true) | F0 median Hz (clip | true-class | pred-class)   | F0 range Hz     | energy dB             | duration s         | top-3                                            |
+|:----------------|:----------|:------------------|:------------------|:-----------|---------------:|---------------:|:------------------------------------------------|:----------------|:----------------------|:-------------------|:-------------------------------------------------|
+| YAF_puff_happy  | YAF       | Happy             | Angry             | 3/3 seeds  |           0.96 |           0.01 | 294 | 280 | 237                                 | 218 | 202 | 216 | -16.2 | -15.9 | -18.0 | 1.42 | 1.72 | 2.06 | Angry 0.96, Happy 0.01, Fear 0.01                |
+| YAF_witch_ps    | YAF       | Pleasant surprise | Happy             | 3/3 seeds  |           0.96 |           0.01 | 296 | 314 | 280                                 | 523 | 418 | 202 | -15.8 | -16.3 | -15.9 | 1.84 | 1.89 | 1.72 | Happy 0.96, Pleasant surprise 0.01, Angry 0.01   |
+| OAF_moon_angry  | OAF       | Angry             | Fear              | 3/3 seeds  |           0.94 |           0.03 | 290 | 268 | 291                                 | 99 | 209 | 148  | -17.1 | -15.3 | -14.7 | 1.51 | 1.51 | 1.57 | Fear 0.94, Angry 0.03, Happy 0.01                |
+| OAF_chair_happy | OAF       | Happy             | Pleasant surprise | 3/3 seeds  |           0.84 |           0.01 | 271 | 249 | 203                                 | 265 | 331 | 353 | -18.2 | -16.3 | -16.4 | 2.08 | 1.99 | 2.02 | Pleasant surprise 0.84, Disgust 0.09, Angry 0.02 |
+| OAF_life_ps     | OAF       | Pleasant surprise | Disgust           | 3/3 seeds  |           0.95 |           0.01 | 201 | 203 | 183                                 | 528 | 353 | 298 | -16.0 | -16.4 | -17.7 | 2.24 | 2.02 | 2.34 | Disgust 0.95, Pleasant surprise 0.01, Angry 0.01 |

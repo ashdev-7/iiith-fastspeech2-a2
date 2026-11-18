@@ -1,0 +1,9 @@
+fusion,protocol,speech_acc,fusion_acc,delta,fixed,broken,mean_gate_speech
+gated_wavlm_gt,sd,99.905,99.952,0.048,2,1,0.777
+gated_wavlm_gt,si,58.476,56.774,-1.702,742,885,0.84
+gated_wavlm_asr,sd,99.905,100.0,0.095,2,0,0.795
+gated_wavlm_asr,si,58.476,57.143,-1.333,813,925,0.771
+concat_wavlm_gt,sd,99.905,100.0,0.095,2,0,
+concat_wavlm_gt,si,58.476,60.119,1.643,1108,970,
+xattn_wavlm_gt,sd,99.905,99.905,0.0,2,2,
+xattn_wavlm_gt,si,58.476,63.417,4.94,1177,762,

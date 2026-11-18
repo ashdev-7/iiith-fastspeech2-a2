@@ -1,0 +1,16 @@
+store,layer,emotion_sd,emotion_si,emotion_si_spknorm,speaker_id
+wavlm,WavLM L0,0.999,0.4725,0.575,1.0
+wavlm,WavLM L2,1.0,0.5186,0.6361,1.0
+wavlm,WavLM L4,1.0,0.6204,0.6704,1.0
+wavlm,WavLM L6,1.0,0.6357,0.705,1.0
+wavlm,WavLM L8,1.0,0.6954,0.735,1.0
+wavlm,WavLM L10,0.9971,0.7168,0.7182,1.0
+wavlm,WavLM L12,1.0,0.565,0.6275,1.0
+logmel,log-Mel,0.9933,0.4868,0.4661,1.0
+text_gt,DistilRoBERTa L0,0.1429,0.1429,0.1429,0.5
+text_gt,DistilRoBERTa L1,0.1429,0.1429,0.1429,0.5
+text_gt,DistilRoBERTa L2,0.1429,0.1429,0.1429,0.5
+text_gt,DistilRoBERTa L3,0.1429,0.1429,0.1429,0.5
+text_gt,DistilRoBERTa L4,0.1429,0.1429,0.1429,0.5
+text_gt,DistilRoBERTa L5,0.1429,0.1429,0.1429,0.5
+text_gt,DistilRoBERTa L6,0.1429,0.1429,0.1429,0.5

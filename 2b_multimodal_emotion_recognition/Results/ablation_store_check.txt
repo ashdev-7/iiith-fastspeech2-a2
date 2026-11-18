@@ -1,0 +1,2 @@
+wavlm_full: 13 layers x 768; wavlm: 7 layers x 768
+200 random clips: frame counts consistent for 200/200; max relative deviation of pooled(full) vs main = 5.40e-04 (fp16 rounding ~1e-3)

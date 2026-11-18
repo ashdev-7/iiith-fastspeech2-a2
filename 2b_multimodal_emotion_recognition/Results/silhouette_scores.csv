@@ -1,0 +1,13 @@
+protocol,run,block,silhouette
+sd,sd_fold0_seed0,Temporal block (speech-only model),0.9486
+sd,sd_fold0_seed0,Temporal block (speech + spk-norm),0.9642
+sd,sd_fold0_seed0,"Contextual block (text-only, GT)",-0.0167
+sd,sd_fold0_seed0,"Contextual block (text-only, Whisper)",-0.1434
+sd,sd_fold0_seed0,"Fusion block (gated, GT)",0.9882
+sd,sd_fold0_seed0,"Fusion block (gated, Whisper)",0.967
+si,si_fold0_seed0,Temporal block (speech-only model),0.4979
+si,si_fold0_seed0,Temporal block (speech + spk-norm),0.569
+si,si_fold0_seed0,"Contextual block (text-only, GT)",-0.005
+si,si_fold0_seed0,"Contextual block (text-only, Whisper)",-0.1574
+si,si_fold0_seed0,"Fusion block (gated, GT)",0.4899
+si,si_fold0_seed0,"Fusion block (gated, Whisper)",0.5053

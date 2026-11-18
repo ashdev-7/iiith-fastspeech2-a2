@@ -1,0 +1,34 @@
+Model,Protocol,Angry,Disgust,Fear,Happy,Neutral,Pleasant surprise,Sad
+Speech: log-Mel + BiGRU (baseline),RAND,100.0,99.8,100.0,99.3,99.7,99.3,99.5
+Speech: log-Mel + BiGRU (baseline),SD,99.7,99.3,99.8,98.8,99.8,99.5,99.7
+Speech: log-Mel + BiGRU (baseline),SI,20.7,51.0,30.9,0.6,83.8,13.6,52.7
+Speech: WavLM + BiGRU,RAND,99.8,99.8,100.0,99.7,100.0,99.7,100.0
+Speech: WavLM + BiGRU,SD,100.0,99.7,100.0,100.0,100.0,99.7,100.0
+Speech: WavLM + BiGRU,SI,15.0,74.9,66.1,6.6,89.9,36.6,84.4
+Speech: WavLM + BiGRU + speaker norm (†),RAND,100.0,100.0,100.0,100.0,100.0,100.0,100.0
+Speech: WavLM + BiGRU + speaker norm (†),SD,100.0,99.8,100.0,100.0,100.0,99.8,100.0
+Speech: WavLM + BiGRU + speaker norm (†),SI,20.1,74.9,74.0,2.7,84.2,36.5,69.3
+Text: DistilRoBERTa + BiGRU (GT transcript),RAND,10.1,10.8,5.0,0.0,1.6,1.1,4.2
+Text: DistilRoBERTa + BiGRU (GT transcript),SD,0.0,0.0,8.6,0.0,14.6,0.0,9.5
+Text: DistilRoBERTa + BiGRU (GT transcript),SI,7.8,0.0,7.0,13.8,11.4,7.0,10.7
+Text: DistilRoBERTa + BiGRU (Whisper transcript),RAND,11.7,21.2,21.4,0.6,33.2,58.3,2.8
+Text: DistilRoBERTa + BiGRU (Whisper transcript),SD,28.9,13.8,26.0,0.0,38.6,55.7,12.6
+Text: DistilRoBERTa + BiGRU (Whisper transcript),SI,16.7,12.1,18.6,1.1,25.7,35.6,12.2
+Fusion: concat (GT),RAND,99.8,100.0,100.0,99.7,100.0,99.7,99.8
+Fusion: concat (GT),SD,100.0,100.0,100.0,100.0,100.0,100.0,100.0
+Fusion: concat (GT),SI,39.6,68.4,78.7,1.6,94.2,35.7,72.9
+Fusion: cross-attention (GT),RAND,100.0,100.0,100.0,100.0,100.0,100.0,100.0
+Fusion: cross-attention (GT),SD,100.0,99.8,100.0,99.8,100.0,99.7,100.0
+Fusion: cross-attention (GT),SI,24.6,69.6,77.1,6.3,95.1,43.9,82.5
+Fusion: gated GMU (GT),RAND,100.0,100.0,100.0,100.0,100.0,100.0,100.0
+Fusion: gated GMU (GT),SD,100.0,100.0,100.0,99.8,100.0,99.8,100.0
+Fusion: gated GMU (GT),SI,23.1,59.2,70.1,6.9,90.7,24.6,91.8
+Fusion: gated GMU (Whisper),RAND,99.8,100.0,99.8,99.8,100.0,99.8,100.0
+Fusion: gated GMU (Whisper),SD,100.0,100.0,100.0,100.0,100.0,100.0,100.0
+Fusion: gated GMU (Whisper),SI,19.4,80.2,70.1,4.8,87.5,27.8,70.2
+Fusion: gated GMU (GT) + speaker norm (†),RAND,100.0,99.8,100.0,99.7,100.0,99.5,100.0
+Fusion: gated GMU (GT) + speaker norm (†),SD,100.0,99.5,100.0,99.3,99.8,98.9,99.8
+Fusion: gated GMU (GT) + speaker norm (†),SI,26.3,76.3,61.3,9.7,89.4,21.6,68.9
+Fusion: gated GMU (Whisper) + speaker norm (†),RAND,99.8,100.0,99.8,100.0,100.0,100.0,100.0
+Fusion: gated GMU (Whisper) + speaker norm (†),SD,100.0,99.2,100.0,99.5,100.0,99.2,99.5
+Fusion: gated GMU (Whisper) + speaker norm (†),SI,15.0,70.0,70.8,15.3,87.4,18.1,81.9
