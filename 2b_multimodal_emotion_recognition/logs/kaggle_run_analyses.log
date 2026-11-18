@@ -1,0 +1,72 @@
+/kaggle/src/script.py:8: DeprecationWarning: Python 3.14 will, by default, filter extracted tar archives and reject files or modify their metadata. Use the filter argument to control this behavior.
+  tarfile.open(fileobj=io.BytesIO(base64.b64decode(CODE_B64)), mode="r:gz").extractall(W)
+torch 2.11.0+cu130 cuda True Tesla T4
+
+$ python prepare_data.py --speech --text
+emotion  angry  disgust  fear  happy  neutral   ps  sad
+speaker                                                
+OAF        200      200   200    200      200  200  200
+YAF        200      200   200    200      200  200  200
+preprocess audio:   0%|          | 0/2800 [00:00<?, ?it/s]preprocess audio:   6%|▌         | 165/2800 [00:30<07:59,  5.49it/s]preprocess audio:   6%|▌         | 165/2800 [00:50<07:59,  5.49it/s]preprocess audio:  20%|█▉        | 552/2800 [01:00<03:48,  9.84it/s]preprocess audio:  20%|█▉        | 552/2800 [01:20<03:48,  9.84it/s]preprocess audio:  34%|███▎      | 942/2800 [01:30<02:44, 11.28it/s]preprocess audio:  34%|███▎      | 942/2800 [01:50<02:44, 11.28it/s]preprocess audio:  48%|████▊     | 1341/2800 [02:00<02:00, 12.06it/s]preprocess audio:  48%|████▊     | 1341/2800 [02:20<02:00, 12.06it/s]preprocess audio:  62%|██████▏   | 1746/2800 [02:30<01:23, 12.57it/s]preprocess audio:  62%|██████▏   | 1746/2800 [02:50<01:23, 12.57it/s]preprocess audio:  76%|███████▌  | 2130/2800 [03:00<00:52, 12.65it/s]preprocess audio:  76%|███████▌  | 2130/2800 [03:20<00:52, 12.65it/s]preprocess audio:  90%|████████▉ | 2518/2800 [03:30<00:22, 12.74it/s]preprocess audio:  90%|████████▉ | 2518/2800 [03:50<00:22, 12.74it/s]preprocess audio: 100%|██████████| 2800/2800 [03:51<00:00, 12.09it/s]
+trimmed durations: mean 2.00s  min 1.11s  max 2.98s
+log-Mel:   0%|          | 0/2800 [00:00<?, ?it/s]log-Mel: 100%|██████████| 2800/2800 [00:08<00:00, 337.76it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 13243.20it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  44%|████▍     | 1231/2800 [00:30<00:38, 41.02it/s]WavLM:  44%|████▍     | 1231/2800 [00:46<00:38, 41.02it/s]WavLM:  99%|█████████▊| 2762/2800 [01:00<00:00, 46.91it/s]WavLM: 100%|██████████| 2800/2800 [01:00<00:00, 46.08it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 7611.11it/s]
+text[text_gt]:   0%|          | 0/200 [00:00<?, ?it/s]text[text_gt]: 100%|██████████| 200/200 [00:01<00:00, 114.65it/s]
+  -> exit 0 in 345 s
+
+$ python analysis/layer_probe.py
+{'store': 'wavlm', 'layer': 'WavLM L0', 'emotion_sd': np.float64(0.999), 'emotion_si': np.float64(0.473), 'emotion_si_spknorm': np.float64(0.575), 'speaker_id': np.float64(1.0)}
+{'store': 'wavlm', 'layer': 'WavLM L2', 'emotion_sd': np.float64(1.0), 'emotion_si': np.float64(0.519), 'emotion_si_spknorm': np.float64(0.636), 'speaker_id': np.float64(1.0)}
+{'store': 'wavlm', 'layer': 'WavLM L4', 'emotion_sd': np.float64(1.0), 'emotion_si': np.float64(0.62), 'emotion_si_spknorm': np.float64(0.67), 'speaker_id': np.float64(1.0)}
+{'store': 'wavlm', 'layer': 'WavLM L6', 'emotion_sd': np.float64(1.0), 'emotion_si': np.float64(0.636), 'emotion_si_spknorm': np.float64(0.705), 'speaker_id': np.float64(1.0)}
+{'store': 'wavlm', 'layer': 'WavLM L8', 'emotion_sd': np.float64(1.0), 'emotion_si': np.float64(0.695), 'emotion_si_spknorm': np.float64(0.735), 'speaker_id': np.float64(1.0)}
+{'store': 'wavlm', 'layer': 'WavLM L10', 'emotion_sd': np.float64(0.997), 'emotion_si': np.float64(0.717), 'emotion_si_spknorm': np.float64(0.718), 'speaker_id': np.float64(1.0)}
+{'store': 'wavlm', 'layer': 'WavLM L12', 'emotion_sd': np.float64(1.0), 'emotion_si': np.float64(0.565), 'emotion_si_spknorm': np.float64(0.628), 'speaker_id': np.float64(1.0)}
+{'store': 'logmel', 'layer': 'log-Mel', 'emotion_sd': np.float64(0.993), 'emotion_si': np.float64(0.487), 'emotion_si_spknorm': np.float64(0.466), 'speaker_id': np.float64(1.0)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L0', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L1', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L2', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L3', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L4', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L5', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+{'store': 'text_gt', 'layer': 'DistilRoBERTa L6', 'emotion_sd': np.float64(0.143), 'emotion_si': np.float64(0.143), 'emotion_si_spknorm': np.float64(0.143), 'speaker_id': np.float64(0.5)}
+  -> exit 0 in 79 s
+
+$ python analysis/prosody_baseline.py
+{'model': 'duration only (LogReg)', 'speaker_norm': False, 'protocol': 'sd', 'acc_mean': np.float64(35.42857142857142), 'acc_std': np.float64(1.6007367918068207), 'runs': 5}
+{'model': 'duration only (LogReg)', 'speaker_norm': False, 'protocol': 'si', 'acc_mean': np.float64(24.607142857142858), 'acc_std': np.float64(4.186165260932342), 'runs': 6}
+{'model': 'duration only (LogReg)', 'speaker_norm': False, 'protocol': 'rand', 'acc_mean': np.float64(36.61904761904762), 'acc_std': np.float64(2.071565403252973), 'runs': 5}
+{'model': 'duration only (LogReg)', 'speaker_norm': True, 'protocol': 'sd', 'acc_mean': np.float64(35.61904761904762), 'acc_std': np.float64(1.6200976986860953), 'runs': 5}
+{'model': 'duration only (LogReg)', 'speaker_norm': True, 'protocol': 'si', 'acc_mean': np.float64(20.32142857142857), 'acc_std': np.float64(4.420903499863126), 'runs': 6}
+{'model': 'duration only (LogReg)', 'speaker_norm': True, 'protocol': 'rand', 'acc_mean': np.float64(36.66666666666667), 'acc_std': np.float64(1.8210783977117098), 'runs': 5}
+{'model': '44 functionals (LogReg)', 'speaker_norm': False, 'protocol': 'sd', 'acc_mean': np.float64(98.66666666666667), 'acc_std': np.float64(0.271470339309321), 'runs': 5}
+{'model': '44 functionals (LogReg)', 'speaker_norm': False, 'protocol': 'si', 'acc_mean': np.float64(40.107142857142854), 'acc_std': np.float64(3.56019662378358), 'runs': 6}
+{'model': '44 functionals (LogReg)', 'speaker_norm': False, 'protocol': 'rand', 'acc_mean': np.float64(97.66666666666666), 'acc_std': np.float64(0.39123039821797434), 'runs': 5}
+{'model': '44 functionals (LogReg)', 'speaker_norm': True, 'protocol': 'sd', 'acc_mean': np.float64(98.14285714285715), 'acc_std': np.float64(0.5684445898244471), 'runs': 5}
+{'model': '44 functionals (LogReg)', 'speaker_norm': True, 'protocol': 'si', 'acc_mean': np.float64(49.35714285714286), 'acc_std': np.float64(3.0515971061002145), 'runs': 6}
+{'model': '44 functionals (LogReg)', 'speaker_norm': True, 'protocol': 'rand', 'acc_mean': np.float64(97.52380952380952), 'acc_std': np.float64(0.4937247941268487), 'runs': 5}
+{'model': '44 functionals (RBF-SVM)', 'speaker_norm': False, 'protocol': 'sd', 'acc_mean': np.float64(99.85714285714286), 'acc_std': np.float64(0.1304101327393248), 'runs': 5}
+{'model': '44 functionals (RBF-SVM)', 'speaker_norm': False, 'protocol': 'si', 'acc_mean': np.float64(46.92857142857144), 'acc_std': np.float64(2.0343980707334746), 'runs': 6}
+{'model': '44 functionals (RBF-SVM)', 'speaker_norm': False, 'protocol': 'rand', 'acc_mean': np.float64(99.66666666666667), 'acc_std': np.float64(0.1304101327393248), 'runs': 5}
+{'model': '44 functionals (RBF-SVM)', 'speaker_norm': True, 'protocol': 'sd', 'acc_mean': np.float64(99.47619047619047), 'acc_std': np.float64(0.2608202654786496), 'runs': 5}
+{'model': '44 functionals (RBF-SVM)', 'speaker_norm': True, 'protocol': 'si', 'acc_mean': np.float64(50.69047619047618), 'acc_std': np.float64(4.512265973730614), 'runs': 6}
+{'model': '44 functionals (RBF-SVM)', 'speaker_norm': True, 'protocol': 'rand', 'acc_mean': np.float64(98.90476190476191), 'acc_std': np.float64(0.27147033930931763), 'runs': 5}
+protocol                                       rand            sd            si
+model                    speaker_norm                                          
+44 functionals (LogReg)  False         97.67 ± 0.39  98.67 ± 0.27  40.11 ± 3.56
+                         True          97.52 ± 0.49  98.14 ± 0.57  49.36 ± 3.05
+44 functionals (RBF-SVM) False         99.67 ± 0.13  99.86 ± 0.13  46.93 ± 2.03
+                         True           98.9 ± 0.27  99.48 ± 0.26  50.69 ± 4.51
+duration only (LogReg)   False         36.62 ± 2.07   35.43 ± 1.6  24.61 ± 4.19
+                         True          36.67 ± 1.82  35.62 ± 1.62  20.32 ± 4.42
+  -> exit 0 in 68 s
+ALL_DONE
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 330994 bytes to __results__.html

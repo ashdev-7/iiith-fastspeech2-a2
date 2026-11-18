@@ -1,0 +1,6 @@
+{
+  "best_val_acc": 1.0,
+  "best_val_loss": 0.03409633785486221,
+  "epochs_run": 14,
+  "train_time_s": 40.0
+}
