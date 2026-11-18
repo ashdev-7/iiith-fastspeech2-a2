@@ -1,0 +1,13 @@
+experiment,speaker,files,words,phones,unk_spn,silence_pct,mean_phone_ms,median_phone_ms,short_phones_le30ms,short_phones_le30ms_pct,long_phones_250ms,mean_word_ms
+arpa_base,all,6,243,1063,0,17.05,75.82,70.0,83,7.81,2,331.69
+arpa_base,f2b,3,228,1025,0,10.73,73.74,70.0,83,8.1,1,331.49
+arpa_base,isle_sess0131,3,15,38,0,59.84,132.11,120.0,0,0.0,1,334.67
+mfa_ipa,all,6,243,1030,0,12.33,82.7,70.0,118,11.46,8,350.56
+mfa_ipa,f2b,3,228,993,0,10.75,76.09,70.0,118,11.88,4,331.4
+mfa_ipa,isle_sess0131,3,15,37,0,23.0,260.14,130.0,0,0.0,4,641.67
+arpa_g2p_custom,all,6,243,1052,0,16.94,76.71,70.0,91,8.65,5,332.1
+arpa_g2p_custom,f2b,3,228,1014,0,10.79,74.49,70.0,91,8.97,2,331.27
+arpa_g2p_custom,isle_sess0131,3,15,38,0,58.64,136.05,120.0,0,0.0,3,344.67
+arpa_adapted,all,6,243,1063,0,17.04,75.83,70.0,82,7.71,2,331.73
+arpa_adapted,f2b,3,228,1025,0,10.72,73.75,70.0,82,8.0,1,331.54
+arpa_adapted,isle_sess0131,3,15,38,0,59.84,132.11,120.0,0,0.0,1,334.67

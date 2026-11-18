@@ -1,0 +1,22 @@
+experiment,file,label,start,end,dur,rel_energy_db,quiet_frac,flag
+arpa_base,F2BJRLP1,act,24.13,24.48,0.35,-7.19,0.514,word stretched over a pause
+arpa_base,F2BJRLP2,court,11.87,12.33,0.46,-8.071,0.5,word stretched over a pause
+arpa_base,F2BJRLP2,court,20.54,20.82,0.28,-8.056,0.536,word stretched over a pause
+arpa_base,F2BJRLP2,clerk,28.01,28.47,0.46,-13.187,0.652,word stretched over a pause
+arpa_base,F2BJRLP3,court,20.8,21.07,0.27,-6.425,0.407,word stretched over a pause
+mfa_ipa,F2BJRLP2,court,11.86,12.33,0.47,-8.163,0.511,word stretched over a pause
+mfa_ipa,F2BJRLP2,court,20.54,20.8,0.26,-7.742,0.5,word stretched over a pause
+mfa_ipa,F2BJRLP2,clerk,28.01,28.29,0.28,-11.142,0.5,word stretched over a pause
+mfa_ipa,F2BJRLP3,court,20.8,21.07,0.27,-6.425,0.407,word stretched over a pause
+mfa_ipa,ISLE_SESS0131_BLOCKD02_01_sprt1,bait,1.7,4.125,2.425,-11.694,0.492,word stretched over a pause
+mfa_ipa,ISLE_SESS0131_BLOCKD02_03_sprt1,bed,1.47,4.5,3.03,-12.272,0.508,word stretched over a pause
+arpa_g2p_custom,F2BJRLP1,act,24.13,24.48,0.35,-7.19,0.514,word stretched over a pause
+arpa_g2p_custom,F2BJRLP2,court,11.87,12.33,0.46,-8.071,0.5,word stretched over a pause
+arpa_g2p_custom,F2BJRLP2,court,20.54,20.82,0.28,-8.056,0.536,word stretched over a pause
+arpa_g2p_custom,F2BJRLP2,clerk,28.0,28.47,0.47,-13.177,0.638,word stretched over a pause
+arpa_g2p_custom,F2BJRLP3,court,20.8,21.07,0.27,-6.425,0.407,word stretched over a pause
+arpa_adapted,F2BJRLP1,act,24.13,24.48,0.35,-7.19,0.514,word stretched over a pause
+arpa_adapted,F2BJRLP2,court,11.87,12.33,0.46,-8.071,0.5,word stretched over a pause
+arpa_adapted,F2BJRLP2,court,20.54,20.82,0.28,-8.056,0.536,word stretched over a pause
+arpa_adapted,F2BJRLP2,clerk,28.01,28.47,0.46,-13.187,0.652,word stretched over a pause
+arpa_adapted,F2BJRLP3,court,20.8,21.07,0.27,-6.425,0.407,word stretched over a pause

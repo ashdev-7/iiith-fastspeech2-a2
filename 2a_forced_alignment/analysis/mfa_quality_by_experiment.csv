@@ -1,0 +1,7 @@
+file,phone_duration_deviation|arpa_adapted,phone_duration_deviation|arpa_base,phone_duration_deviation|arpa_g2p_custom,phone_duration_deviation|mfa_ipa,speech_log_likelihood|arpa_adapted,speech_log_likelihood|arpa_base,speech_log_likelihood|arpa_g2p_custom,speech_log_likelihood|mfa_ipa
+F2BJRLP1,4.256,4.256,3.408,4.035,-46.037,-46.86,-48.071,-45.444
+F2BJRLP2,3.408,3.408,3.408,3.089,-45.849,-46.703,-46.988,-44.702
+F2BJRLP3,2.762,2.742,2.665,2.832,-46.531,-47.42,-48.45,-46.251
+ISLE_SESS0131_BLOCKD02_01_sprt1,2.249,2.249,2.995,5.122,-48.176,-49.371,-49.01,-45.052
+ISLE_SESS0131_BLOCKD02_02_sprt1,2.069,2.069,2.11,1.967,-46.159,-47.131,-46.768,-46.366
+ISLE_SESS0131_BLOCKD02_03_sprt1,3.012,3.014,3.122,4.882,-47.876,-49.057,-49.266,-46.093

@@ -1,0 +1,7 @@
+file,provided_format,converted_rate,converted_channels,converted_bytes_per_sample,converted_samples,header_rate,header_samples,header_max,header_min,converted_max,converted_min,samples_identical
+F2BJRLP1,"NIST SPHERE (pcm, 16-bit LE)",16000,1,2,404946,16000.0,404946.0,8362.0,-8740.0,8362.0,-8740.0,True
+F2BJRLP2,"NIST SPHERE (pcm, 16-bit LE)",16000,1,2,458359,16000.0,458359.0,8530.0,-8427.0,8530.0,-8427.0,True
+F2BJRLP3,"NIST SPHERE (pcm, 16-bit LE)",16000,1,2,491309,16000.0,491309.0,9284.0,-10295.0,9284.0,-10295.0,True
+ISLE_SESS0131_BLOCKD02_01_sprt1,RIFF/WAVE,16000,1,2,66000,,,,,,,True
+ISLE_SESS0131_BLOCKD02_02_sprt1,RIFF/WAVE,16000,1,2,62000,,,,,,,True
+ISLE_SESS0131_BLOCKD02_03_sprt1,RIFF/WAVE,16000,1,2,72000,,,,,,,True

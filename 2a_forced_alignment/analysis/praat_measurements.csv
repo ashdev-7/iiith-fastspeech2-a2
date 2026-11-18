@@ -1,0 +1,8 @@
+utterance,word,extra_start,extra_end,extra_dur_s,extra_mean_dB,speech_words_mean_dB,dB_below_speech,extra_voiced_pct
+ISLE_SESS0131_BLOCKD02_01_sprt1,white,1.33,1.49,0.16,50.9,73.4,22.6,0.0
+ISLE_SESS0131_BLOCKD02_01_sprt1,bait,1.7,1.8,0.1,60.5,73.4,12.9,0.0
+ISLE_SESS0131_BLOCKD02_01_sprt1,bait,2.25,4.12,1.88,47.8,73.4,25.7,0.0
+ISLE_SESS0131_BLOCKD02_03_sprt1,bed,2.04,4.5,2.46,48.6,72.7,24.1,0.0
+F2BJRLP2,democratic,1.38,1.5,0.12,55.8,65.2,9.3,0.0
+F2BJRLP2,he,7.79,8.04,0.25,53.0,65.2,12.2,0.0
+F2BJRLP2,led,18.16,18.34,0.18,63.6,65.2,1.6,66.7

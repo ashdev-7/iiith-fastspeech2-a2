@@ -1,0 +1,150 @@
+
+== summary ==
+      experiment       speaker  files  words  phones  unk_spn  silence_pct  mean_phone_ms  median_phone_ms  short_phones_le30ms  short_phones_le30ms_pct  long_phones_250ms  mean_word_ms
+      arpa_base           all      6    243    1063        0        17.05          75.82             70.0                   83                     7.81                  2        331.69
+      arpa_base           f2b      3    228    1025        0        10.73          73.74             70.0                   83                     8.10                  1        331.49
+      arpa_base isle_sess0131      3     15      38        0        59.84         132.11            120.0                    0                     0.00                  1        334.67
+        mfa_ipa           all      6    243    1030        0        12.33          82.70             70.0                  118                    11.46                  8        350.56
+        mfa_ipa           f2b      3    228     993        0        10.75          76.09             70.0                  118                    11.88                  4        331.40
+        mfa_ipa isle_sess0131      3     15      37        0        23.00         260.14            130.0                    0                     0.00                  4        641.67
+arpa_g2p_custom           all      6    243    1052        0        16.94          76.71             70.0                   91                     8.65                  5        332.10
+arpa_g2p_custom           f2b      3    228    1014        0        10.79          74.49             70.0                   91                     8.97                  2        331.27
+arpa_g2p_custom isle_sess0131      3     15      38        0        58.64         136.05            120.0                    0                     0.00                  3        344.67
+   arpa_adapted           all      6    243    1063        0        17.04          75.83             70.0                   82                     7.71                  2        331.73
+   arpa_adapted           f2b      3    228    1025        0        10.72          73.75             70.0                   82                     8.00                  1        331.54
+   arpa_adapted isle_sess0131      3     15      38        0        59.84         132.11            120.0                    0                     0.00                  1        334.67
+
+== boundary agreement vs arpa_base (per file) ==
+      experiment   tier                            file   n  n_other  mean_abs_ms  median_abs_ms  within_20ms_pct  within_50ms_pct  max_abs_ms
+        mfa_ipa  words                        F2BJRLP1  73       73         13.8           10.0             87.0             94.5       200.0
+        mfa_ipa  words                        F2BJRLP2  73       73         17.1           10.0             87.7             93.8       270.0
+        mfa_ipa  words                        F2BJRLP3  82       82         11.9           10.0             82.9             95.1       120.0
+        mfa_ipa  words ISLE_SESS0131_BLOCKD02_01_sprt1   5        5        231.5           20.0             40.0             60.0      1875.0
+        mfa_ipa  words ISLE_SESS0131_BLOCKD02_02_sprt1   5        5         11.0           10.0             80.0            100.0        30.0
+        mfa_ipa  words ISLE_SESS0131_BLOCKD02_03_sprt1   5        5        258.0           10.0             60.0             90.0      2460.0
+arpa_g2p_custom  words                        F2BJRLP1  73       73          9.7            0.0             90.4             96.6       250.0
+arpa_g2p_custom  words                        F2BJRLP2  73       73          2.7            0.0             97.3             98.6        80.0
+arpa_g2p_custom  words                        F2BJRLP3  82       82          1.9            0.0             97.6             98.8        60.0
+arpa_g2p_custom  words ISLE_SESS0131_BLOCKD02_01_sprt1   5        5         17.0            0.0             90.0             90.0       160.0
+arpa_g2p_custom  words ISLE_SESS0131_BLOCKD02_02_sprt1   5        5          0.0            0.0            100.0            100.0         0.0
+arpa_g2p_custom  words ISLE_SESS0131_BLOCKD02_03_sprt1   5        5          4.0            0.0             80.0            100.0        20.0
+arpa_g2p_custom phones                        F2BJRLP1 308      299          NaN            NaN              NaN              NaN         NaN
+arpa_g2p_custom phones                        F2BJRLP2 345      342          NaN            NaN              NaN              NaN         NaN
+arpa_g2p_custom phones                        F2BJRLP3 372      373          NaN            NaN              NaN              NaN         NaN
+arpa_g2p_custom phones ISLE_SESS0131_BLOCKD02_01_sprt1  13       13          7.3            0.0             96.2             96.2       160.0
+arpa_g2p_custom phones ISLE_SESS0131_BLOCKD02_02_sprt1  12       12          0.8            0.0            100.0            100.0        10.0
+arpa_g2p_custom phones ISLE_SESS0131_BLOCKD02_03_sprt1  13       13          2.3            0.0             92.3            100.0        20.0
+   arpa_adapted  words                        F2BJRLP1  73       73          0.0            0.0            100.0            100.0         0.0
+   arpa_adapted  words                        F2BJRLP2  73       73          0.1            0.0            100.0            100.0        10.0
+   arpa_adapted  words                        F2BJRLP3  82       82          0.1            0.0            100.0            100.0        10.0
+   arpa_adapted  words ISLE_SESS0131_BLOCKD02_01_sprt1   5        5          0.0            0.0            100.0            100.0         0.0
+   arpa_adapted  words ISLE_SESS0131_BLOCKD02_02_sprt1   5        5          0.0            0.0            100.0            100.0         0.0
+   arpa_adapted  words ISLE_SESS0131_BLOCKD02_03_sprt1   5        5          0.0            0.0            100.0            100.0         0.0
+   arpa_adapted phones                        F2BJRLP1 308      308          0.1            0.0            100.0            100.0        20.0
+   arpa_adapted phones                        F2BJRLP2 345      345          0.1            0.0            100.0            100.0        10.0
+   arpa_adapted phones                        F2BJRLP3 372      372          0.0            0.0            100.0            100.0        10.0
+   arpa_adapted phones ISLE_SESS0131_BLOCKD02_01_sprt1  13       13          0.0            0.0            100.0            100.0         0.0
+   arpa_adapted phones ISLE_SESS0131_BLOCKD02_02_sprt1  12       12          0.8            0.0            100.0            100.0        10.0
+   arpa_adapted phones ISLE_SESS0131_BLOCKD02_03_sprt1  13       13          0.0            0.0            100.0            100.0         0.0
+
+== boundary agreement (all files pooled, mean of file means) ==
+                         mean_abs_ms  median_abs_ms  within_20ms_pct
+experiment      tier                                               
+arpa_adapted    phones          0.2            0.0            100.0
+                words           0.0            0.0            100.0
+arpa_g2p_custom phones          3.5            0.0             96.2
+                words           5.9            0.0             92.5
+mfa_ipa         words          90.5           11.7             72.9
+
+== MFA alignment_analysis: mean per experiment ==
+                                speech_log_likelihood  phone_duration_deviation     snr
+experiment      speaker                                                               
+arpa_adapted    f2b                          -46.139                     3.475   8.495
+                isle_sess0131                -47.404                     2.443  11.859
+arpa_base       f2b                          -46.994                     3.469   8.497
+                isle_sess0131                -48.520                     2.444  11.859
+arpa_g2p_custom f2b                          -47.836                     3.160   8.344
+                isle_sess0131                -48.348                     2.742  11.790
+mfa_ipa         f2b                          -45.466                     3.319   8.642
+                isle_sess0131                -45.837                     3.990  10.443
+
+== pronunciation differences lexicon vs G2P-only ==
+                            file           word                         lexicon_pron                             g2p_pron
+                       F2BJRLP1         wanted                      W AA1 N T IH0 D                      W AO1 N T IH0 D
+                       F2BJRLP1             of                                AH0 V                                AA1 F
+                       F2BJRLP1            the                               DH AH0                               TH IY0
+                       F2BJRLP1            the                               DH IY0                               TH IY0
+                       F2BJRLP1              j                               JH EY1                                   JH
+                       F2BJRLP1     retirement            R IY0 T AY1 ER0 M AH0 N T              R IY0 T AY1 R M AH0 N T
+                       F2BJRLP1             of                                AH0 V                                AO1 F
+                       F2BJRLP1             is                                IH0 Z                                IH0 S
+                       F2BJRLP1       expected              IH0 K S P EH1 K T IH0 D              IH0 K S P EH1 K T AH0 D
+                       F2BJRLP1             to                                T IH0                                T OW0
+                       F2BJRLP1            the                               DH AH0                                   DH
+                       F2BJRLP1           most                            M OW1 S T                            M OW2 S T
+                       F2BJRLP1            his                             HH IH0 Z                             HH IH1 Z
+                       F2BJRLP1 administration AE0 D M IH2 N IH0 S T R EY1 SH AH0 N AE0 D M IH2 N AH0 S T R EY1 SH AH0 N
+                       F2BJRLP1             as                                EH1 Z                                AH0 Z
+                       F2BJRLP1              w                  D AH1 B AH0 L Y UW0                                    V
+                       F2BJRLP1        reports                    R IH0 P AO1 R T S                    R IY0 P AO1 R T S
+                       F2BJRLP1           will                              W AH0 L                              W IH1 L
+                       F2BJRLP1             to                                T AH0                                T OW0
+                       F2BJRLP2        dukakis                  D UW0 K AA1 K IH0 S                  D UW1 K AA1 K IH0 S
+                       F2BJRLP2             to                                T UW1                                T OW0
+                       F2BJRLP2   depoliticize      D EH2 P AH0 L IH1 T IH0 S AY2 Z      D EH1 P AH0 L IH1 T IH0 S AY2 Z
+                       F2BJRLP2     republican          R IY0 P AH1 B L IH0 K AH0 N          R IY0 P AH1 B L AH0 K AH0 N
+                       F2BJRLP2            for                              F R ER0                                F ER0
+                       F2BJRLP2         career                          K ER0 IH1 R                        K ER0 IY1 ER0
+                       F2BJRLP2             as                                AE1 Z                                AH0 S
+                       F2BJRLP2             as                                AE1 Z                                AH0 Z
+                       F2BJRLP2      associate                AH0 S OW1 S IY0 AH0 T                AH0 S OW1 S IY0 EY2 T
+                       F2BJRLP2      president              P R EH1 Z IH0 D AH0 N T              P R EH1 Z AH0 D AH0 N T
+                       F2BJRLP2  massachusetts         M AE2 S AH0 CH UW1 S AH0 T S         M AE2 S AH0 CH UW1 S IH0 T S
+                       F2BJRLP2            law                                L AA1                                L AO1
+                       F2BJRLP3           than                             DH AE1 N                             TH AH0 N
+                       F2BJRLP3        hundred                   HH AH1 N D R AH0 D                   HH AH1 N D R IH0 D
+                       F2BJRLP3          court                            K AO1 R T                            K AO2 R T
+                       F2BJRLP3       hennessy                   HH EH1 N AH0 S IY0                   HH EH1 N IH0 S IY0
+                       F2BJRLP3             is                                IH1 Z                                IH0 S
+                       F2BJRLP3      respected              R IY0 S P EH1 K T IH0 D              R IH0 S P EH1 K T IH0 D
+                       F2BJRLP3            for                              F R ER0                              F AO1 R
+                       F2BJRLP3 administrative  AH0 D M IH1 N AH0 S T R EY2 T IH0 V  AE0 D M IH1 N IH0 S T R EY2 T IH0 V
+                       F2BJRLP3         credit                      K R EH1 D IH0 T                      K R EH1 D AH0 T
+                       F2BJRLP3             of                                AH1 V                                AA1 F
+                       F2BJRLP3         thirty                         TH ER1 D IY0                         TH ER1 T IY0
+                       F2BJRLP3           from                              F ER0 M                            F R AH1 M
+                       F2BJRLP3          these                             DH IY1 Z                             TH IY1 Z
+ISLE_SESS0131_BLOCKD02_01_sprt1           said                              S EH1 D                              S EY1 D
+
+== energy flags (all experiments) ==
+      experiment                            file label  start    end   dur  rel_energy_db  quiet_frac                        flag
+      arpa_base                        F2BJRLP1   act  24.13 24.480 0.350         -7.190       0.514 word stretched over a pause
+      arpa_base                        F2BJRLP2 court  11.87 12.330 0.460         -8.071       0.500 word stretched over a pause
+      arpa_base                        F2BJRLP2 court  20.54 20.820 0.280         -8.056       0.536 word stretched over a pause
+      arpa_base                        F2BJRLP2 clerk  28.01 28.470 0.460        -13.187       0.652 word stretched over a pause
+      arpa_base                        F2BJRLP3 court  20.80 21.070 0.270         -6.425       0.407 word stretched over a pause
+        mfa_ipa                        F2BJRLP2 court  11.86 12.330 0.470         -8.163       0.511 word stretched over a pause
+        mfa_ipa                        F2BJRLP2 court  20.54 20.800 0.260         -7.742       0.500 word stretched over a pause
+        mfa_ipa                        F2BJRLP2 clerk  28.01 28.290 0.280        -11.142       0.500 word stretched over a pause
+        mfa_ipa                        F2BJRLP3 court  20.80 21.070 0.270         -6.425       0.407 word stretched over a pause
+        mfa_ipa ISLE_SESS0131_BLOCKD02_01_sprt1  bait   1.70  4.125 2.425        -11.694       0.492 word stretched over a pause
+        mfa_ipa ISLE_SESS0131_BLOCKD02_03_sprt1   bed   1.47  4.500 3.030        -12.272       0.508 word stretched over a pause
+arpa_g2p_custom                        F2BJRLP1   act  24.13 24.480 0.350         -7.190       0.514 word stretched over a pause
+arpa_g2p_custom                        F2BJRLP2 court  11.87 12.330 0.460         -8.071       0.500 word stretched over a pause
+arpa_g2p_custom                        F2BJRLP2 court  20.54 20.820 0.280         -8.056       0.536 word stretched over a pause
+arpa_g2p_custom                        F2BJRLP2 clerk  28.00 28.470 0.470        -13.177       0.638 word stretched over a pause
+arpa_g2p_custom                        F2BJRLP3 court  20.80 21.070 0.270         -6.425       0.407 word stretched over a pause
+   arpa_adapted                        F2BJRLP1   act  24.13 24.480 0.350         -7.190       0.514 word stretched over a pause
+   arpa_adapted                        F2BJRLP2 court  11.87 12.330 0.460         -8.071       0.500 word stretched over a pause
+   arpa_adapted                        F2BJRLP2 court  20.54 20.820 0.280         -8.056       0.536 word stretched over a pause
+   arpa_adapted                        F2BJRLP2 clerk  28.01 28.470 0.460        -13.187       0.652 word stretched over a pause
+   arpa_adapted                        F2BJRLP3 court  20.80 21.070 0.270         -6.425       0.407 word stretched over a pause
+
+== flag counts ==
+ experiment       flag                       
+arpa_adapted     word stretched over a pause    5
+arpa_base        word stretched over a pause    5
+arpa_g2p_custom  word stretched over a pause    5
+mfa_ipa          word stretched over a pause    6
+
+figures -> C:\Users\YASH\OneDrive\Desktop\Assignment_2\Ass_2\mfa-forced-alignment\analysis\figures

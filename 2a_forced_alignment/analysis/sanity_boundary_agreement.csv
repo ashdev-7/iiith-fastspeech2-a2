@@ -1,0 +1,25 @@
+comparison,tier,speaker,boundaries,matched_pct,identical_pct,within_10ms_pct,within_20ms_pct,mean_ms,max_ms
+repeat: arpa_base vs run1,words,f2b,456,100.0,99.34,100.0,100.0,0.07,10.0
+repeat: arpa_base vs run1,words,isle,30,100.0,100.0,100.0,100.0,0.0,0.0
+repeat: arpa_base vs run1,phones,f2b,2050,100.0,99.17,99.9,100.0,0.09,20.0
+repeat: arpa_base vs run1,phones,isle,76,100.0,100.0,100.0,100.0,0.0,0.0
+repeat: arpa_base vs run2,words,f2b,456,100.0,100.0,100.0,100.0,0.0,0.0
+repeat: arpa_base vs run2,words,isle,30,100.0,100.0,100.0,100.0,0.0,0.0
+repeat: arpa_base vs run2,phones,f2b,2050,100.0,100.0,100.0,100.0,0.0,0.0
+repeat: arpa_base vs run2,phones,isle,76,100.0,94.74,100.0,100.0,0.53,10.0
+repeat: run1 vs run2,words,f2b,456,100.0,99.34,100.0,100.0,0.07,10.0
+repeat: run1 vs run2,words,isle,30,100.0,100.0,100.0,100.0,0.0,0.0
+repeat: run1 vs run2,phones,f2b,2050,100.0,99.17,99.9,100.0,0.09,20.0
+repeat: run1 vs run2,phones,isle,76,100.0,94.74,100.0,100.0,0.53,10.0
+untouched input vs arpa_base,words,f2b,444,100.0,98.42,100.0,100.0,0.16,10.0
+untouched input vs arpa_base,words,isle,30,100.0,100.0,100.0,100.0,0.0,0.0
+untouched input vs arpa_base,phones,f2b,1998,100.0,99.15,99.8,99.9,0.12,30.0
+untouched input vs arpa_base,phones,isle,76,100.0,97.37,100.0,100.0,0.26,10.0
+arpa_adapted vs arpa_base,words,f2b,456,100.0,99.34,100.0,100.0,0.07,10.0
+arpa_adapted vs arpa_base,words,isle,30,100.0,100.0,100.0,100.0,0.0,0.0
+arpa_adapted vs arpa_base,phones,f2b,2050,100.0,99.27,99.9,100.0,0.08,20.0
+arpa_adapted vs arpa_base,phones,isle,76,100.0,97.37,100.0,100.0,0.26,10.0
+arpa_g2p_custom vs arpa_base,words,f2b,456,100.0,85.09,93.86,96.49,4.67,250.0
+arpa_g2p_custom vs arpa_base,words,isle,30,100.0,86.67,90.0,96.67,7.0,160.0
+arpa_g2p_custom vs arpa_base,phones,f2b,1868,91.02,94.33,98.45,98.77,1.56,250.0
+arpa_g2p_custom vs arpa_base,phones,isle,70,92.09,87.14,95.71,98.57,3.71,160.0

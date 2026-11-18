@@ -1,0 +1,46 @@
+experiment,utterance,word,start,end,dur_s,phones,file_silence_pct
+mfa_ipa,01,i,0.43,0.55,0.12,aj,10.4
+mfa_ipa,01,said,0.55,0.91,0.36,s aj d,10.4
+mfa_ipa,01,white,0.91,1.49,0.58,ʋ aj ʈ,10.4
+mfa_ipa,01,not,1.49,1.7,0.21,n a t,10.4
+mfa_ipa,01,bait,1.7,4.12,2.42,b e t,10.4
+mfa_ipa,02,i,0.61,0.7,0.09,aj,57.7
+mfa_ipa,02,said,0.7,1.0,0.3,s aj d,57.7
+mfa_ipa,02,new,1.0,1.44,0.44,ɲ uː,57.7
+mfa_ipa,02,not,1.44,1.75,0.31,n a t,57.7
+mfa_ipa,02,no,1.75,2.25,0.5,n əw,57.7
+mfa_ipa,03,i,0.21,0.3,0.09,aj,4.7
+mfa_ipa,03,said,0.3,0.66,0.36,s aj d,4.7
+mfa_ipa,03,bad,0.66,1.14,0.48,b a d,4.7
+mfa_ipa,03,not,1.14,1.47,0.33,n a t,4.7
+mfa_ipa,03,bed,1.47,4.5,3.03,b ɛ d,4.7
+mfa_ipa_dict_v300,01,i,0.43,0.55,0.12,aj,10.4
+mfa_ipa_dict_v300,01,said,0.55,0.91,0.36,s ɛ d,10.4
+mfa_ipa_dict_v300,01,white,0.91,1.49,0.58,w aj t,10.4
+mfa_ipa_dict_v300,01,not,1.49,1.7,0.21,n ɔ t,10.4
+mfa_ipa_dict_v300,01,bait,1.7,4.12,2.42,b ej t,10.4
+mfa_ipa_dict_v300,02,i,0.61,0.7,0.09,aj,57.7
+mfa_ipa_dict_v300,02,said,0.7,1.01,0.31,s ɛ d,57.7
+mfa_ipa_dict_v300,02,new,1.01,1.29,0.28,ɲ ʉː,57.7
+mfa_ipa_dict_v300,02,not,1.29,1.75,0.46,n ɑ t,57.7
+mfa_ipa_dict_v300,02,no,1.75,2.25,0.5,n əw,57.7
+mfa_ipa_dict_v300,03,i,0.21,0.3,0.09,aj,4.7
+mfa_ipa_dict_v300,03,said,0.3,0.66,0.36,s ɛ d,4.7
+mfa_ipa_dict_v300,03,bad,0.66,1.14,0.48,b a d,4.7
+mfa_ipa_dict_v300,03,not,1.14,1.47,0.33,n ɔ t,4.7
+mfa_ipa_dict_v300,03,bed,1.47,4.5,3.03,b ɛ d,4.7
+arpa_base,01,i,0.44,0.53,0.09,AY1,59.8
+arpa_base,01,said,0.53,0.92,0.39,S EH1 D,59.8
+arpa_base,01,white,0.92,1.33,0.41,W AY1 T,59.8
+arpa_base,01,not,1.48,1.8,0.32,N AA1 T,59.8
+arpa_base,01,bait,1.8,2.25,0.45,B EY1 T,59.8
+arpa_base,02,i,0.62,0.69,0.07,AY1,59.5
+arpa_base,02,said,0.69,1.01,0.32,S EH1 D,59.5
+arpa_base,02,new,1.01,1.42,0.41,N Y UW1,59.5
+arpa_base,02,not,1.45,1.75,0.3,N AA1 T,59.5
+arpa_base,02,no,1.75,2.22,0.47,N OW1,59.5
+arpa_base,03,i,0.22,0.29,0.07,AY1,60.2
+arpa_base,03,said,0.29,0.66,0.37,S EH1 D,60.2
+arpa_base,03,bad,0.66,1.17,0.51,B AE1 D,60.2
+arpa_base,03,not,1.17,1.46,0.29,N AA1 T,60.2
+arpa_base,03,bed,1.49,2.04,0.55,B EH1 D,60.2
