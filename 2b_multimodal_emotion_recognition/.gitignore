@@ -1,0 +1,10 @@
+runs/*/*/*/best.pt
+__pycache__/
+*.pyc
+.venv/
+data/
+# generated Kaggle job packages (rebuild with: python kaggle/make_kernel.py <job> --user <name>)
+kaggle/build/
+report/*.aux
+report/*.log
+report/*.out
