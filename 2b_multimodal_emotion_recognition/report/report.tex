@@ -1,0 +1,339 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=1.9cm]{geometry}
+\usepackage{graphicx,booktabs,xcolor,float,tabularx,amsmath,amssymb}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+\setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
+\graphicspath{{../Results/plots/}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\pp}{\,pp}
+\newcommand{\best}[1]{\textbf{#1}}
+
+\title{\vspace{-1.2cm}Multimodal Emotion Recognition on TESS:\\ speech, text and fusion pipelines\\\large Assignment 2b}
+\author{Yash Tyagi}
+\date{November 2026}
+
+\begin{document}
+\sloppy
+\maketitle
+\vspace{-0.7cm}
+
+\begin{center}\fbox{\begin{minipage}{0.96\linewidth}\small
+\textbf{Summary.} We build three pipelines on frozen encoders: speech (WavLM-Base+ $\to$ BiGRU $\to$ attention), text (emotion-tuned DistilRoBERTa $\to$ BiGRU $\to$ attention) and fusion (gated multimodal unit; concatenation and cross-attention as ablations).
+All 11 variants are trained and tested 16 times each (176 runs, plus 48 ablation runs) under three protocols, and every pairwise comparison is tested on identical splits.
+\textbf{(1)} The usual random split is saturated: every speech-based model scores 99.5--100\%. Under leave-one-speaker-out, the realistic setting, the best model reaches 63.4\%.
+\textbf{(2)} TESS's transcripts are label-independent by design, so text alone sits at exactly chance (14.29\%). Whisper transcripts reach 30.1\% (SD, $p<10^{-4}$) because ASR punctuation leaks prosody: 72\% of pleasant-surprise transcripts end in ``!''.
+\textbf{(3)} Fusion never helps significantly across runs. It helps where speech is \emph{uncertain} (+11.8\pp{} when speech confidence is $<$0.5) and hurts where speech is confident ($-$8.4\pp).
+\textbf{(4)} The bottleneck is speaker shift, not representation. Test-speaker emotions form clean clusters (silhouette 0.50), a linear probe on frozen WavLM layer 10 reaches 71.7\% SI, and label-free speaker normalisation makes the SI model robust to noise (54.8\% at 0\,dB vs.\ 28.1\%).
+\end{minipage}}\end{center}
+
+\input{sections/architecture}
+
+% =====================================================================
+\section{Experiments (B)}\label{sec:exp}
+\subsection{Main comparison of the three pipelines}
+\begin{table}[H]\centering\small
+\caption{Test accuracy (\%), mean $\pm$ std over runs (RAND/SD: 5 runs, SI: 6 runs). Classes are balanced, so accuracy = UAR. Macro-F1 for every row is in \code{Results/accuracy\_tables.md}. $\dagger$ = transductive speaker normalisation.}\label{tab:main}
+\begin{tabular}{@{}llccc@{}}\toprule
+Pipeline & Variant & RAND & SD & SI (LOSO)\\\midrule
+Speech & log-Mel + BiGRU (baseline) & 99.67 $\pm$ 0.32 & 99.52 $\pm$ 0.56 & 41.57 $\pm$ 5.99\\
+ & \textbf{WavLM + BiGRU} (main) & 99.86 $\pm$ 0.21 & 99.90 $\pm$ 0.13 & 58.48 $\pm$ 8.74\\
+ & WavLM + BiGRU + speaker norm $\dagger$ & \best{100.00 $\pm$ 0.00} & \best{99.95 $\pm$ 0.11} & 56.54 $\pm$ 5.58\\\midrule
+Text & DistilRoBERTa + BiGRU, ground truth & 13.81 $\pm$ 0.56 & 14.29 $\pm$ 0.00 & 14.29 $\pm$ 0.00\\
+ & DistilRoBERTa + BiGRU, Whisper ASR & 28.52 $\pm$ 1.93 & 30.05 $\pm$ 2.42 & 23.46 $\pm$ 4.72\\
+ & zero-shot emotion model, ground truth & 14.05 $\pm$ 0.86 & 14.29 $\pm$ 0.00 & 14.29 $\pm$ 0.00\\
+ & zero-shot emotion model, Whisper ASR & 14.29 $\pm$ 0.48 & 14.19 $\pm$ 0.27 & 14.32 $\pm$ 0.20\\\midrule
+Fusion & \textbf{Gated GMU, ground truth} (main) & \best{100.00 $\pm$ 0.00} & \best{99.95 $\pm$ 0.11} & 56.77 $\pm$ 7.57\\
+ & Gated GMU, Whisper ASR & 99.90 $\pm$ 0.13 & \best{100.00 $\pm$ 0.00} & 57.14 $\pm$ 7.29\\
+ & Concatenation, ground truth & 99.86 $\pm$ 0.13 & \best{100.00 $\pm$ 0.00} & 60.12 $\pm$ 11.23\\
+ & Cross-attention, ground truth & \best{100.00 $\pm$ 0.00} & 99.90 $\pm$ 0.13 & \best{63.42 $\pm$ 8.84}\\
+ & Gated GMU, ground truth + speaker norm $\dagger$ & 99.86 $\pm$ 0.21 & 99.62 $\pm$ 0.49 & 55.82 $\pm$ 4.60\\
+ & Gated GMU, Whisper + speaker norm $\dagger$ & 99.95 $\pm$ 0.11 & 99.62 $\pm$ 0.36 & 55.44 $\pm$ 6.28\\\midrule
+\multicolumn{2}{@{}l}{Chance} & 14.29 & 14.29 & 14.29\\\bottomrule
+\end{tabular}\end{table}
+
+\textbf{Reading the table.}
+\emph{(i) RAND and SD are saturated.} With both speakers in training, every model that sees audio is within 0.5\pp{} of 100\%, and no difference between them is significant.
+This holds even for SD, where the test \emph{words} are unseen, so the models are not memorising lexical items.
+Under RAND the same speaker and word appear in train and test, so those numbers say little about generalisation.
+This is why most of our analysis uses SI.
+\emph{(ii) SI is hard and noisy.} With only one speaker to learn from, accuracy falls to 42--63\%, with large seed variance (std 5--11\pp).
+It also depends on direction: speech-only scores 53.0\% for OAF$\to$YAF and 63.9\% for YAF$\to$OAF (\code{accuracy\_si\_by\_direction.csv}).
+\emph{(iii) Self-supervised features matter most where it counts.} WavLM beats log-Mel by $+16.9$\pp{} under SI (95\% CI $\pm$13.2; paired $t$ $p=0.022$, Wilcoxon $p=0.031$, McNemar $p<10^{-6}$), but by only 0.2--0.4\pp{} under RAND and SD.
+It is the only architectural choice that is significant across runs.
+\emph{(iv) Text.} With ground-truth transcripts, both the trained text model and the zero-shot emotion classifier are at chance in every protocol.
+The trained model's validation loss stays at $\ln 7$, and the zero-shot model predicts ``neutral'' for 91\% of clips.
+With Whisper transcripts, the trained text model is far above chance: 30.1\% SD ($t_4=14.6$, $p<10^{-4}$) and 23.5\% SI ($t_5=4.8$, $p=0.003$).
+The zero-shot model is still at chance, so the signal is not lexical emotion; it is in the punctuation (\S\ref{sec:whenfusion}).
+
+\subsection{Paired significance tests}
+\begin{table}[H]\centering\small
+\caption{Paired comparisons (B vs.\ A, identical splits and seeds). $\Delta$ = mean per-run accuracy difference (pp) with 95\% $t$-CI; $p_t$ paired $t$-test over runs; McNemar is exact and pooled over all test clips of all runs (fixes/breaks = clips A got wrong and B right / the reverse). RAND/SD rows are omitted: every $|\Delta|\le0.4$\pp. The full table is in \code{Results/statistics.md}.}\label{tab:sig}
+\begin{tabular}{@{}llrrrrr@{}}\toprule
+A & B (SI protocol) & $\Delta$ (pp) & 95\% CI & $p_t$ & fixes / breaks & $p_\text{McNemar}$\\\midrule
+speech log-Mel & speech WavLM & $+16.90$ & $\pm13.24$ & \textbf{0.022} & 2252 / 832 & $<10^{-6}$\\
+speech WavLM & fusion GMU (GT) & $-1.70$ & $\pm6.62$ & 0.54 & 742 / 885 & $4\times10^{-4}$\\
+speech WavLM & fusion GMU (Whisper) & $-1.33$ & $\pm9.64$ & 0.74 & 813 / 925 & 0.008\\
+speech WavLM & fusion concat (GT) & $+1.64$ & $\pm13.73$ & 0.77 & 1108 / 970 & 0.003\\
+speech WavLM & fusion cross-attn (GT) & $+4.94$ & $\pm13.63$ & 0.39 & 1177 / 762 & $<10^{-6}$\\
+speech WavLM & speech + speaker norm $\dagger$ & $-1.94$ & $\pm11.72$ & 0.69 & 858 / 1021 & $2\times10^{-4}$\\
+fusion GMU (GT) & fusion GMU (Whisper) & $+0.37$ & $\pm8.15$ & 0.91 & 845 / 814 & 0.46\\\bottomrule
+\end{tabular}\end{table}
+The pooled McNemar test treats the 8400 clip decisions as independent, but each clip is scored once per seed, so it overstates confidence.
+We therefore base conclusions on the run-level test.
+Even so, it shows that fusion changes many decisions in both directions (740--1180 fixes \emph{and} 760--1020 breaks): it is not a near-copy of the speech model.
+\textbf{Conclusion:} among 11 variants, only the move from hand-crafted to self-supervised features gives a significant run-level gain.
+Cross-attention fusion has the best mean SI accuracy, but six runs cannot distinguish it from speech-only.
+
+\subsection{How strong is the speech model? A non-neural reference}
+\begin{table}[H]\centering\small
+\caption{Hand-crafted prosody baseline: 44 utterance-level functionals (duration, F0 statistics, energy, spectral shape, 13 MFCC means and stds), same splits as the neural models.}\label{tab:prosody}
+\begin{tabular}{@{}lcccc@{}}\toprule
+Model & speaker norm & RAND & SD & SI\\\midrule
+duration only (LogReg) & -- & 36.62 $\pm$ 2.07 & 35.43 $\pm$ 1.60 & 24.61 $\pm$ 4.19\\
+44 functionals, LogReg & -- & 97.67 $\pm$ 0.39 & 98.67 $\pm$ 0.27 & 40.11 $\pm$ 3.56\\
+44 functionals, RBF-SVM & -- & 99.67 $\pm$ 0.13 & 99.86 $\pm$ 0.13 & 46.93 $\pm$ 2.03\\
+44 functionals, LogReg & $\dagger$ & 97.52 $\pm$ 0.49 & 98.14 $\pm$ 0.57 & 49.36 $\pm$ 3.05\\
+44 functionals, RBF-SVM & $\dagger$ & 98.90 $\pm$ 0.27 & 99.48 $\pm$ 0.26 & 50.69 $\pm$ 4.51\\\bottomrule
+\end{tabular}\end{table}
+A 44-feature SVM already reaches 99.9\% SD, confirming that the speaker-dependent task is easy.
+Duration \emph{alone} gives 2.5$\times$ chance, a shortcut that any model will exploit.
+Under SI, the neural WavLM model (58.5\%) beats the best hand-crafted model by 11.6\pp{} (46.9\%), and even the speaker-normalised one (50.7\%) by 7.8\pp.
+Speaker normalisation helps the hand-crafted features (+3.8 to +9.3\pp) much more than WavLM ($-1.9$\pp, not significant).
+That fits WavLM features being partly speaker-invariant already.
+
+\subsection{Layer-wise linear probes on the frozen encoders}
+\begin{table}[H]\centering\small
+\caption{Logistic-regression probes on pooled (mean+std) features of single frozen layers. Emotion: 7-class accuracy; speaker: OAF vs.\ YAF.}\label{tab:probe}
+\begin{tabular}{@{}lcccccccc@{}}\toprule
+& \multicolumn{7}{c}{WavLM-Base+ layer} & \\\cmidrule(lr){2-8}
+Probe & L0 & L2 & L4 & L6 & L8 & L10 & L12 & log-Mel\\\midrule
+emotion, SD & 99.9 & 100 & 100 & 100 & 100 & 99.7 & 100 & 99.3\\
+emotion, SI & 47.3 & 51.9 & 62.0 & 63.6 & 69.5 & \textbf{71.7} & 56.5 & 48.7\\
+emotion, SI + speaker norm $\dagger$ & 57.5 & 63.6 & 67.0 & 70.5 & \textbf{73.5} & 71.8 & 62.8 & 46.6\\
+speaker identity & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100\\\bottomrule
+\end{tabular}\end{table}
+Every DistilRoBERTa layer probes at exactly 14.3\% for emotion and 50\% for speaker identity, the information-theoretic floor for ground-truth text.
+For WavLM, SI emotion accuracy rises steadily to L8--L10 and drops at the last layer, the usual SUPERB pattern for paralinguistics.
+Every layer identifies the speaker perfectly, so speaker information is \emph{not} removed at any depth.
+\textbf{Two honest caveats.}
+(a) A single-layer linear probe at L8--L10 \emph{beats} our trained BiGRU model under SI (69.5--71.7\% vs.\ 58.5\%).
+The probes use one seed and the best layer is chosen after looking at test results, so they are optimistic.
+But all of L4--L10 exceed 62\%.
+Our conclusion is that the trained sequence model, selected on one speaker's validation data, overfits speaker-specific cues that a heavily regularised linear model cannot use.
+Under SI, simpler is better.
+(b) The learned softmax layer weights barely move from uniform (1/7 = 0.143 initially; final values 0.13--0.16, with a mild preference for \emph{lower} layers).
+We tested two explanations in a dedicated ablation (Table~\ref{tab:ablation}, Fig.~\ref{fig:ablation}).
+Removing weight decay from the layer logits changes nothing (weights and accuracy identical), so decay is \emph{not} the cause.
+Giving them a 10$\times$ learning rate does free them (largest weight 0.26 vs.\ 0.16). However, they move towards the \emph{lowest} layers (L0, L2), not towards the L8--L10 that transfer best in the probes, and SI accuracy is unchanged ($+1.0$\pp, $p=0.75$).
+So the near-uniform weights were an optimisation-speed effect, and fixing it does not help.
+Trained on one speaker, the model prefers low-level acoustic layers that suffice to fit that speaker, rather than the deeper layers that generalise across speakers.
+Our earlier guess that freeing the weights would find L8--L10 was wrong.
+
+\begin{table}[H]\centering\small
+\caption{Speech front-end ablation, paired against the main WavLM model on identical splits and seeds ($\Delta$ in pp, 95\% $t$-CI, paired $t$-test). Max weight = largest learned layer weight (uniform: 0.143 for 7 layers, 0.077 for 13).}\label{tab:ablation}
+\begin{tabular}{@{}lccccc@{}}\toprule
+Variant & SD & SI & $\Delta$ SI (pp) & $p$ & max weight\\\midrule
+main: 7 layers (0,2,\dots,12), 40\,ms & 99.90 $\pm$ 0.13 & 58.48 $\pm$ 8.74 & -- & -- & 0.156\\
+all 13 layers, 20\,ms & 99.86 $\pm$ 0.21 & 55.02 $\pm$ 10.25 & $-3.45 \pm 9.59$ & 0.40 & 0.086\\
+layer logits: no weight decay & 99.90 $\pm$ 0.13 & 58.42 $\pm$ 9.97 & $-0.06 \pm 5.33$ & 0.98 & 0.156\\
+layer logits: no decay, 10$\times$ lr & 99.86 $\pm$ 0.13 & 59.45 $\pm$ 6.51 & $+0.98 \pm 7.57$ & 0.75 & 0.257\\\bottomrule
+\end{tabular}\end{table}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{ablation_layer_weights.png}
+\caption{Learned layer weights (mean over runs). Only the 10$\times$ learning-rate variant departs from uniform, and it shifts weight to the lowest layers.}\label{fig:ablation}
+\end{figure}
+
+% =====================================================================
+\section{Analysis (C)}
+\subsection{Which emotions are easiest and hardest?}
+\begin{table}[H]\centering\small
+\caption{Per-class F1 (\%) under SI, mean over 6 runs. Under RAND/SD every class is $\ge98.8$ for all audio models.}\label{tab:f1}
+\begin{tabular}{@{}lccccccc@{}}\toprule
+Model & Angry & Disgust & Fear & Happy & Neutral & Pl.\ surprise & Sad\\\midrule
+Speech log-Mel & 20.7 & 51.0 & 30.9 & 0.6 & 83.8 & 13.6 & 52.7\\
+Speech WavLM & 15.0 & 74.9 & 66.1 & 6.6 & 89.9 & 36.6 & 84.4\\
+Text, Whisper ASR & 16.7 & 12.1 & 18.6 & 1.1 & 25.7 & 35.6 & 12.2\\
+Fusion GMU (GT) & 23.1 & 59.2 & 70.1 & 6.9 & 90.7 & 24.6 & \textbf{91.8}\\
+Fusion cross-attn (GT) & 24.6 & 69.6 & \textbf{77.1} & 6.3 & \textbf{95.1} & \textbf{43.9} & 82.5\\\bottomrule
+\end{tabular}\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.42\linewidth]{confusion_speech_wavlm_si.png}\hfill
+\includegraphics[width=0.42\linewidth]{confusion_text_asr_sd.png}
+\caption{Row-normalised confusion matrices. Left: speech WavLM, SI (6 runs). Right: text model on Whisper transcripts, SD. It can only separate classes whose ASR punctuation differs, and pleasant surprise is the most distinctive.}\label{fig:conf}
+\end{figure}
+
+\textbf{Easiest: neutral, sad, fear} (SI F1 90--95, 82--92 and 66--77 for the WavLM-based models).
+They sit at the extremes of the arousal axis.
+Neutral and sad are low-arousal: low, flat F0 and low energy. Sad is also among the longest (2.36\,s on average; only disgust is longer, at 2.39\,s).
+Fear has its own high, tense, short profile (the shortest class, 1.60\,s).
+These are \emph{global} prosodic properties that change little between speakers once the speaker's own level is accounted for.
+\textbf{Hardest: happy (F1 $\le$7) and angry (15--25)}, then pleasant surprise.
+They are all high-arousal and differ mainly in \emph{valence}, which acoustics encode weakly.
+The confusion matrix (Fig.~\ref{fig:conf}) shows the structure: happy is split between angry (30\%), pleasant surprise (31\%), fear and disgust, and angry is mostly called fear (60\%).
+How these classes are realised depends on the speaker: the two transfer directions differ by up to 13\pp{} for the same model.
+None of this shows under RAND/SD (every class $\ge$98.8), which is another sign that those protocols mostly test recognition of a known speaker's style.
+
+\subsection{When does fusion help?}\label{sec:whenfusion}
+\textbf{Ground-truth text cannot help, and the model learns that only partly.}
+Every word appears once per emotion and speaker, so $I(\text{text};y)=0$, and the probes, the zero-shot model and the trained text model all confirm it.
+The GMU gate puts most weight on speech (mean $z=0.84$ in SI; Fig.~\ref{fig:gate}), but not all of it.
+The 16\% of fused dimensions that carry text inject word-identity variance that is useless for the label.
+This is consistent with GMU-GT being slightly (n.s.) \emph{below} speech-only under SI ($-1.7$\pp).
+Concatenation and cross-attention are not hurt and even gain (+1.6, +4.9\pp, n.s.).
+A plausible mechanism: text is independent of the \emph{label} but not of the \emph{acoustics}.
+Knowing which word was said lets cross-attention condition the speech pooling on lexical content and partly factor phonetic variation out of the prosodic evidence.
+With six runs we cannot confirm this.
+
+\begin{table}[H]\centering\small
+\caption{What Whisper-small writes for each emotion (\% of clips). The trained text model can only read these marks; the target word is recognised for 84--92\% of clips regardless of emotion.}\label{tab:asr}
+\begin{tabular}{@{}lccccccc@{}}\toprule
+& Angry & Disgust & Fear & Happy & Neutral & Pl.\ surprise & Sad\\\midrule
+ends with ``!'' & 9.2 & 4.5 & 32.0 & 42.8 & 0.0 & \textbf{72.2} & 0.0\\
+ends with ``.'' & 90.8 & 95.5 & 65.0 & 57.2 & 87.2 & 27.5 & \textbf{99.5}\\
+ends with ``?'' & 0 & 0 & 2.8 & 0 & 0.5 & 0.2 & 0\\
+exact carrier sentence & 85.0 & 84.0 & 59.0 & 79.8 & 63.5 & 86.2 & 70.8\\\bottomrule
+\end{tabular}\end{table}
+
+\textbf{ASR transcripts carry prosody, through punctuation.}
+Whisper's punctuation and casing are predicted from the audio, so excited speech gets an exclamation mark and a long pause gets a comma (\emph{``Say the word, bar.''} is typical of neutral and sad).
+This is why the Whisper text model reaches 2.1$\times$ chance while the emotion-tuned zero-shot model, which reads the \emph{words}, stays at chance.
+The text model's best class is pleasant surprise (F1 56 in SD), exactly the class with the most ``!''.
+However, this text signal is a lossy, quantised copy of information the speech branch already has, so it adds little \emph{on average} (GMU-Whisper vs.\ GMU-GT: $+0.4$\pp, $p=0.91$).
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.46\linewidth]{fusion_gate_distribution.png}\hfill
+\includegraphics[width=0.50\linewidth]{fusion_gain_vs_confidence_gated_wavlm_asr.png}
+\caption{Left: distribution of the mean GMU gate per test clip (1 = speech). Right: SI accuracy of speech-only vs.\ GMU fusion (Whisper), binned by the speech-only model's confidence on the same clip.}\label{fig:gate}
+\end{figure}
+
+\textbf{Fusion helps when the speech evidence is weak.}
+Binning SI test clips by the speech-only model's confidence (Fig.~\ref{fig:gate}, right) shows a clear crossover:
+
+\begin{center}\small
+\begin{tabular}{@{}lcccc@{}}\toprule
+speech confidence & $<$0.5 & 0.5--0.7 & 0.7--0.9 & $\ge$0.9\\\midrule
+clips & 1002 & 1427 & 2497 & 3474\\
+speech-only acc. & 27.4 & 32.6 & 50.1 & 84.1\\
+fusion (Whisper) acc. & 39.1 & 37.8 & 49.6 & 75.7\\
+$\Delta$ & \textbf{+11.8} & \textbf{+5.3} & $-0.5$ & $-8.4$\\\bottomrule
+\end{tabular}\end{center}
+
+The same pattern holds, more weakly, for ground-truth text (+4.9 / +1.1 / $-3.2$ / $-3.7$).
+Fusion therefore helps when speech is ambiguous: a second view, even a weak one, then breaks ties.
+It hurts when speech is already right and confident, because the gate stays at $\approx0.77$ regardless of confidence (it was learned on the training speaker, where speech is almost always right).
+A confidence-aware or per-clip-calibrated gate is the obvious next step.
+Under noise (\S\ref{sec:noise}), where speech degrades, the fusion models did \emph{not} gain meaningfully over speech-only, because the noisy-ASR transcripts lose their punctuation cue as well (see the table in that section).
+
+\subsection{Error analysis: five systematic failure cases}
+695 of 2800 SI test clips are misclassified by the gated fusion model in \emph{every} seed. Most of these errors are systematic, not random.
+The most frequent pairs are happy$\to$angry (123), pleasant surprise$\to$happy (118), angry$\to$fear (91) and happy$\to$pleasant surprise (75).
+For each case below, we compare the clip's prosody with \emph{the same speaker's} average for the true and predicted classes (\code{Results/error\_analysis.md}):
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.72\linewidth]{error_analysis_cases.png}
+\caption{Five clips misclassified by GMU fusion in all SI seeds: log-Mel spectrogram with F0 (left) and mean posterior (right; orange = predicted, green = true).}\label{fig:errors}
+\end{figure}
+\begin{enumerate}\setlength\itemsep{1pt}
+\item \textbf{YAF\_puff\_happy $\to$ angry (p = 0.96).} F0 median (294\,Hz) and energy ($-16.2$\,dB) are close to YAF's \emph{happy} means (280\,Hz, $-15.9$\,dB) and far from angry (237\,Hz, $-18.0$\,dB); the F0 range fits both classes (218 vs.\ 202/216\,Hz), and the duration is shorter than either (1.42\,s). Its own prosody points to the correct class rather than the predicted one, so this is a pure \emph{cross-speaker mapping} error. The region the OAF-trained model calls ``angry'' covers YAF's happy, the most frequent confusion overall (123 clips).
+\item \textbf{YAF\_witch\_ps $\to$ happy (0.96).} Median F0 (296\,Hz) and energy are closer to happy than to pleasant surprise. The very wide F0 range (523\,Hz) is partly pitch-tracker octave jumps on a creaky ending (Fig.~\ref{fig:errors}). Both classes are high-arousal with rising contours, and what separates them is valence, which acoustics encode weakly.
+\item \textbf{OAF\_moon\_angry $\to$ fear (0.94).} This is the one case where global prosody clearly favours the prediction. The F0 median (290\,Hz) equals OAF-fear's (291\,Hz vs.\ 268\,Hz for angry), the range is compressed (99\,Hz vs.\ 209\,Hz angry, 148\,Hz fear) and the contour is flat and tense. Prosodically the clip \emph{is} the speaker's fear profile, so the label itself is arguably ambiguous.
+\item \textbf{OAF\_chair\_happy $\to$ pleasant surprise (0.84).} The utterance-level functionals do not favour surprise (F0 range 265\,Hz, smaller than both class means, and lower energy). But the target word carries a large rise-fall in F0 (peak $\approx$400\,Hz at 1.8\,s), the archetypal surprise contour. The model follows this \emph{local} cue on the final word, as attention pooling allows.
+\item \textbf{OAF\_life\_ps $\to$ disgust (0.95).} Median F0 (201\,Hz) and energy match OAF-ps (203\,Hz), not disgust (183\,Hz). Only the long duration (2.24\,s, close to disgust's 2.34\,s) and the slow, low middle section point to disgust. The surprise rise is confined to the last word and is irregular (voicing breaks), so the model weights the slow delivery more heavily than the final rise.
+\end{enumerate}
+\textbf{Common pattern.} Only one of the five errors (case 3) is explained by the clip's global prosody resembling the predicted class.
+In the others, the speaker-relative functionals favour the \emph{true} class or are mixed, and the error comes from (a) the class regions learned on the other speaker not lining up with this speaker's (cases 1 and 2, matching the displaced clusters in Fig.~\ref{fig:tsne}), or (b) a single salient local cue (a final rise or a slow segment) overriding the rest (cases 4 and 5).
+The fix suggested by (a) is speaker adaptation or normalisation; by (b), richer pooling over several cues.
+The confidences are also \emph{high} (0.84--0.96): errors are confident, not borderline (see calibration below).
+
+\subsection{Separability of the temporal, contextual and fusion blocks}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{tsne_blocks_sd.png}\\[2pt]
+\includegraphics[width=\linewidth]{tsne_blocks_si.png}
+\caption{t-SNE~\cite{tsne} of test-set block outputs (attention-pooled embeddings), coloured by true emotion. Top: SD (seed 0). Bottom: SI, train OAF $\to$ test YAF. Silhouette is cosine, in the original 256-d space.}\label{fig:tsne}
+\end{figure}
+
+\begin{center}\small
+\begin{tabular}{@{}lcccccc@{}}\toprule
+silhouette & \begin{tabular}[c]{@{}c@{}}temporal\\speech\end{tabular} & \begin{tabular}[c]{@{}c@{}}temporal\\+spk-norm\end{tabular} & \begin{tabular}[c]{@{}c@{}}contextual\\GT text\end{tabular} & \begin{tabular}[c]{@{}c@{}}contextual\\Whisper\end{tabular} & \begin{tabular}[c]{@{}c@{}}fusion\\GMU-GT\end{tabular} & \begin{tabular}[c]{@{}c@{}}fusion\\GMU-Whisper\end{tabular}\\\midrule
+SD & 0.949 & 0.964 & $-0.017$ & $-0.143$ & \textbf{0.988} & 0.967\\
+SI & 0.498 & \textbf{0.569} & $-0.005$ & $-0.157$ & 0.490 & 0.505\\\bottomrule
+\end{tabular}\end{center}
+
+\textbf{Temporal block (speech).} Under SD, the seven emotions form tight, well-separated clusters (silhouette 0.95).
+Under SI, the unseen speaker's emotions \emph{still} form seven compact clusters (Fig.~\ref{fig:tsne}, bottom left), yet accuracy is only 58\%.
+The representation therefore does separate the new speaker's emotions. What fails is that the clusters are \emph{displaced} relative to the decision boundaries learned on the training speaker.
+This is a domain-shift problem, and it is why label-free speaker normalisation raises the silhouette (0.50$\to$0.57) and why the linear probes reach 72\%.
+\textbf{Contextual block (text).} With ground-truth text the embeddings are an unstructured cloud (silhouette $\approx$0): the text block encodes words, not emotion.
+With Whisper text, groups appear, but they are groups of \emph{transcript forms} (ending in ``!'' vs.\ ``.'', comma or no comma), each mixing several emotions; hence the negative silhouette.
+\textbf{Fusion block.} Fusion clusters are as tight as speech (0.99 SD) and are organised by the speech geometry.
+Under SI the clusters stretch into elongated manifolds, consistent with the text dimensions adding word-wise variation along directions orthogonal to emotion.
+
+\subsection{Robustness to noise and the value of speaker normalisation}\label{sec:noise}
+\begin{figure}[H]\centering
+\includegraphics[width=0.92\linewidth]{noise_robustness.png}
+\caption{Test-time additive white noise. Models are trained on clean audio; WavLM, Whisper and DistilRoBERTa features are recomputed from the noisy audio. Mean $\pm$ std over 5 (SD) / 6 (SI) runs.}\label{fig:noise}
+\end{figure}
+\begin{center}\small
+\begin{tabular}{@{}llccccc@{}}\toprule
+& Model & clean & 20\,dB & 10\,dB & 5\,dB & 0\,dB\\\midrule
+SD & Speech WavLM & 99.9 & 99.7 & 94.5 & 84.6 & 61.8\\
+& Speech + speaker norm $\dagger$ & 100.0 & 99.8 & 98.0 & 94.9 & \textbf{87.0}\\
+& Fusion GMU (Whisper) & 100.0 & 99.7 & 93.9 & 83.0 & 61.8\\
+& Fusion GMU (Whisper) + speaker norm $\dagger$ & 99.6 & 99.6 & 98.2 & 96.4 & \textbf{89.9}\\\midrule
+SI & Speech WavLM & 58.5 & 52.5 & 41.6 & 35.6 & 28.1\\
+& Speech + speaker norm $\dagger$ & 56.6 & \textbf{60.3} & \textbf{60.4} & 57.9 & \textbf{54.8}\\
+& Fusion GMU (GT) & 56.8 & 49.3 & 42.3 & 34.8 & 30.2\\
+& Fusion GMU (Whisper) + speaker norm $\dagger$ & 55.4 & 58.8 & 59.6 & 57.6 & 52.5\\
+& Text only (Whisper) & 23.5 & 22.3 & 22.3 & 21.3 & 18.9\\\bottomrule
+\end{tabular}\end{center}
+Without normalisation, accuracy degrades steadily, and at 0\,dB the SI models are only 2$\times$ chance.
+With label-free per-speaker normalisation of the WavLM features, the statistics are re-estimated on each speaker's (noisy, unlabelled) test audio, i.e.\ test-time CMVN.
+The SD model then keeps 87--90\% at 0\,dB, and the SI model is essentially \emph{flat} from clean to 0\,dB (56.6$\to$54.8\%), even slightly \emph{better} at 10--20\,dB than on clean audio.
+Stationary white noise mostly shifts and scales the feature distribution, which per-speaker standardisation removes.
+The same mechanism removes some of the speaker shift.
+This is transductive: it needs a batch of unlabelled audio from the test speaker and condition. That is cheap in practice, but it is why we report it separately ($\dagger$) and never in the main comparison.
+Text-only (Whisper) is the most \emph{stable} pipeline ($-4.6$\pp{} at 0\,dB), but only because it starts low.
+Noisy ASR loses the exclamation cue (from 16.6\% of transcripts ending in ``!'' at 20\,dB to 10.6\% at 0\,dB, \code{noise\_asr\_punctuation.json}) and starts producing ``?''.
+So the text branch cannot compensate for degraded speech, and fusion without normalisation degrades as fast as speech.
+
+\textbf{Calibration.} Under RAND/SD all audio models are well calibrated (ECE about 3\%).
+Under SI they are badly over-confident~\cite{guo}: the WavLM model has 78.5\% mean confidence at 58.5\% accuracy (ECE 20.9\%), and GMU fusion is worse (86--87\% confidence at 57\%, ECE 29--30\%).
+Fusion adds confidence without adding accuracy.
+Any deployment would need re-calibration on the target speaker (e.g.\ temperature scaling) before the confidence-based gating suggested above could work.
+
+% =====================================================================
+\section{Conclusions and limitations}
+\begin{itemize}\setlength\itemsep{1pt}
+\item \textbf{Best pipeline.} Speech (WavLM + BiGRU + attention) carries essentially all the emotion information in TESS. Fusion matches it and only cross-attention improves it nominally under SI (63.4\% vs.\ 58.5\%, n.s.). Text alone is useful only through ASR punctuation (2.1$\times$ chance).
+\item \textbf{The real problem is speaker shift.} The same model scores 99.9\% when it has heard the speaker and 58\% when it has not. Linear probes, t-SNE and the speaker-normalisation results all locate the gap in a speaker-dependent \emph{displacement} of otherwise separable emotion clusters, not in missing information.
+\item \textbf{Limitations.} TESS has two speakers, both female, reading one carrier phrase. SI results are therefore two transfer directions with high variance, and conclusions about fusion apply only to text that is label-independent by construction. Datasets with semantically emotional text (e.g.\ IEMOCAP, MELD) would test the fusion design properly. The frozen encoders were not fine-tuned (by design, given about 1.2--2k training clips).
+\item \textbf{Reproducibility.} \code{python run\_all.py} reproduces every number and figure. All runs were executed on a Kaggle T4 GPU (\code{logs/kaggle\_run\_v2.log}; ablation: \code{logs/kaggle\_run\_ablation.log}, \code{run\_all.py --ablations}). Three analysis scripts in that job computed and printed their results but crashed when saving, because \code{Results/} did not yet exist (fixed). The layer probes and the prosody baseline were re-run in a separate job (\code{logs/kaggle\_run\_analyses.log}); the re-run agrees with the printed values (prosody identical, probes within 0.05\pp). The noise study needs the trained checkpoints, which were not kept, so its table and plot were rebuilt from the printed per-run values by \code{analysis/recover\_from\_log.py} with the script's own report function (accurate to 0.1\pp; its clean column matches Table~\ref{tab:main} exactly). Kaggle jobs are generated by \code{kaggle/make\_kernel.py}. Per-run predictions, metrics, embeddings and training curves for all 176 runs are in \code{runs/}.
+\end{itemize}
+
+\begin{thebibliography}{99}\small\setlength\itemsep{0pt}
+\bibitem{tess} K.~Dupuis and M.~K. Pichora-Fuller, ``Toronto Emotional Speech Set (TESS),'' University of Toronto, Psychology Department, 2010. doi:10.5683/SP2/E8H2MF.
+\bibitem{wavlm} S.~Chen et al., ``WavLM: Large-scale self-supervised pre-training for full stack speech processing,'' \emph{IEEE J. Sel. Topics Signal Process.}, vol.~16, no.~6, pp.~1505--1518, 2022.
+\bibitem{superb} S.-w. Yang et al., ``SUPERB: Speech processing Universal PERformance Benchmark,'' in \emph{Proc. Interspeech}, 2021, pp.~1194--1198.
+\bibitem{pasad} A.~Pasad, J.-C. Chou, and K.~Livescu, ``Layer-wise analysis of a self-supervised speech representation model,'' in \emph{Proc. IEEE ASRU}, 2021.
+\bibitem{whisper} A.~Radford, J.~W. Kim, T.~Xu, G.~Brockman, C.~McLeavey, and I.~Sutskever, ``Robust speech recognition via large-scale weak supervision,'' in \emph{Proc. ICML}, 2023.
+\bibitem{distilbert} V.~Sanh, L.~Debut, J.~Chaumond, and T.~Wolf, ``DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter,'' arXiv:1910.01108, 2019.
+\bibitem{roberta} Y.~Liu et al., ``RoBERTa: A robustly optimized BERT pretraining approach,'' arXiv:1907.11692, 2019.
+\bibitem{hartmann} J.~Hartmann, ``Emotion English DistilRoBERTa-base,'' 2022. \url{https://huggingface.co/j-hartmann/emotion-english-distilroberta-base}.
+\bibitem{gru} K.~Cho, B.~van Merri\"enboer, C.~Gulcehre, D.~Bahdanau, F.~Bougares, H.~Schwenk, and Y.~Bengio, ``Learning phrase representations using RNN encoder--decoder for statistical machine translation,'' in \emph{Proc. EMNLP}, 2014.
+\bibitem{bahdanau} D.~Bahdanau, K.~Cho, and Y.~Bengio, ``Neural machine translation by jointly learning to align and translate,'' in \emph{Proc. ICLR}, 2015.
+\bibitem{specaugment} D.~S. Park, W.~Chan, Y.~Zhang, C.-C. Chiu, B.~Zoph, E.~D. Cubuk, and Q.~V. Le, ``SpecAugment: A simple data augmentation method for automatic speech recognition,'' in \emph{Proc. Interspeech}, 2019.
+\bibitem{gmu} J.~Arevalo, T.~Solorio, M.~Montes-y-G\'omez, and F.~A. Gonz\'alez, ``Gated multimodal units for information fusion,'' in \emph{ICLR Workshop Track}, 2017.
+\bibitem{moddrop} N.~Neverova, C.~Wolf, G.~Taylor, and F.~Nebout, ``ModDrop: Adaptive multi-modal gesture recognition,'' \emph{IEEE Trans. Pattern Anal. Mach. Intell.}, vol.~38, no.~8, pp.~1692--1706, 2016.
+\bibitem{mult} Y.-H.~H. Tsai, S.~Bai, P.~P. Liang, J.~Z. Kolter, L.-P. Morency, and R.~Salakhutdinov, ``Multimodal Transformer for unaligned multimodal language sequences,'' in \emph{Proc. ACL}, 2019.
+\bibitem{adamw} I.~Loshchilov and F.~Hutter, ``Decoupled weight decay regularization,'' in \emph{Proc. ICLR}, 2019.
+\bibitem{onecycle} L.~N. Smith and N.~Topin, ``Super-convergence: Very fast training of neural networks using large learning rates,'' in \emph{Proc. SPIE}, vol.~11006, 2019.
+\bibitem{labelsmooth} C.~Szegedy, V.~Vanhoucke, S.~Ioffe, J.~Shlens, and Z.~Wojna, ``Rethinking the Inception architecture for computer vision,'' in \emph{Proc. CVPR}, 2016.
+\bibitem{dietterich} T.~G. Dietterich, ``Approximate statistical tests for comparing supervised classification learning algorithms,'' \emph{Neural Computation}, vol.~10, no.~7, pp.~1895--1923, 1998.
+\bibitem{cmvn} O.~Viikki and K.~Laurila, ``Cepstral domain segmental feature vector normalization for noise robust speech recognition,'' \emph{Speech Communication}, vol.~25, pp.~133--147, 1998.
+\bibitem{egemaps} F.~Eyben et al., ``The Geneva Minimalistic Acoustic Parameter Set (GeMAPS) for voice research and affective computing,'' \emph{IEEE Trans. Affective Computing}, vol.~7, no.~2, pp.~190--202, 2016.
+\bibitem{tsne} L.~van der Maaten and G.~Hinton, ``Visualizing data using t-SNE,'' \emph{J. Mach. Learn. Res.}, vol.~9, pp.~2579--2605, 2008.
+\bibitem{guo} C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q. Weinberger, ``On calibration of modern neural networks,'' in \emph{Proc. ICML}, 2017.
+\end{thebibliography}
+
+\end{document}

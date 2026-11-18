@@ -1,0 +1,76 @@
+\section{Dataset and what it implies}
+TESS~\cite{tess} contains 2800 clips: 2 female speakers (OAF, 64 years old; YAF, 26 years old) $\times$ 7 emotions (angry, disgust, fear, happy, neutral, pleasant surprise, sad) $\times$ 200 target words, each spoken in the carrier phrase \emph{``Say the word \underline{\ \ \ }''}.
+The Kaggle archive also holds a byte-identical nested copy of the corpus, which we discard (verified by MD5), and one misnamed file (\code{OA\_bite\_neutral.wav}), so labels and speakers are read from folder names.
+
+\textbf{Key property.} Every word occurs in all $7\times2$ emotion--speaker combinations, so the transcript is statistically independent of the label by design: $I(\text{text};\text{emotion})=0$.
+A text-only model therefore \emph{cannot} beat chance (14.29\%) on ground-truth transcripts, and a fusion model cannot gain from them.
+We treat this as the central fact to analyse rather than something to hide.
+We confirm it empirically in three ways: a trained text model (\S\ref{sec:exp}), a zero-shot emotion classifier, and the learned fusion gates.
+We then add an \emph{ASR-transcript} condition (Whisper-small~\cite{whisper}), where the text is produced from the audio and can carry prosodic traces (punctuation), to study \emph{when} text and fusion help.
+
+\section{Architecture decisions (A)}
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{@{}p{2.3cm}XX@{}}\toprule
+Block & Speech pipeline & Text pipeline\\\midrule
+Preprocessing & resample 24.4$\to$16\,kHz, mono, DC removal, trim leading/trailing silence (30\,dB, 50\,ms margin), peak-normalise, keep variable length (pad + mask) & lower-case, remove symbols, keep \texttt{. , ? !} as separate tokens, RoBERTa byte-level BPE\\
+Feature extraction & frozen \textbf{WavLM-Base+}; hidden states of 7 layers (0,2,\dots,12) at 40\,ms $\Rightarrow$ $T\times7\times768$ & frozen \textbf{emotion-tuned DistilRoBERTa}; all 7 hidden states $\Rightarrow$ $N\times7\times768$\\
+Temporal / contextual modelling & softmax layer weighting $\to$ LayerNorm $\to$ Linear(768,256) $\to$ \textbf{2-layer BiGRU} $\to$ \textbf{additive attention pooling}; time masking & layer weighting $\to$ Linear(768,256) $\to$ \textbf{BiGRU} $\to$ attention pooling\\
+Fusion & \multicolumn{2}{p{12.5cm}}{\textbf{Gated Multimodal Unit}: $h=z\odot\tanh(W_s s)+(1-z)\odot\tanh(W_t t)$, $z=\sigma(W_z[s;t])$, with modality dropout ($p{=}0.2$). Ablations: concatenation, bidirectional cross-modal attention.}\\
+Classifier & \multicolumn{2}{p{12.5cm}}{MLP $256\to128\to7$ (GELU, dropout 0.3), cross-entropy with label smoothing~\cite{labelsmooth} 0.05.}\\\bottomrule
+\end{tabularx}\end{table}
+
+\textbf{Preprocessing.} 16\,kHz is the rate WavLM was pre-trained on, and emotion cues (F0, energy, spectral tilt, voice quality) lie well below 8\,kHz.
+TESS clips are already tightly edited: trimming removes only 60\,ms on average (90th percentile 190\,ms). It makes onsets and offsets consistent across recordings, so the pooled representation is not diluted by silent frames. Utterance duration itself is left intact, because it is an emotion cue: mean trimmed duration ranges from 1.60\,s (fear) and 1.78\,s (angry) to 2.36\,s (sad) and 2.39\,s (disgust).
+Peak normalisation removes recording-level gain differences but keeps the \emph{within}-utterance energy contour, itself an emotion cue (e.g.\ angry vs.\ sad).
+For text, sentence punctuation is kept on purpose: for ASR transcripts it is the only trace of prosody that survives the speech-to-text bottleneck.
+
+\textbf{Speech feature extraction: WavLM-Base+, frozen.} Self-supervised speech models are the strongest generic paralinguistic features; WavLM~\cite{wavlm} ranks top on SUPERB~\cite{superb} emotion recognition among base-size models.
+Its denoising, masked-prediction pre-training on 94k\,h of speech encodes speaker and prosodic information alongside phonetic content.
+We freeze it because with 1190--1960 training clips, fine-tuning 95M parameters would overfit.
+Freezing also lets us cache features once, which keeps every experiment reproducible on a laptop.
+Different emotion cues live at different depths: lower layers are more acoustic and prosodic, upper layers more phonetic~\cite{pasad}.
+So instead of picking one layer we learn a softmax-weighted combination (SUPERB protocol) over 7 layers spanning the whole network.
+Every second layer is kept and frames are average-pooled to 40\,ms, which shrinks the cache from 5.6\,GB to 1.5\,GB; adjacent layers are highly redundant.
+We verified that this costs nothing: all 13 layers at 20\,ms give the same SD/RAND accuracy and, under SI, $-3.5$\pp{} (95\% CI $\pm$9.6, $p=0.40$; Table~\ref{tab:ablation}).
+\textbf{Baseline:} 80-d log-Mel + Conv1d front-end, to quantify what self-supervised features buy.
+
+\textbf{Text feature extraction: emotion-tuned DistilRoBERTa, frozen.} If any emotional meaning can be read from the text, a language model fine-tuned \emph{for emotion} (DistilRoBERTa~\cite{distilbert,roberta} fine-tuned on six emotion corpora~\cite{hartmann}) is the most likely to find it.
+Its 7 output classes even map 1:1 onto TESS's, which gives us a zero-shot sanity check for free.
+
+\textbf{Temporal modelling: BiGRU + attention pooling.} Emotion in speech is expressed through contours over the utterance, such as F0 rises (surprise), lengthening (sad) and energy bursts (anger).
+A BiGRU~\cite{gru} models these sequentially in both directions with few parameters (0.86M for the whole speech model), which matters at this data size; a Transformer would need more data.
+Additive attention pooling~\cite{bahdanau} replaces mean pooling, so the model can focus on the frames that carry the cue (in TESS, the emotionally coloured target word at the end of the phrase).
+SpecAugment-style~\cite{specaugment} time masking regularises it.
+
+\textbf{Contextual modelling: BiGRU + attention.} The pretrained encoder already contextualises tokens; a light BiGRU adapts these frozen states to the task, and attention lets it weigh tokens.
+Here those tokens are the target word and the final punctuation mark.
+
+\textbf{Fusion: Gated Multimodal Unit~\cite{gmu}.} Early (feature-level) fusion is ill-posed because the sequences have different rates ($\approx$50 frames vs.\ 6--8 tokens).
+Plain concatenation treats both modalities as equally reliable.
+The GMU learns an input-dependent, per-dimension gate $z$, so it can rely on speech when the text is uninformative.
+Exactly that is needed for TESS, where text is uninformative by construction and the gate is directly interpretable (mean $z$ = reliance on speech).
+Modality dropout~\cite{moddrop}, which zeroes one modality for 20\% of training samples, keeps both branches trained and makes the model robust to a missing or degraded modality.
+Bidirectional cross-attention~\cite{mult} (frames$\leftrightarrow$tokens) and concatenation are evaluated as ablations.
+
+\textbf{Training.} AdamW~\cite{adamw} (lr $10^{-3}$, weight decay $10^{-2}$), one-cycle schedule~\cite{onecycle}, batch 32, at most 40 epochs, gradient clipping 1.0.
+Early stopping (patience 8) on validation accuracy, with ties broken by validation loss (min $\Delta=10^{-3}$).
+Everything after the frozen encoders is trained end-to-end; the fusion model is trained from scratch, not from unimodal checkpoints.
+
+\section{Experimental protocol}
+Most published TESS results use random clip-level splits, which put the same speakers and words in train and test.
+We report that protocol for comparability, alongside two stricter ones:
+\begin{itemize}\setlength\itemsep{1pt}
+\item \textbf{RAND: random clip-level split} (stratified by speaker $\times$ emotion, 70/15/15). 5 seeds. Optimistic; reported only so the numbers can be compared with the literature.
+\item \textbf{SD: speaker-dependent, word-disjoint.} Both speakers are in every split, but all 14 recordings of a word go to exactly one split (140/30/30 words = 1960/420/420 clips). 5 seeds (different word partitions and initialisations).
+\item \textbf{SI: speaker-independent, leave-one-speaker-out.} Train and validate on one speaker (170/30 words), test on all 1400 clips of the \emph{unseen} speaker. 2 directions $\times$ 3 seeds.
+This is the realistic setting, and model selection cannot peek at the target speaker.
+\end{itemize}
+The test sets are evaluated once by \code{test.py}, after training has finished. We report mean $\pm$ std over runs; classes are balanced, so accuracy equals unweighted average recall (UAR).
+Comparisons between models are \emph{paired}: they use the same splits and seeds, are summarised as a mean difference with a 95\% $t$-interval, and are tested with paired $t$/Wilcoxon tests over runs and an exact McNemar test over all test clips~\cite{dietterich}.
+
+\textbf{Additional studies.}
+(i) \emph{Speaker normalisation} ($\dagger$): label-free per-speaker z-scoring of the frame features, i.e.\ speaker-level CMVN~\cite{cmvn}.
+Under SI it uses the test speaker's \emph{unlabelled} audio, so it is transductive adaptation and is always reported separately.
+(ii) \emph{Layer-wise linear probes} on the frozen encoders, for emotion and for speaker identity.
+(iii) A \emph{hand-crafted prosody baseline}: 44 eGeMAPS-style~\cite{egemaps} functionals with logistic regression or an RBF-SVM, plus a duration-only model.
+(iv) \emph{Test-time noise robustness}: white noise at 20/10/5/0\,dB SNR, with the \emph{whole} front-end (WavLM, Whisper and DistilRoBERTa) re-run on the noisy audio and the checkpoints left unchanged.
