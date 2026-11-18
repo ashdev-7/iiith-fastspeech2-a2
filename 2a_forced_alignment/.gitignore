@@ -1,0 +1,9 @@
+# the adapted acoustic model is 92 MB; regenerate with `python scripts/run_pipeline.py --stages adapt`
+models/*.zip
+__pycache__/
+*.pyc
+report/*.aux
+report/*.log
+report/*.out
+# rebuilt from data/raw by the sanity stage
+corpus_untouched/
