@@ -84,13 +84,14 @@ On the news speech it absorbed a 250\,ms inter-phrase pause into \textit{he} (Fi
 This explains its outlier statistics on ISLE: 23\% silence instead of 60\%, a mean phone of 260\,ms, and the largest phone-duration deviation (3.99).
 \emph{Praat confirms these stretches are silence} (\code{analysis/praat\_measurements.csv}): the extra 1.88\,s of \textit{bait} and 2.46\,s of \textit{bed} are 24--26\,dB below the speech and 0\% voiced, and the 0.25\,s absorbed into \textit{he} is 12\,dB below and unvoiced.
 \emph{It is not the dictionary.} MFA's default \code{english\_mfa} 3.1 dictionary keeps one pronunciation per word, some of them rare variants (\textit{said}~\code{s aj d}, \textit{white}~\code{\textipa{V}aj\textipa{\:t}}).
-With the full 3.0 dictionary (\code{mfa\_ipa\_dict\_v300}) the aligner picks \code{s \textipa{E} d} and \code{w aj t}, but absorbs exactly the same silences into \textit{bait} and \textit{bed}; the cause lies in the acoustic model's silence handling on this noisy recording (SNR $\approx$12\,dB), not in the lexicon.
+With the full 3.0 dictionary (\code{mfa\_ipa\_dict\_v300}) the aligner picks \code{s \textipa{E} d} and \code{w aj t}, but absorbs exactly the same silences into \textit{bait} and \textit{bed}. So the cause lies in the acoustic model's silence handling on these short, mostly silent prompts (60\% silence), not in the lexicon.
+Recording noise does not explain it either: by MFA's own estimate the ISLE files are \emph{less} noisy than the news speech (SNR 11.9 vs.\ 8.5\,dB), where the error is rare.
 On the news speech, by contrast, the better dictionary does help: 95.2\% instead of 88.2\% of word boundaries within 20\,ms of \code{arpa\_base} (\code{analysis/ipa\_dict\_check.md}).
 Not every disagreement is an \code{english\_mfa} error: at \textit{led} (18.16--18.34\,s) the stretch it adds is 67\% voiced and only 1.6\,dB below the speech level, so there the ARPA model may cut the word short.
 
 \textbf{Error 2: very short, near-skipped phones.} 8--12\% of phones in the fast news speech last $\le$30\,ms, the shortest being a single 10\,ms frame.
 The most frequent are \code{T} (15), \code{N} (14) and \code{AH0} (8): flapped or unreleased /t/, syllabic or assimilated /n/, and reduced schwas.
-The aligner cannot delete a dictionary phone, so a phone the speaker actually elided is squeezed into the minimum duration. These are effectively \emph{skipped phonemes}.
+The aligner cannot delete a dictionary phone, so a phone the speaker actually elided is squeezed into the minimum duration. These are most likely \emph{skipped phonemes}, although without a hand-labelled reference we cannot confirm each one.
 The IPA model, with its finer allophone set (e.g.\ separate flap and syllabic phones), produces more of them (11.9\%).
 
 \textbf{Error 3: wrong pronunciations from a G2P-only dictionary.} Without the curated lexicon, the aligner sometimes picks bad G2P variants:
@@ -126,7 +127,7 @@ By contrast, the G2P-only dictionary changes boundaries well beyond the noise fl
 
 \textbf{Conclusion.} The \code{english\_us\_arpa} acoustic model with its curated dictionary plus G2P for OOVs gives the most reliable alignment of this data.
 On the news speech, the second acoustic model agrees with it to a median of 10\,ms (83--88\% of boundaries within 20\,ms), which suggests the boundaries are stable.
-The disagreements are concentrated in pause handling on noisy L2 speech, where the spectrogram and energy evidence favour the ARPA model.
+The disagreements are concentrated in pause handling on the short L2 prompts, where the spectrogram and energy evidence favour the ARPA model.
 There is no hand-labelled reference, so agreement between systems measures consistency, not accuracy.
 
 \begin{figure}[H]\centering

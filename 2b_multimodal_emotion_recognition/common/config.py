@@ -50,7 +50,7 @@ SPEAKERS = ["OAF", "YAF"]  # older (64 y) and younger (26 y) adult female
 SAMPLE_RATE = 16_000        # TESS is 24.414 kHz; 16 kHz is what WavLM was pre-trained on
 TRIM_TOP_DB = 30            # leading/trailing silence threshold (dB below peak)
 TRIM_PAD_S = 0.05           # keep 50 ms of context around the trimmed region
-MAX_AUDIO_S = 4.0           # safety cap (longest TESS clip after trimming is ~2.5 s)
+MAX_AUDIO_S = 4.0           # safety cap (longest TESS clip after trimming is 2.98 s)
 
 # ---------------------------------------------------------------- pretrained encoders (frozen)
 SPEECH_SSL_MODEL = "microsoft/wavlm-base-plus"

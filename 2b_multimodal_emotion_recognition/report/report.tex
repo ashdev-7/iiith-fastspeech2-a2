@@ -20,10 +20,11 @@
 \begin{center}\fbox{\begin{minipage}{0.96\linewidth}\small
 \textbf{Summary.} We build three pipelines on frozen encoders: speech (WavLM-Base+ $\to$ BiGRU $\to$ attention), text (emotion-tuned DistilRoBERTa $\to$ BiGRU $\to$ attention) and fusion (gated multimodal unit; concatenation and cross-attention as ablations).
 All 11 variants are trained and tested 16 times each (176 runs, plus 48 ablation runs) under three protocols, and every pairwise comparison is tested on identical splits.
-\textbf{(1)} The usual random split is saturated: every speech-based model scores 99.5--100\%. Under leave-one-speaker-out, the realistic setting, the best model reaches 63.4\%.
+\textbf{(1)} The usual random split is saturated: every speech-based model scores 99.5--100\%. Under leave-one-speaker-out (SI), the realistic setting, the trained neural models reach 42--63\% with large seed variance.
 \textbf{(2)} TESS's transcripts are label-independent by design, so text alone sits at exactly chance (14.29\%). Whisper transcripts reach 30.1\% (SD, $p<10^{-4}$) because ASR punctuation leaks prosody: 72\% of pleasant-surprise transcripts end in ``!''.
-\textbf{(3)} Fusion never helps significantly across runs. It helps where speech is \emph{uncertain} (+11.8\pp{} when speech confidence is $<$0.5) and hurts where speech is confident ($-$8.4\pp).
-\textbf{(4)} The bottleneck is speaker shift, not representation. Test-speaker emotions form clean clusters (silhouette 0.50), a linear probe on frozen WavLM layer 10 reaches 71.7\% SI, and label-free speaker normalisation makes the SI model robust to noise (54.8\% at 0\,dB vs.\ 28.1\%).
+\textbf{(3)} Fusion never helps significantly across runs. Where speech is uncertain, Whisper-text fusion gains +5.7\pp{} \emph{after} removing a regression-to-the-mean artefact that accounts for half of the raw +11.8\pp; ground-truth text gives no net gain.
+\textbf{(4)} The bottleneck is speaker shift: the trained BiGRU overfits the one training speaker. A \emph{pre-registered} low-capacity model (all-layer pooled WavLM + logistic regression, every choice fixed in advance) reaches 66.0\% SI (70.7\% with label-free speaker normalisation~$\dagger$) vs.\ 58.5\%.
+\textbf{Statistics are reported conservatively:} the 6 SI runs come from only 2 transfer directions, and after Holm correction for 24 comparisons no run-level difference between the 11 trained variants is significant.
 \end{minipage}}\end{center}
 
 \input{sections/architecture}
@@ -59,7 +60,7 @@ This is why most of our analysis uses SI.
 \emph{(ii) SI is hard and noisy.} With only one speaker to learn from, accuracy falls to 42--63\%, with large seed variance (std 5--11\pp).
 It also depends on direction: speech-only scores 53.0\% for OAF$\to$YAF and 63.9\% for YAF$\to$OAF (\code{accuracy\_si\_by\_direction.csv}).
 \emph{(iii) Self-supervised features matter most where it counts.} WavLM beats log-Mel by $+16.9$\pp{} under SI (95\% CI $\pm$13.2; paired $t$ $p=0.022$, Wilcoxon $p=0.031$, McNemar $p<10^{-6}$), but by only 0.2--0.4\pp{} under RAND and SD.
-It is the only architectural choice that is significant across runs.
+It is the only gain that is \emph{consistent}: positive in all 6 runs and in both directions (+9.6\pp{} OAF$\to$YAF, +24.2\pp{} YAF$\to$OAF). It is nominally significant, but \emph{not} after Holm correction for the 24 comparisons (adjusted $p=0.18$ within SI; \code{robustness\_checks.md}).
 \emph{(iv) Text.} With ground-truth transcripts, both the trained text model and the zero-shot emotion classifier are at chance in every protocol.
 The trained model's validation loss stays at $\ln 7$, and the zero-shot model predicts ``neutral'' for 91\% of clips.
 With Whisper transcripts, the trained text model is far above chance: 30.1\% SD ($t_4=14.6$, $p<10^{-4}$) and 23.5\% SI ($t_5=4.8$, $p=0.003$).
@@ -81,8 +82,11 @@ fusion GMU (GT) & fusion GMU (Whisper) & $+0.37$ & $\pm8.15$ & 0.91 & 845 / 814 
 The pooled McNemar test treats the 8400 clip decisions as independent, but each clip is scored once per seed, so it overstates confidence.
 We therefore base conclusions on the run-level test.
 Even so, it shows that fusion changes many decisions in both directions (740--1180 fixes \emph{and} 760--1020 breaks): it is not a near-copy of the speech model.
-\textbf{Conclusion:} among 11 variants, only the move from hand-crafted to self-supervised features gives a significant run-level gain.
-Cross-attention fusion has the best mean SI accuracy, but six runs cannot distinguish it from speech-only.
+\textbf{The run-level test is itself optimistic.} The 6 SI runs are 2 directions $\times$ 3 seeds, and seeds within a direction share both speakers, so the effective sample size is closer to 2 than to 6.
+We therefore also check every SI comparison per direction (\code{robustness\_checks.md}): only WavLM vs.\ log-Mel has the same sign in both.
+Cross-attention's $+4.9$\pp{} is $+13.0$\pp{} for OAF$\to$YAF and $-3.1$\pp{} for YAF$\to$OAF, and speaker normalisation's $-1.9$\pp{} is $+3.2$ / $-7.1$\pp.
+\textbf{Conclusion:} with two speakers, the only robust architectural finding is that self-supervised features beat hand-crafted ones under SI.
+No fusion variant can be distinguished from speech-only.
 
 \subsection{How strong is the speech model? A non-neural reference}
 \begin{table}[H]\centering\small
@@ -96,7 +100,7 @@ duration only (LogReg) & -- & 36.62 $\pm$ 2.07 & 35.43 $\pm$ 1.60 & 24.61 $\pm$ 
 44 functionals, RBF-SVM & $\dagger$ & 98.90 $\pm$ 0.27 & 99.48 $\pm$ 0.26 & 50.69 $\pm$ 4.51\\\bottomrule
 \end{tabular}\end{table}
 A 44-feature SVM already reaches 99.9\% SD, confirming that the speaker-dependent task is easy.
-Duration \emph{alone} gives 2.5$\times$ chance, a shortcut that any model will exploit.
+Duration \emph{alone} gives 2.5$\times$ chance, a cue that any of the models can exploit.
 Under SI, the neural WavLM model (58.5\%) beats the best hand-crafted model by 11.6\pp{} (46.9\%), and even the speaker-normalised one (50.7\%) by 7.8\pp.
 Speaker normalisation helps the hand-crafted features (+3.8 to +9.3\pp) much more than WavLM ($-1.9$\pp, not significant).
 That fits WavLM features being partly speaker-invariant already.
@@ -115,18 +119,15 @@ speaker identity & 100 & 100 & 100 & 100 & 100 & 100 & 100 & 100\\\bottomrule
 Every DistilRoBERTa layer probes at exactly 14.3\% for emotion and 50\% for speaker identity, the information-theoretic floor for ground-truth text.
 For WavLM, SI emotion accuracy rises steadily to L8--L10 and drops at the last layer, the usual SUPERB pattern for paralinguistics.
 Every layer identifies the speaker perfectly, so speaker information is \emph{not} removed at any depth.
-\textbf{Two honest caveats.}
+\textbf{Two caveats.}
 (a) A single-layer linear probe at L8--L10 \emph{beats} our trained BiGRU model under SI (69.5--71.7\% vs.\ 58.5\%).
-The probes use one seed and the best layer is chosen after looking at test results, so they are optimistic.
-But all of L4--L10 exceed 62\%.
-Our conclusion is that the trained sequence model, selected on one speaker's validation data, overfits speaker-specific cues that a heavily regularised linear model cannot use.
-Under SI, simpler is better.
+But the best layer is read off the test-speaker results, so these numbers are optimistic and are \emph{not} reported as a result. They motivated the pre-registered experiment in \S\ref{sec:prereg}.
 (b) The learned softmax layer weights barely move from uniform (1/7 = 0.143 initially; final values 0.13--0.16, with a mild preference for \emph{lower} layers).
 We tested two explanations in a dedicated ablation (Table~\ref{tab:ablation}, Fig.~\ref{fig:ablation}).
 Removing weight decay from the layer logits changes nothing (weights and accuracy identical), so decay is \emph{not} the cause.
 Giving them a 10$\times$ learning rate does free them (largest weight 0.26 vs.\ 0.16). However, they move towards the \emph{lowest} layers (L0, L2), not towards the L8--L10 that transfer best in the probes, and SI accuracy is unchanged ($+1.0$\pp, $p=0.75$).
 So the near-uniform weights were an optimisation-speed effect, and fixing it does not help.
-Trained on one speaker, the model prefers low-level acoustic layers that suffice to fit that speaker, rather than the deeper layers that generalise across speakers.
+One interpretation (not tested further): trained on one speaker, the model prefers low-level acoustic layers that suffice to fit that speaker, rather than the deeper layers that generalise across speakers.
 Our earlier guess that freeing the weights would find L8--L10 was wrong.
 
 \begin{table}[H]\centering\small
@@ -142,6 +143,29 @@ layer logits: no decay, 10$\times$ lr & 99.86 $\pm$ 0.13 & 59.45 $\pm$ 6.51 & $+
 \includegraphics[width=\linewidth]{ablation_layer_weights.png}
 \caption{Learned layer weights (mean over runs). Only the 10$\times$ learning-rate variant departs from uniform, and it shifts weight to the lowest layers.}\label{fig:ablation}
 \end{figure}
+
+\subsection{Is the SI gap overfitting? A pre-registered test}\label{sec:prereg}
+The BiGRU fits the training speaker perfectly (100\% on held-out words of that speaker) and transfers poorly, with seed-to-seed swings of up to 19\pp{} on the same test speaker (55.6--74.7\% for YAF$\to$OAF).
+This is overfitting to the \emph{speaker}, not to the clips.
+We tested one fix and wrote the plan down \emph{before} running it, committed to git ahead of the results (\code{analysis/PREREGISTRATION\_si\_linear.md}): a low-capacity model whose every choice is fixed in advance.
+It uses mean and std over time of all 7 cached WavLM layers (no layer selection; 10\,752 dims), StandardScaler, and L2 logistic regression.
+$C$ is chosen by word-grouped 5-fold cross-validation on the \emph{training} speaker only, and the test speaker is used once.
+\begin{table}[H]\centering\small
+\caption{Pre-registered SI experiment (\code{Results/si\_linear.md}). The linear model is deterministic, so there is one run per direction; the BiGRU shows mean [min, max] over its 3 seeds.}\label{tab:prereg}
+\begin{tabular}{@{}lccc@{}}\toprule
+Model & OAF$\to$YAF & YAF$\to$OAF & mean\\\midrule
+WavLM + BiGRU (Table~\ref{tab:main}) & 53.0 [51.1, 55.9] & 63.9 [55.6, 74.7] & 58.5\\
+\textbf{all-layer linear} (pre-registered) & \textbf{68.4} & 63.5 & \textbf{66.0}\\\midrule
+WavLM + BiGRU + speaker norm $\dagger$ & 56.3 & 56.8 & 56.5\\
+\textbf{all-layer linear + speaker norm} $\dagger$ (pre-registered secondary) & \textbf{75.3} & \textbf{66.0} & \textbf{70.7}\\\bottomrule
+\end{tabular}\end{table}
+H1 is supported, but not uniformly.
+The linear model beats 5 of the 6 BiGRU runs (exact McNemar $p\le0.011$ for each), by $+15.4$\pp{} for OAF$\to$YAF. For YAF$\to$OAF it ties the BiGRU's mean ($-0.4$\pp), and one lucky BiGRU seed (74.7\%) beats it.
+With speaker normalisation, it beats all 6 runs of its BiGRU counterpart in both directions ($+14.1$\pp{} on average).
+Its main practical gain is \emph{stability}: no seed lottery.
+Two disclosures: the training-speaker CV scores 100\% for every $C$, so it cannot discriminate, and ties fall to the strongest regularisation in the grid ($C=0.001$, the first value; a code default, not written in the plan).
+Within-speaker selection cannot measure transfer to a new speaker, which is the core difficulty of SI with two speakers.
+As a sanity check, the same feature store reproduces every per-layer probe of Table~\ref{tab:probe}.
 
 % =====================================================================
 \section{Analysis (C)}
@@ -178,7 +202,7 @@ None of this shows under RAND/SD (every class $\ge$98.8), which is another sign 
 \textbf{Ground-truth text cannot help, and the model learns that only partly.}
 Every word appears once per emotion and speaker, so $I(\text{text};y)=0$, and the probes, the zero-shot model and the trained text model all confirm it.
 The GMU gate puts most weight on speech (mean $z=0.84$ in SI; Fig.~\ref{fig:gate}), but not all of it.
-The 16\% of fused dimensions that carry text inject word-identity variance that is useless for the label.
+The remaining weight on text ($1-z\approx0.16$ on average) injects word-identity variance that is useless for the label.
 This is consistent with GMU-GT being slightly (n.s.) \emph{below} speech-only under SI ($-1.7$\pp).
 Concatenation and cross-attention are not hurt and even gain (+1.6, +4.9\pp, n.s.).
 A plausible mechanism: text is independent of the \emph{label} but not of the \emph{acoustics}.
@@ -220,8 +244,14 @@ $\Delta$ & \textbf{+11.8} & \textbf{+5.3} & $-0.5$ & $-8.4$\\\bottomrule
 \end{tabular}\end{center}
 
 The same pattern holds, more weakly, for ground-truth text (+4.9 / +1.1 / $-3.2$ / $-3.7$).
-Fusion therefore helps when speech is ambiguous: a second view, even a weak one, then breaks ties.
-It hurts when speech is already right and confident, because the gate stays at $\approx0.77$ regardless of confidence (it was learned on the training speaker, where speech is almost always right).
+
+\textbf{But part of this crossover is a statistical artefact.} Binning clips by model A's confidence selects clips where A happens to be wrong, so \emph{any} second model looks better in A's low-confidence bins and worse in its high ones (regression to the mean).
+We measure the artefact directly by replacing fusion with a second \emph{speech-only} model (another seed, same direction; \code{robustness\_checks.md}).
+It ``gains'' +6.1 / +3.9 / +1.4 / $-4.4$\pp{} across the four bins, with no new information at all.
+Net of this control, Whisper-text fusion gains \textbf{+5.7}\pp{} for clips with speech confidence $<$0.5 and +1.4\pp{} at 0.5--0.7, and loses 1.9--4.0\pp{} at higher confidence.
+Ground-truth-text fusion shows \emph{no} net gain in any bin ($-4.6$ to $+0.7$\pp).
+So the defensible claim is narrower: text that carries prosodic traces (ASR punctuation) adds a little where speech is ambiguous, and label-independent text does not.
+Where speech is confident, fusion hurts, and the gate stays at $\approx0.77$ regardless of confidence (Whisper model; it was learned on the training speaker, where speech is almost always right).
 A confidence-aware or per-clip-calibrated gate is the obvious next step.
 Under noise (\S\ref{sec:noise}), where speech degrades, the fusion models did \emph{not} gain meaningfully over speech-only, because the noisy-ASR transcripts lose their punctuation cue as well (see the table in that section).
 
@@ -260,10 +290,11 @@ SD & 0.949 & 0.964 & $-0.017$ & $-0.143$ & \textbf{0.988} & 0.967\\
 SI & 0.498 & \textbf{0.569} & $-0.005$ & $-0.157$ & 0.490 & 0.505\\\bottomrule
 \end{tabular}\end{center}
 
+Silhouettes are computed for one run per protocol (the runs shown in Fig.~\ref{fig:tsne}), so they are descriptive.
 \textbf{Temporal block (speech).} Under SD, the seven emotions form tight, well-separated clusters (silhouette 0.95).
-Under SI, the unseen speaker's emotions \emph{still} form seven compact clusters (Fig.~\ref{fig:tsne}, bottom left), yet accuracy is only 58\%.
-The representation therefore does separate the new speaker's emotions. What fails is that the clusters are \emph{displaced} relative to the decision boundaries learned on the training speaker.
-This is a domain-shift problem, and it is why label-free speaker normalisation raises the silhouette (0.50$\to$0.57) and why the linear probes reach 72\%.
+Under SI, the unseen speaker's emotions still form largely separate clusters (silhouette 0.50; Fig.~\ref{fig:tsne}, bottom left), yet this run's accuracy is only 52.1\%.
+The representation therefore does separate much of the new speaker's emotions. What fails is that the clusters are \emph{displaced} relative to the decision boundaries learned on the training speaker.
+This is consistent with a domain shift: label-free speaker normalisation raises the silhouette (0.50$\to$0.57), and the pre-registered linear model with speaker normalisation reaches 75.3\% in this direction (\S\ref{sec:prereg}).
 \textbf{Contextual block (text).} With ground-truth text the embeddings are an unstructured cloud (silhouette $\approx$0): the text block encodes words, not emotion.
 With Whisper text, groups appear, but they are groups of \emph{transcript forms} (ending in ``!'' vs.\ ``.'', comma or no comma), each mixing several emotions; hence the negative silhouette.
 \textbf{Fusion block.} Fusion clusters are as tight as speech (0.99 SD) and are organised by the speech geometry.
@@ -305,10 +336,10 @@ Any deployment would need re-calibration on the target speaker (e.g.\ temperatur
 % =====================================================================
 \section{Conclusions and limitations}
 \begin{itemize}\setlength\itemsep{1pt}
-\item \textbf{Best pipeline.} Speech (WavLM + BiGRU + attention) carries essentially all the emotion information in TESS. Fusion matches it and only cross-attention improves it nominally under SI (63.4\% vs.\ 58.5\%, n.s.). Text alone is useful only through ASR punctuation (2.1$\times$ chance).
-\item \textbf{The real problem is speaker shift.} The same model scores 99.9\% when it has heard the speaker and 58\% when it has not. Linear probes, t-SNE and the speaker-normalisation results all locate the gap in a speaker-dependent \emph{displacement} of otherwise separable emotion clusters, not in missing information.
-\item \textbf{Limitations.} TESS has two speakers, both female, reading one carrier phrase. SI results are therefore two transfer directions with high variance, and conclusions about fusion apply only to text that is label-independent by construction. Datasets with semantically emotional text (e.g.\ IEMOCAP, MELD) would test the fusion design properly. The frozen encoders were not fine-tuned (by design, given about 1.2--2k training clips).
-\item \textbf{Reproducibility.} \code{python run\_all.py} reproduces every number and figure. All runs were executed on a Kaggle T4 GPU (\code{logs/kaggle\_run\_v2.log}; ablation: \code{logs/kaggle\_run\_ablation.log}, \code{run\_all.py --ablations}). Three analysis scripts in that job computed and printed their results but crashed when saving, because \code{Results/} did not yet exist (fixed). The layer probes and the prosody baseline were re-run in a separate job (\code{logs/kaggle\_run\_analyses.log}); the re-run agrees with the printed values (prosody identical, probes within 0.05\pp). The noise study needs the trained checkpoints, which were not kept, so its table and plot were rebuilt from the printed per-run values by \code{analysis/recover\_from\_log.py} with the script's own report function (accurate to 0.1\pp; its clean column matches Table~\ref{tab:main} exactly). Kaggle jobs are generated by \code{kaggle/make\_kernel.py}. Per-run predictions, metrics, embeddings and training curves for all 176 runs are in \code{runs/}.
+\item \textbf{Best pipeline.} Speech carries essentially all the emotion information in TESS. Among the trained neural variants, fusion matches speech-only; cross-attention's higher SI mean (63.4\% vs.\ 58.5\%) comes from one transfer direction and is not significant. Text alone is useful only through ASR punctuation (2.1$\times$ chance).
+\item \textbf{The real problem is speaker shift.} The BiGRU scores 100\% on unseen words of the training speaker and 58.5\% on the unseen speaker: it overfits the speaker. A pre-registered low-capacity model narrows the gap (66.0\%; 70.7\% with transductive speaker normalisation). Probes, t-SNE and the normalisation results all locate the gap in a speaker-dependent \emph{displacement} of otherwise largely separable emotion clusters.
+\item \textbf{Limitations.} TESS has two speakers, both female, reading one carrier phrase. SI results are therefore two transfer directions: seeds within a direction are not independent, no difference survives correction for multiple comparisons, and per-direction results are reported for every claim. Conclusions about fusion apply only to text that is label-independent by construction; datasets with semantically emotional text (e.g.\ IEMOCAP, MELD) would test the fusion design properly. The frozen encoders were not fine-tuned (by design, given about 1.2--2k training clips; untested). The only result not regenerated from saved outputs is the noise study (below).
+\item \textbf{Reproducibility.} \code{python run\_all.py} reproduces every number and figure. All runs were executed on a Kaggle T4 GPU (\code{logs/kaggle\_run\_v2.log}; ablation: \code{logs/kaggle\_run\_ablation.log}, \code{run\_all.py --ablations}). Three analysis scripts in that job computed and printed their results but crashed when saving, because \code{Results/} did not yet exist (fixed). The layer probes and the prosody baseline were re-run in a separate job (\code{logs/kaggle\_run\_analyses.log}); the re-run agrees with the printed values (prosody identical, probes within 0.05\pp). The noise study needs the trained checkpoints, which were not kept, so its table and plot were rebuilt from the printed per-run values by \code{analysis/recover\_from\_log.py} with the script's own report function (accurate to 0.1\pp; its clean column matches Table~\ref{tab:main} exactly). Kaggle jobs are generated by \code{kaggle/make\_kernel.py}. The pre-registered SI experiment and the robustness checks (\code{analysis/si\_linear.py}, \code{analysis/robustness\_checks.py}) run on CPU from the cached features and saved predictions; the cached WavLM store reproduces the Kaggle probe results. Per-run predictions, metrics, embeddings and training curves for all 176 runs are in \code{runs/}.
 \end{itemize}
 
 \begin{thebibliography}{99}\small\setlength\itemsep{0pt}

@@ -26,14 +26,18 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
 
 **Key findings**
 * **Random and speaker-dependent splits are saturated** (99.5–100 % for every audio model). Under leave-one-speaker-out, accuracy is 42–63 %.
-  Of all the architectural choices, only **WavLM vs. log-Mel** gives a significant run-level gain (+16.9 pp SI, paired *t* p = 0.022).
+  Of all the architectural choices, only **WavLM vs. log-Mel** gives a consistent gain (+16.9 pp SI, positive in all 6 runs and both directions;
+  paired *t* p = 0.022, but not significant after Holm correction for 24 comparisons, see [`robustness_checks.md`](Results/robustness_checks.md)).
 * **Ground-truth text is at chance by construction**: every word occurs once per emotion and speaker, so I(text; emotion) = 0.
   The trained model, a zero-shot emotion classifier and linear probes all confirm it. **Whisper transcripts reach 2.1× chance** because ASR
   punctuation encodes prosody: 72 % of pleasant-surprise transcripts end in "!", and 0 % of sad or neutral ones do.
-* **Fusion helps only where speech is unsure.** Under SI, binned by speech-only confidence, fusion gains +11.8 pp when confidence is below 0.5 and loses 8.4 pp when it is 0.9 or above.
-  No fusion variant beats speech-only significantly (cross-attention +4.9 pp, p = 0.39).
-* **The bottleneck is speaker shift.** The unseen speaker's emotions still form clean t-SNE clusters (silhouette 0.50), and a linear probe on frozen
-  WavLM layer 10 reaches 71.7 % SI. Label-free per-speaker normalisation makes SI accuracy **flat under white noise** (56.6 → 54.8 % at 0 dB, vs. 58.5 → 28.1 % without it).
+* **Fusion helps only a little, and only where speech is unsure.** Binned by speech-only confidence, Whisper-text fusion gains +11.8 pp below 0.5,
+  but a second speech-only model "gains" +6.1 pp there too (regression to the mean). Net effect: +5.7 pp; none for ground-truth text.
+  No fusion variant beats speech-only significantly (cross-attention +4.9 pp, p = 0.39, and it reverses sign between the two transfer directions).
+* **The bottleneck is speaker shift: the BiGRU overfits the training speaker** (100 % on its held-out words, 58.5 % on the other speaker).
+  A **pre-registered** low-capacity model ([plan](analysis/PREREGISTRATION_si_linear.md), committed before the run) reaches **66.0 % SI**
+  (70.7 % with label-free speaker normalisation †): [`si_linear.md`](Results/si_linear.md).
+  Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.6 → 54.8 % at 0 dB, vs. 58.5 → 28.1 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 
 Additional studies: speech front-end ablation ([`ablation_speech.md`](Results/ablation_speech.md): all 13 WavLM layers at 20 ms gives no gain, -3.5 pp SI, n.s.; freeing the layer weights moves them to the *lowest* layers and does not help SI), hand-crafted 44-feature prosody baseline ([`prosody_baseline.md`](Results/prosody_baseline.md)),
@@ -89,6 +93,8 @@ python analysis/layer_probe.py                         # linear probes per froze
 python analysis/prosody_baseline.py                    # hand-crafted prosody baseline
 python analysis/noise_robustness.py                    # test-time noise (needs checkpoints + GPU)
 python run_all.py --skip-prepare --skip-train --skip-analyses --ablations   # speech front-end ablation (48 runs)
+python analysis/si_linear.py                           # pre-registered SI experiment (CPU, cached features)
+python analysis/robustness_checks.py                   # Holm correction, per-direction tests, regression-to-mean control
 python run_all.py                                      # everything above in one go
 ```
 
@@ -97,7 +103,8 @@ python run_all.py                                      # everything above in one
 ```
 common/           config, data/splits, audio preprocessing, feature extraction + store, model blocks, train/eval engine
 models/{speech,text,fusion}_pipeline/{train,test}.py
-analysis/         make_results.py, error_analysis.py, layer_probe.py, prosody_baseline.py, noise_robustness.py, recover_from_log.py
+analysis/         make_results.py, error_analysis.py, layer_probe.py, prosody_baseline.py, noise_robustness.py, recover_from_log.py,
+                  si_linear.py (+ PREREGISTRATION_si_linear.md), robustness_checks.py
 Results/          accuracy tables (md/csv), significance + calibration, per-class F1, analysis tables, plots/
 runs/             all 176 runs: train log, test metrics, predictions, embeddings (checkpoints not included)
 artifacts/        Whisper transcripts (clean + noisy), zero-shot text predictions, clip index, exported from the feature cache
