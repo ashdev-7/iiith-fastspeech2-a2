@@ -37,6 +37,9 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
 * **The bottleneck is speaker shift: the BiGRU overfits the training speaker** (100 % on its held-out words, 58.5 % on the other speaker).
   A **pre-registered** low-capacity model ([plan](analysis/PREREGISTRATION_si_linear.md), committed before the run) reaches **66.0 % SI**
   (70.6 % with label-free speaker normalisation †): [`si_linear.md`](Results/si_linear.md).
+  A second pre-registered study (80 runs, [`capacity_study.md`](Results/capacity_study.md)): on identical normalised inputs the
+  linear head beats the BiGRU by 10–18 pp in both directions (robust to seed noise). Normalisation helps the linear head but not
+  the BiGRU, and it works from a 40-word unlabelled enrolment sample (within 0.6 pp of using the whole test set).
   Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.6 → 54.8 % at 0 dB, vs. 58.5 → 28.1 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 
@@ -95,6 +98,8 @@ python analysis/noise_robustness.py                    # test-time noise (needs 
 python run_all.py --skip-prepare --skip-train --skip-analyses --ablations   # speech front-end ablation (48 runs)
 python analysis/si_linear.py                           # pre-registered SI experiment (CPU, cached features)
 python analysis/robustness_checks.py                   # Holm correction, per-direction tests, regression-to-mean control
+python analysis/capacity_study.py                      # pre-registered head-capacity study (runs_capacity/, Kaggle job 'capacity')
+python tests/test_invariants.py && python tests/report_tables_check.py   # leakage/alignment tests; table cells vs data
 python run_all.py                                      # everything above in one go
 ```
 

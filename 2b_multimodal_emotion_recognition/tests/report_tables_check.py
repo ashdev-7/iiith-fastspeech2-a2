@@ -178,6 +178,20 @@ def main():
     l = si[si.model.str.startswith("all-layer linear + speaker")].accuracy.values
     check("Table prereg", "all-layer linear + norm", row("all-layer linear + speaker norm"), [l[0], l[1], l.mean()], 1)
 
+    cap = pd.read_csv(R / "capacity_scores.csv")
+    for lab, m in (("B1 BiGRU", "B1"), ("B2 BiGRU", "B2"), ("B3 small", "B3"), ("B4 attentive", "B4"),
+                   ("L1 logistic", "L1"), ("L1n same", "L1n"), ("L2n mean", "L2n")):
+        line = [l for l in TEX if l.strip().startswith(lab)][0]
+        body = line.split("&", 2)[2].replace("\textbf{", "").replace("}", "")
+        got = [float(x) for x in re.findall(r"\d+\.\d+", body)]
+        a, b = cap[(cap.model == m) & (cap.direction == "OAF->YAF")].iloc[0], cap[(cap.model == m) & (cap.direction == "YAF->OAF")].iloc[0]
+        if m.startswith("B"):
+            want = [a["mean"], a["min"], a["max"], b["mean"], b["min"], b["max"], (a["mean"] + b["mean"]) / 2,
+                    (a.ensemble + b.ensemble) / 2]
+        else:
+            want = [a["mean"], b["mean"], (a["mean"] + b["mean"]) / 2]
+        check("Table capacity", lab, got, want, 1)
+
     print(f"{CHECKED[0]} table cells checked, {len(FAILS)} mismatches")
     for f in FAILS:
         print("  MISMATCH", f)

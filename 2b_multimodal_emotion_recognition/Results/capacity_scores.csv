@@ -1,0 +1,15 @@
+direction,model,run_dir,seeds,mean,sd,min,max,ensemble
+OAF->YAF,B1,wavlm,10,57.18,10.46,44.93,72.14,61.79
+OAF->YAF,B2,wavlm_spknorm,10,57.26,10.72,43.5,72.79,62.07
+OAF->YAF,B3,wavlm_spknorm_d64_do0.5_wd0.05,10,61.44,5.29,52.57,70.29,69.0
+OAF->YAF,B4,wavlm_spknorm_attnpool,10,58.23,9.34,43.0,73.5,58.36
+OAF->YAF,L1,logistic regression,1,68.43,,,,
+OAF->YAF,L1n,logistic regression,1,75.29,,,,
+OAF->YAF,L2n,logistic regression,1,73.14,,,,
+YAF->OAF,B1,wavlm,10,61.45,5.63,53.64,74.71,64.0
+YAF->OAF,B2,wavlm_spknorm,10,55.71,5.3,48.64,62.57,56.79
+YAF->OAF,B3,wavlm_spknorm_d64_do0.5_wd0.05,10,60.26,5.45,52.64,70.86,63.64
+YAF->OAF,B4,wavlm_spknorm_attnpool,10,55.56,3.85,51.14,64.0,55.36
+YAF->OAF,L1,logistic regression,1,63.5,,,,
+YAF->OAF,L1n,logistic regression,1,66.0,,,,
+YAF->OAF,L2n,logistic regression,1,62.29,,,,

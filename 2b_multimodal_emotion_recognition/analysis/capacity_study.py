@@ -56,6 +56,24 @@ def boot(delta_clip: np.ndarray, words: np.ndarray, rng) -> tuple[float, float, 
     return 100 * per_word.mean(), 100 * np.percentile(bs, 2.5), 100 * np.percentile(bs, 97.5), min(1.0, p)
 
 
+def boot2(A: pd.DataFrame | pd.Series, B: pd.DataFrame | pd.Series, words: np.ndarray, rng):
+    """POST-HOC (not in the pre-registration): resample words AND seeds. A/B: clips x seeds correctness
+    (a Series = deterministic model). Seeds are resampled jointly by seed id, so seed-to-seed training
+    noise enters the interval. Returns (lo, hi) of B - A in pp."""
+    uw, inv = np.unique(words, return_inverse=True)
+    def per_word(M):
+        M = M.to_frame() if isinstance(M, pd.Series) else M
+        return np.stack([np.bincount(inv, weights=M.values[:, j]) / np.bincount(inv) for j in range(M.shape[1])], 1)
+    wa, wb = per_word(A), per_word(B)                     # words x seeds
+    out = np.empty(N_BOOT)
+    for k in range(N_BOOT):
+        wi = rng.integers(0, len(uw), len(uw))
+        sa = rng.integers(0, wa.shape[1], wa.shape[1])
+        sb = sa if wb.shape[1] == wa.shape[1] else rng.integers(0, wb.shape[1], wb.shape[1])
+        out[k] = wb[wi][:, sb].mean() - wa[wi][:, sa].mean()
+    return 100 * np.percentile(out, 2.5), 100 * np.percentile(out, 97.5)
+
+
 def verdict(cis):
     (m0, l0, h0), (m1, l1, h1) = cis
     sig = [l > 0 or h < 0 for l, h in ((l0, h0), (l1, h1))]
@@ -80,14 +98,16 @@ def main():
     runs = Path(ap.parse_args().runs)
     df = load_index().set_index("uid")
     rng = np.random.default_rng(0)
+    rng2 = np.random.default_rng(1)
     lr = pd.read_csv(RESULTS_DIR / "capacity_lr_predictions.csv")
 
     # ------------------------------------------------ per-variant scores (per direction)
-    corr, ens, rows = {}, {}, []
+    corr, ens, rows, seedmat = {}, {}, [], {}
     for fold in (0, 1):
         for vid, var in VARIANTS.items():
             c, e, uids = load_neural(runs, var, fold, df)
             corr[(vid, fold)], ens[(vid, fold)] = pd.Series(c.mean(0), uids), pd.Series(e.astype(float), uids)
+            seedmat[(vid, fold)] = pd.DataFrame(c.T.astype(float), index=uids)   # clips x seeds
             accs = 100 * c.mean(1)
             rows.append(dict(direction=DIRS[fold], model=vid, run_dir=var, seeds=len(accs), mean=accs.mean(),
                              sd=accs.std(ddof=1), min=accs.min(), max=accs.max(), ensemble=100 * e.mean()))
@@ -130,8 +150,15 @@ def main():
                 d, w = cmp(a, b, fold)
             m, lo, hi, p = boot(d, w, rng)
             cis.append((m, lo, hi))
+            lo2 = hi2 = np.nan
+            if b not in ("E(B2)", "I(L1n)"):
+                A = seedmat.get((a, fold), corr[(a, fold)])
+                Bm = seedmat.get((b, fold), corr[(b, fold)])
+                Bm = Bm.loc[A.index]
+                lo2, hi2 = boot2(A, Bm, df.loc[A.index, "word"].values, rng2)
             tests.append(dict(hypothesis=h, comparison=f"{b} - {a}", direction=DIRS[fold], delta_pp=m,
-                              ci_lo=lo, ci_hi=hi, p_boot=p, prediction=pred))
+                              ci_lo=lo, ci_hi=hi, p_boot=p, prediction=pred,
+                              ci2_lo_posthoc=lo2, ci2_hi_posthoc=hi2))
         v = verdict(cis)
         ok = {"pos": all(lo > 0 for _, lo, _ in cis), "ge-2": all(lo >= -ROPE for _, lo, _ in cis),
               "rope": all(-ROPE <= lo and hi <= ROPE for _, lo, hi in cis),
@@ -174,7 +201,12 @@ def main():
           scores.round(2).to_markdown(index=False), "",
           "## Pre-registered comparisons (word-cluster bootstrap, 10 000 resamples; ROPE +-2 pp; "
           "Holm over all 14 tests)", "",
-          tests.round({"delta_pp": 2, "ci_lo": 2, "ci_hi": 2, "p_boot": 4, "p_holm": 4}).to_markdown(index=False), ""]
+          tests.round({"delta_pp": 2, "ci_lo": 2, "ci_hi": 2, "p_boot": 4, "p_holm": 4, "ci2_lo_posthoc": 2,
+                       "ci2_hi_posthoc": 2}).to_markdown(index=False), "",
+          "`ci_lo/ci_hi` = the pre-registered word bootstrap. It treats the 10 seeds as fixed, so it measures "
+          "uncertainty over test words only. `ci2_*_posthoc` = **post-hoc** (not pre-registered) bootstrap "
+          "over words AND seeds, which also includes training noise; it is the more honest interval for a "
+          "claim about the model rather than these 10 trained instances.", ""]
     if neur_txt:
         md += ["## Inductive normalisation of the BiGRU (B2): 40 calibration words, scored on the other 160", "",
                "| direction | transductive | inductive | delta | seeds |", "|---|---|---|---|---|", *neur_txt, ""]
