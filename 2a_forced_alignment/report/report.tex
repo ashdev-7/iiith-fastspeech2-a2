@@ -106,6 +106,9 @@ Spotting minimal-pair errors would need free phone recognition or goodness-of-pr
 
 \textbf{Automatic checks without a gold reference.} An energy check (\code{energy\_flags.csv}) flags words longer than 0.25\,s whose frames are mostly within 6\,dB of the file's noise floor.
 It catches both IPA errors. Its other flags (\textit{court}, \textit{act}, \textit{clerk} in all models) are mostly words that end in a stop closure, a known false-positive type.
+An aligner-independent pause reference (\code{scripts/reference\_check.py}) marks every stretch of $\ge$150\,ms within 6, 9 or 12\,dB of the noise floor in Praat's intensity contour.
+On ISLE, the ARPA models put $\le$1\% of that pause time inside words at every threshold; \code{english\_mfa} puts 35--56\% there.
+This confirms Error~1 without trusting any aligner. The same reference is \emph{too coarse} to rank aligners at the 10--20\,ms level: its edges move with the threshold, and on the news speech it also catches low-energy stretches inside words (stop closures, weak fricatives), equally for every model.
 
 \textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers ($-46.99\rightarrow-46.14$ and $-48.52\rightarrow-47.40$) but its boundary changes (99.3\% of word boundaries identical, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
 With 97\,s of data the Gaussians move only slightly, and the segmentation was already stable.

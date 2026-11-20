@@ -1,0 +1,39 @@
+F2BJRLP1.wav
+    word #5   'massachusetts'  starts somewhere after 2 s
+    word #6   'supreme'        starts somewhere after 3 s
+    word #37  'be'             starts somewhere after 13 s
+    word #71  'to'             starts somewhere after 24 s
+
+F2BJRLP2.wav
+    word #27  'court'          starts somewhere after 11 s
+    word #33  'step'           starts somewhere after 14 s
+    word #48  'appointment'    starts somewhere after 18 s
+    word #63  'president'      starts somewhere after 24 s
+
+F2BJRLP3.wav
+    word #21  'administrative' starts somewhere after 6 s
+    word #32  'court'          starts somewhere after 11 s
+    word #71  'the'            starts somewhere after 26 s
+    word #75  'to'             starts somewhere after 27 s
+
+ISLE_SESS0131_BLOCKD02_01_sprt1.wav
+    word #0   'i'              starts somewhere after 0 s
+    word #1   'said'           starts somewhere after 0 s
+    word #2   'white'          starts somewhere after 0 s
+    word #3   'not'            starts somewhere after 1 s
+    word #4   'bait'           starts somewhere after 1 s
+
+ISLE_SESS0131_BLOCKD02_02_sprt1.wav
+    word #0   'i'              starts somewhere after 0 s
+    word #1   'said'           starts somewhere after 0 s
+    word #2   'new'            starts somewhere after 1 s
+    word #3   'not'            starts somewhere after 1 s
+    word #4   'no'             starts somewhere after 1 s
+
+ISLE_SESS0131_BLOCKD02_03_sprt1.wav
+    word #0   'i'              starts somewhere after 0 s
+    word #1   'said'           starts somewhere after 0 s
+    word #2   'bad'            starts somewhere after 0 s
+    word #3   'not'            starts somewhere after 1 s
+    word #4   'bed'            starts somewhere after 1 s
+
