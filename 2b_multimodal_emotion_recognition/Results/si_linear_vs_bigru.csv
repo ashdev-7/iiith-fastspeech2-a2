@@ -1,0 +1,25 @@
+model,baseline,run,acc_model,acc_baseline,delta_pp,fixes,breaks,p_mcnemar
+all-layer linear,WavLM + BiGRU,si_fold0_seed0,68.43,52.14,16.29,279,51,3.3943938799299554e-39
+all-layer linear + speaker norm †,WavLM + BiGRU,si_fold0_seed0,75.29,52.14,23.14,376,52,1.1216765712740455e-61
+all-layer linear,WavLM + BiGRU,si_fold0_seed1,68.43,51.07,17.36,259,16,1.1501948556640484e-57
+all-layer linear + speaker norm †,WavLM + BiGRU,si_fold0_seed1,75.29,51.07,24.21,354,15,3.1865281670342685e-85
+all-layer linear,WavLM + BiGRU,si_fold0_seed2,68.43,55.86,12.57,268,92,4.501108334891214e-21
+all-layer linear + speaker norm †,WavLM + BiGRU,si_fold0_seed2,75.29,55.86,19.43,291,19,1.0402489912926415e-63
+all-layer linear,WavLM + BiGRU,si_fold1_seed0,63.5,61.43,2.07,75,46,0.01061145992533823
+all-layer linear + speaker norm †,WavLM + BiGRU,si_fold1_seed0,66.0,61.43,4.57,97,33,1.69872442575104e-08
+all-layer linear,WavLM + BiGRU,si_fold1_seed1,63.5,74.71,-11.21,44,201,3.6910319541674013e-25
+all-layer linear + speaker norm †,WavLM + BiGRU,si_fold1_seed1,66.0,74.71,-8.71,49,171,5.0015453112265766e-17
+all-layer linear,WavLM + BiGRU,si_fold1_seed2,63.5,55.64,7.86,135,25,1.8898303304290044e-19
+all-layer linear + speaker norm †,WavLM + BiGRU,si_fold1_seed2,66.0,55.64,10.36,168,23,2.0859226863292347e-28
+all-layer linear,WavLM + BiGRU + speaker norm †,si_fold0_seed0,68.43,52.71,15.71,262,42,5.080436885942488e-40
+all-layer linear + speaker norm †,WavLM + BiGRU + speaker norm †,si_fold0_seed0,75.29,52.71,22.57,343,27,6.879760443601786e-71
+all-layer linear,WavLM + BiGRU + speaker norm †,si_fold0_seed1,68.43,65.29,3.14,146,102,0.0062098725171032985
+all-layer linear + speaker norm †,WavLM + BiGRU + speaker norm †,si_fold0_seed1,75.29,65.29,10.0,165,25,1.724010780677072e-26
+all-layer linear,WavLM + BiGRU + speaker norm †,si_fold0_seed2,68.43,50.79,17.64,274,27,1.2531388284695809e-52
+all-layer linear + speaker norm †,WavLM + BiGRU + speaker norm †,si_fold0_seed2,75.29,50.79,24.5,366,23,1.2492778193874248e-80
+all-layer linear,WavLM + BiGRU + speaker norm †,si_fold1_seed0,63.5,61.36,2.14,121,91,0.046145139696688715
+all-layer linear + speaker norm †,WavLM + BiGRU + speaker norm †,si_fold1_seed0,66.0,61.36,4.64,155,90,3.9356011285420014e-05
+all-layer linear,WavLM + BiGRU + speaker norm †,si_fold1_seed1,63.5,54.29,9.21,174,45,4.302156789196239e-19
+all-layer linear + speaker norm †,WavLM + BiGRU + speaker norm †,si_fold1_seed1,66.0,54.29,11.71,198,34,2.480463194127932e-29
+all-layer linear,WavLM + BiGRU + speaker norm †,si_fold1_seed2,63.5,54.79,8.71,201,79,1.9858372017911786e-13
+all-layer linear + speaker norm †,WavLM + BiGRU + speaker norm †,si_fold1_seed2,66.0,54.79,11.21,214,57,1.4767561756031438e-22

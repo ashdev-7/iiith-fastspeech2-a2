@@ -1,0 +1,5 @@
+model,train,test,C,cv_acc_train_speaker,accuracy,macro_f1
+all-layer linear,OAF,YAF,0.001,100.0,68.43,66.31
+all-layer linear,YAF,OAF,0.001,100.0,63.5,55.59
+all-layer linear + speaker norm †,OAF,YAF,0.001,100.0,75.29,71.27
+all-layer linear + speaker norm †,YAF,OAF,0.001,100.0,66.0,61.93
