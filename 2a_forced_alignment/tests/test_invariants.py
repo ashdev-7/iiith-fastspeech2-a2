@@ -117,6 +117,22 @@ def test_summary_table_recomputes():
             assert abs(row.mean_phone_ms - 1000 * np.mean([b - a for a, b in speech])) < 0.06, (exp, spk)
 
 
+def test_report_delta_column_recomputes():
+    """The report's 'word boundary difference vs arpa_base' column, pooled over all word boundaries."""
+    import re
+    tex = (ROOT / "report" / "report.tex").read_text(encoding="utf-8")
+    for exp in ("mfa_ipa", "arpa_g2p_custom", "arpa_adapted"):
+        label = exp.replace("_", r"\_")
+        line = [ln for ln in tex.splitlines() if ln.startswith(label + " ") and "& f2b" in ln][0]
+        shown = float(re.findall(r"([\d.]+)\\,ms", line)[0])
+        d = []
+        for w in [w for w in WAVS if w.parent.name == "f2b"]:
+            a = [(x, y) for x, y, t in tg("arpa_base", w)["words"] if t not in SIL]
+            b = [(x, y) for x, y, t in tg(exp, w)["words"] if t not in SIL]
+            d += [abs(p - q) for (p, _), (q, _) in zip(a, b)] + [abs(p - q) for (_, p), (_, q) in zip(a, b)]
+        assert abs(shown - 1000 * np.mean(d)) <= 0.05 + 1e-6, (exp, shown, 1000 * np.mean(d))
+
+
 if __name__ == "__main__":
     fails = 0
     for name, fn in list(globals().items()):

@@ -36,7 +36,7 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
   No fusion variant beats speech-only significantly (cross-attention +4.9 pp, p = 0.39, and it reverses sign between the two transfer directions).
 * **The bottleneck is speaker shift: the BiGRU overfits the training speaker** (100 % on its held-out words, 58.5 % on the other speaker).
   A **pre-registered** low-capacity model ([plan](analysis/PREREGISTRATION_si_linear.md), committed before the run) reaches **66.0 % SI**
-  (70.7 % with label-free speaker normalisation †): [`si_linear.md`](Results/si_linear.md).
+  (70.6 % with label-free speaker normalisation †): [`si_linear.md`](Results/si_linear.md).
   Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.6 → 54.8 % at 0 dB, vs. 58.5 → 28.1 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 

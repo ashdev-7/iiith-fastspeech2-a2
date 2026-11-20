@@ -56,15 +56,15 @@ The wide beam (\code{--beam 100 --retry\_beam 400}) is there because 25--31\,s u
 Experiment & Speaker & Phones & Silence \% & Mean phone (ms) & Phones $\le$30\,ms & Speech log-lik. & Word bound.\ $\Delta$ vs base\\\midrule
 arpa\_base & f2b & 1025 & 10.7 & 73.7 & 8.1\% & $-46.99$ & --\\
            & isle & 38 & 59.8 & 132.1 & 0.0\% & $-48.52$ & --\\
-mfa\_ipa   & f2b & 993 & 10.8 & 76.1 & 11.9\% & n/c & 14.3\,ms (med.\ 10)\\
+mfa\_ipa   & f2b & 993 & 10.8 & 76.1 & 11.9\% & n/c & 14.2\,ms (med.\ 10)\\
            & isle & 37 & \textbf{23.0} & \textbf{260.1} & 0.0\% & n/c & \textbf{167\,ms} (max 2.46\,s)\\
-arpa\_g2p\_custom & f2b & 1014 & 10.8 & 74.5 & 9.0\% & $-47.84$ & 4.8\,ms\\
+arpa\_g2p\_custom & f2b & 1014 & 10.8 & 74.5 & 9.0\% & $-47.84$ & 4.7\,ms\\
            & isle & 38 & 58.6 & 136.1 & 0.0\% & $-48.35$ & 7.0\,ms\\
-arpa\_adapted & f2b & 1025 & 10.7 & 73.8 & 8.0\% & $\mathbf{-46.14}$ & 0.0\,ms\\
+arpa\_adapted & f2b & 1025 & 10.7 & 73.8 & 8.0\% & $\mathbf{-46.14}$ & 0.1\,ms\\
            & isle & 38 & 59.8 & 132.1 & 0.0\% & $\mathbf{-47.40}$ & 0.0\,ms\\\bottomrule
 \end{tabular}}
 \caption{\small Alignment statistics (\code{analysis/summary\_by\_experiment.csv}, \code{agreement\_vs\_arpa\_base.csv}, \code{mfa\_quality\_by\_experiment.csv}).
-$\Delta$ = mean absolute difference of word start/end times against \code{arpa\_base}. Log-likelihoods (MFA's \code{alignment\_analysis.csv}) are only comparable within the ARPA models (n/c = not comparable).}
+$\Delta$ = mean absolute difference of word start/end times against \code{arpa\_base}, pooled over all word boundaries. Log-likelihoods (MFA's \code{alignment\_analysis.csv}) are only comparable within the ARPA models (n/c = not comparable).}
 \end{table}
 
 \begin{figure}[H]\centering
@@ -79,8 +79,8 @@ In Fig.~1 (left), the pauses between the learner's words are correctly left empt
 In the read news speech (Fig.~2), phones are short (median 70\,ms against 120\,ms for the slow, careful L2 speech), and function words get compressed: the five shortest words are all \textit{a} (40--60\,ms).
 
 \textbf{Error 1: the IPA model absorbs pauses into words.} \code{english\_mfa} stretched the last word of two ISLE prompts over the trailing silence:
-\textit{bait} runs from 1.70 to 4.13\,s and \textit{bed} from 1.47 to 4.50\,s (Fig.~1, right). It also swallowed the 150\,ms pause after \textit{white} and moved the \textit{not}/\textit{bait} boundary 100\,ms early.
-On the news speech it absorbed a 250\,ms inter-phrase pause into \textit{he} (Fig.~2, 7.75--8.04\,s). The three ARPA models put silence in all these places.
+\textit{bait} runs from 1.70 to 4.13\,s and \textit{bed} from 1.47 to 4.50\,s (Fig.~1, right). It also swallowed the 160\,ms pause after \textit{white} and moved the \textit{not}/\textit{bait} boundary 100\,ms early.
+On the news speech it absorbed a 250\,ms inter-phrase pause into \textit{he} (Fig.~2, 7.79--8.04\,s). The three ARPA models put silence in all these places.
 This explains its outlier statistics on ISLE: 23\% silence instead of 60\%, a mean phone of 260\,ms, and the largest phone-duration deviation (3.99).
 \emph{Praat confirms these stretches are silence} (\code{analysis/praat\_measurements.csv}): the extra 1.88\,s of \textit{bait} and 2.46\,s of \textit{bed} are 24--26\,dB below the speech and 0\% voiced, and the 0.25\,s absorbed into \textit{he} is 12\,dB below and unvoiced.
 \emph{It is not the dictionary.} MFA's default \code{english\_mfa} 3.1 dictionary keeps one pronunciation per word, some of them rare variants (\textit{said}~\code{s aj d}, \textit{white}~\code{\textipa{V}aj\textipa{\:t}}).
@@ -96,7 +96,7 @@ The IPA model, with its finer allophone set (e.g.\ separate flap and syllabic ph
 
 \textbf{Error 3: wrong pronunciations from a G2P-only dictionary.} Without the curated lexicon, the aligner sometimes picks bad G2P variants:
 \textit{the}$\rightarrow$\code{TH IY0}, \textit{w}$\rightarrow$\code{V}, \textit{j}$\rightarrow$\code{JH}, \textit{of}$\rightarrow$\code{AA1 F}, \textit{these}$\rightarrow$\code{TH IY1 Z} (45 differing tokens in \code{pronunciation\_diffs.csv}).
-Word boundaries stay close (median 0\,ms, mean 5.9\,ms), but phone labels become wrong and the likelihood on native speech drops ($-46.99\rightarrow-47.84$).
+Word boundaries stay close (median 0\,ms, mean 4.8\,ms), but phone labels become wrong and the likelihood on native speech drops ($-46.99\rightarrow-47.84$).
 For the L2 learner, though, the G2P dictionary fits slightly \emph{better} ($-48.52\rightarrow-48.35$), and the aligner chose \textit{said}~\code{S EY1 D} instead of the lexicon's \code{S EH1 D}.
 That is a typical spelling pronunciation for L2 speakers, and it shows how pronunciation variants matter for non-native speech.
 
@@ -110,7 +110,7 @@ An aligner-independent pause reference (\code{scripts/reference\_check.py}) mark
 On ISLE, the ARPA models put $\le$1\% of that pause time inside words at every threshold; \code{english\_mfa} puts 35--56\% there.
 This confirms Error~1 without trusting any aligner. The same reference is \emph{too coarse} to rank aligners at the 10--20\,ms level: its edges move with the threshold, and on the news speech it also catches low-energy stretches inside words (stop closures, weak fricatives), equally for every model.
 
-\textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers ($-46.99\rightarrow-46.14$ and $-48.52\rightarrow-47.40$) but its boundary changes (99.3\% of word boundaries identical, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
+\textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers ($-46.99\rightarrow-46.14$ and $-48.52\rightarrow-47.40$) but its boundary changes (99.3\% of word boundaries identical on the news speech and 100\% on ISLE, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
 With 97\,s of data the Gaussians move only slightly, and the segmentation was already stable.
 Note that \code{mfa adapt --output\_directory} exports the \emph{pre}-adaptation alignment (its log says ``Alignment already done, skipping''), so the pipeline re-aligns explicitly with the adapted model.
 
