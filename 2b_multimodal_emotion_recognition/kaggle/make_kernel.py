@@ -7,6 +7,7 @@ Results/ was produced by these jobs (logs in logs/).
     python kaggle/make_kernel.py full      --user <kaggle-username>   # everything (~5 h on a T4)
     python kaggle/make_kernel.py ablation  --user <kaggle-username>   # speech front-end ablation (~1 h)
     python kaggle/make_kernel.py analyses  --user <kaggle-username>   # layer probes + prosody baseline (~20 min)
+    python kaggle/make_kernel.py capacity  --user <kaggle-username>   # pre-registered head-capacity study (~1.5 h)
     kaggle kernels push -p kaggle/build/<job>
     kaggle kernels output <kaggle-username>/mer-tess-<job> -p <dir>  # then copy runs/ and Results/ back
 
@@ -30,6 +31,13 @@ JOBS = {
                  ["run_all.py", "--skip-prepare", "--skip-train", "--skip-analyses", "--ablations"]],
     "analyses": [["prepare_data.py", "--speech", "--text"],
                  ["analysis/layer_probe.py"], ["analysis/prosody_baseline.py"]],
+    # pre-registration 2 (analysis/PREREGISTRATION_si_capacity.md): B1-B4 x 2 SI directions x 10 seeds
+    "capacity": [["prepare_data.py", "--speech"]] + [
+        [f"models/speech_pipeline/{s}.py", "--protocol", "si", "--si_seeds", "10", *a]
+        for a in ([], ["--spk_norm", "true"],
+                  ["--spk_norm", "true", "--dim", "64", "--dropout", "0.5", "--weight_decay", "0.05"],
+                  ["--spk_norm", "true", "--head", "attnpool"])
+        for s in ("train", "test")] + [["analysis/capacity_inductive.py"]],
 }
 
 TEMPLATE = '''# Multimodal emotion recognition on TESS (Assignment 2b) - Kaggle job "{job}".

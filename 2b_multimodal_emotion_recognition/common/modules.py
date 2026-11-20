@@ -111,6 +111,33 @@ class SequenceEncoder(nn.Module):
         return seq, pooled, attn
 
 
+class StatsPoolEncoder(nn.Module):
+    """Head-capacity study (no recurrence): softmax layer-weighted sum of the frozen layers ->
+    LayerNorm -> dropout -> attentive statistics pooling (attention-weighted mean and std over frames,
+    as in ECAPA-TDNN) -> linear projection to `dim`. The only temporal operation is the attention
+    weighting; frame order is ignored."""
+
+    def __init__(self, num_layers_in: int, in_dim: int, dim: int = 256, dropout: float = 0.2):
+        super().__init__()
+        self.layer_logits = nn.Parameter(torch.zeros(num_layers_in))
+        self.norm = nn.LayerNorm(in_dim)
+        self.drop = nn.Dropout(dropout)
+        self.score = nn.Linear(in_dim, 1)
+        self.proj = nn.Linear(2 * in_dim, dim)
+        self.out_dim = dim
+
+    def layer_weights(self) -> torch.Tensor:
+        return self.layer_logits.softmax(0)
+
+    def forward(self, x, lengths, mask):  # x (B,T,L,D)
+        h = self.drop(self.norm((x * self.layer_weights()[None, None, :, None]).sum(2)))
+        a = self.score(h).squeeze(-1).masked_fill(~mask, float("-inf")).softmax(-1)      # (B,T)
+        mean = torch.bmm(a.unsqueeze(1), h).squeeze(1)
+        var = torch.bmm(a.unsqueeze(1), h * h).squeeze(1) - mean * mean
+        pooled = self.proj(torch.cat([mean, var.clamp(min=1e-6).sqrt()], -1))
+        return h, pooled, a
+
+
 # ---------------------------------------------------------------- fusion blocks
 class ConcatFusion(nn.Module):
     def __init__(self, dim: int, dropout: float):
@@ -175,6 +202,8 @@ class Classifier(nn.Module):
 
 # ---------------------------------------------------------------- full models
 def _speech_encoder(meta, cfg):
+    if cfg.get("head", "bigru") == "attnpool":
+        return StatsPoolEncoder(meta["speech_layers"], meta["speech_dim"], cfg["dim"], cfg["dropout"])
     conv = cfg["speech_features"] == "logmel"
     return SequenceEncoder(meta["speech_layers"], meta["speech_dim"], cfg["dim"], rnn_layers=2,
                            dropout=cfg["dropout"], frontend="conv" if conv else "layerweight", augment=True)

@@ -21,9 +21,11 @@ from .modules import MODELS
 
 DEFAULTS = dict(dim=256, dropout=0.2, lr=1e-3, weight_decay=1e-2, batch_size=32, epochs=40,
                 patience=8, label_smoothing=0.05, modality_dropout=0.0, preload=False, skip_existing=True,
-                spk_norm=False, layer_wd=-1.0, layer_lr_mult=1.0)
+                spk_norm=False, layer_wd=-1.0, layer_lr_mult=1.0, head="bigru")
 # layer_wd / layer_lr_mult: weight decay and learning-rate multiplier for the softmax layer-weight
 # logits only (ablation). layer_wd < 0 means "same as weight_decay" (the setting of all main runs).
+# head: speech temporal head, "bigru" (main) or "attnpool" (attentive statistics pooling, no recurrence;
+# head-capacity study, analysis/PREREGISTRATION_si_capacity.md).
 
 
 # ---------------------------------------------------------------- data
@@ -275,6 +277,8 @@ def base_parser(desc: str) -> argparse.ArgumentParser:
                     help="sd = speaker-dependent word-disjoint (5 seeds); si = leave-one-speaker-out (2 folds x 3 seeds)")
     ap.add_argument("--seed", type=int, default=None, help="run a single seed (default: all seeds of the protocol)")
     ap.add_argument("--fold", type=int, default=None, help="si fold: 0 = train OAF/test YAF, 1 = train YAF/test OAF")
+    ap.add_argument("--si_seeds", type=int, default=None,
+                    help="number of SI seeds per fold (default: the protocol's 3; the capacity study uses 10)")
     for k, v in DEFAULTS.items():
         if isinstance(v, bool):
             ap.add_argument(f"--{k}", type=lambda s: s.lower() in ("1", "true", "yes"), default=v)
@@ -286,7 +290,10 @@ def base_parser(desc: str) -> argparse.ArgumentParser:
 def iter_configs(args, pipeline: str, variant: str, extra: dict):
     protocols = list(PROTOCOLS) if args.protocol == "all" else [args.protocol]
     for proto in protocols:
-        for seed, fold in PROTOCOLS[proto]["runs"]:
+        runs = PROTOCOLS[proto]["runs"]
+        if proto == "si" and getattr(args, "si_seeds", None):
+            runs = [(seed, fold) for fold in (0, 1) for seed in range(args.si_seeds)]
+        for seed, fold in runs:
             if args.seed is not None and seed != args.seed:
                 continue
             if args.fold is not None and fold != args.fold:
@@ -294,3 +301,15 @@ def iter_configs(args, pipeline: str, variant: str, extra: dict):
             cfg = {k: getattr(args, k) for k in DEFAULTS}
             cfg.update(extra, pipeline=pipeline, variant=variant, protocol=proto, seed=seed, fold=fold)
             yield cfg
+
+
+def speech_variant(args) -> str:
+    """Run-folder name of a speech configuration (shared by train.py and test.py)."""
+    d = DEFAULTS
+    return (args.features + ("_spknorm" if args.spk_norm else "")
+            + (f"_lw{args.layer_wd:g}" if args.layer_wd >= 0 else "")
+            + (f"x{args.layer_lr_mult:g}" if args.layer_lr_mult != 1 else "")
+            + (f"_{args.head}" if args.head != d["head"] else "")
+            + (f"_d{args.dim}" if args.dim != d["dim"] else "")
+            + (f"_do{args.dropout:g}" if args.dropout != d["dropout"] else "")
+            + (f"_wd{args.weight_decay:g}" if args.weight_decay != d["weight_decay"] else ""))
