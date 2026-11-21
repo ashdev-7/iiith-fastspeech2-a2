@@ -1,7 +1,8 @@
 """Build a blind annotation kit for a small hand-labelled reference (gold standard).
 
-Targets: all 15 words of the 3 ISLE prompts plus 12 words drawn at random (fixed seed) from the news
-speech, i.e. 54 boundaries. Random drawing means nobody chose the "easy" words.
+Targets: all 15 words of the 3 ISLE prompts plus 45 words drawn at random (fixed seed) from the news
+speech, i.e. 60 words and 120 boundaries (first planned as 12 news words; enlarged to 45 before any
+marking was done, to narrow the confidence intervals). Random drawing means nobody chose the "easy" words.
 For each target the kit gives only the word and its location rounded DOWN to the whole second
 (so the annotator need not search 30 s of audio), never an aligner boundary.
 The empty TextGrids contain a single tier "gold"; no aligner output is visible while annotating.
@@ -22,7 +23,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from analyze_alignments import read_textgrid  # noqa: E402
 
 KIT = ROOT / "gold" / "kit"
-N_NEWS = 12
+N_NEWS = 45
 SEED = 2026
 
 

@@ -10,9 +10,10 @@ precision instead of assuming it.
 This protocol measures *our own* error too: every word is marked twice, blind, and the two passes are
 compared. Aligner differences smaller than that pass-to-pass difference are reported as unresolvable.
 
-**What.** 27 words = 54 boundaries (`kit/words_to_mark.txt`):
+**What.** 60 words = 120 boundaries (`kit/words_to_mark.txt`):
 * all 15 words of the 3 ISLE prompts;
-* 12 words drawn **at random** (fixed seed) from the news speech, so nobody picked easy cases.
+* 45 words drawn **at random** (fixed seed) from the news speech, so nobody picked easy cases.
+  (The first kit had 12; it was enlarged to 45 before any word was marked, to narrow the intervals.)
 
 The kit shows only each word and the whole second after which it starts. It never shows an aligner
 boundary.

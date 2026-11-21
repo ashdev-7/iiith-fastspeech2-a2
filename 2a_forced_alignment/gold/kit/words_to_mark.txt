@@ -1,19 +1,52 @@
 F2BJRLP1.wav
     word #5   'massachusetts'  starts somewhere after 2 s
     word #6   'supreme'        starts somewhere after 3 s
+    word #12  'j'              starts somewhere after 4 s
+    word #15  'leader'         starts somewhere after 5 s
+    word #24  'seventy'        starts somewhere after 9 s
+    word #34  'march'          starts somewhere after 12 s
     word #37  'be'             starts somewhere after 13 s
+    word #42  'governor'       starts somewhere after 14 s
+    word #46  'during'         starts somewhere after 16 s
+    word #52  'and'            starts somewhere after 18 s
     word #71  'to'             starts somewhere after 24 s
 
 F2BJRLP2.wav
+    word #3   'six'            starts somewhere after 0 s
+    word #20  'hennessy'       starts somewhere after 9 s
+    word #21  'to'             starts somewhere after 10 s
     word #27  'court'          starts somewhere after 11 s
     word #33  'step'           starts somewhere after 14 s
+    word #44  'and'            starts somewhere after 18 s
     word #48  'appointment'    starts somewhere after 18 s
+    word #53  'justice'        starts somewhere after 20 s
+    word #55  'nineteen'       starts somewhere after 21 s
+    word #58  'that'           starts somewhere after 23 s
     word #63  'president'      starts somewhere after 24 s
+    word #65  'the'            starts somewhere after 25 s
+    word #70  "hennessy's"     starts somewhere after 27 s
+    word #72  'clerk'          starts somewhere after 28 s
 
 F2BJRLP3.wav
+    word #0   'the'            starts somewhere after 0 s
+    word #1   'author'         starts somewhere after 0 s
+    word #4   'than'           starts somewhere after 1 s
     word #21  'administrative' starts somewhere after 6 s
+    word #24  'give'           starts somewhere after 9 s
+    word #25  'hennessy'       starts somewhere after 9 s
+    word #27  'of'             starts somewhere after 10 s
     word #32  'court'          starts somewhere after 11 s
+    word #35  'began'          starts somewhere after 12 s
+    word #37  'decade'         starts somewhere after 12 s
+    word #52  'hundred'        starts somewhere after 18 s
+    word #61  'the'            starts somewhere after 22 s
+    word #63  'massive'        starts somewhere after 23 s
+    word #64  'budget'         starts somewhere after 23 s
+    word #65  'deficit'        starts somewhere after 23 s
+    word #66  'hennessy'       starts somewhere after 24 s
+    word #69  'colleagues'     starts somewhere after 25 s
     word #71  'the'            starts somewhere after 26 s
+    word #72  'bar'            starts somewhere after 26 s
     word #75  'to'             starts somewhere after 27 s
 
 ISLE_SESS0131_BLOCKD02_01_sprt1.wav

@@ -160,7 +160,7 @@ Agreement between aligners measures consistency, not accuracy. Two references th
   that pause time inside words at every threshold, and `english_mfa` puts 35–56 % there. This confirms the pause-absorption error.
   Edge positions move with the threshold, so this reference is too coarse to rank aligners at 10–20 ms
   (`analysis/reference_check.md`).
-* **Blind hand-labelled reference** (`gold/ANNOTATION_PROTOCOL.md`). It covers 27 words (54 boundaries): all ISLE words plus 12
+* **Blind hand-labelled reference** (`gold/ANNOTATION_PROTOCOL.md`). It covers 60 words (120 boundaries): all ISLE words plus 45
   random news words. Each is marked twice in Praat, blind to every aligner output. `python scripts/score_gold.py` then reports
   the annotator's own pass-to-pass consistency (the reference's precision) and each experiment's error against it.
   The kit (`gold/kit/`) is built by `scripts/make_gold_kit.py`.

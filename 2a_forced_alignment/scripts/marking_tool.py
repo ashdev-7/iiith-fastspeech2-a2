@@ -1,7 +1,7 @@
 """Browser alternative to Praat for the blind hand-marking passes (gold/ANNOTATION_PROTOCOL.md).
 
     python scripts/marking_tool.py build
-        -> gold/kit/marking_tool.html (self-contained: the six recordings and the 27 target words are
+        -> gold/kit/marking_tool.html (self-contained: the six recordings and the target words are
            embedded; it shows no aligner output). Open it in a browser, mark, and it downloads
            gold_passN_marks.json.
     python scripts/marking_tool.py convert <gold_passN_marks.json> [...]

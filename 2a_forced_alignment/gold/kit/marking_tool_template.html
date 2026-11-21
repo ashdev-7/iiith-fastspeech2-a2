@@ -53,7 +53,7 @@ const W = DATA.targets;           // [{file, word_index, word, search_from_s}]
 let pass = null, marks = [], idx = 0, view = null, drag = null, ctx = null, playing = null;
 let rate = 0.5; try { rate = parseFloat(localStorage.getItem("gold_rate")) || 0.5; } catch (e) {}
 
-function key() { return "gold_marks_pass" + pass; }
+function key() { return "gold_marks_pass" + pass + "_n" + W.length; }
 function save() { try { localStorage.setItem(key(), JSON.stringify({marks, idx})); } catch (e) {} }
 function load() {
   try { const s = JSON.parse(localStorage.getItem(key()) || "null"); if (s) { marks = s.marks; idx = s.idx; return; } } catch (e) {}
@@ -66,7 +66,7 @@ const fmt = t => t.toFixed(3) + " s";
 function startScreen() {
   app.innerHTML = `
   <div class="card"><h1>Word marking tool</h1>
-  <p>You will mark where 27 words start and end. Each word gets its own screen: <b>click where the word starts, click where it ends, press Next.</b> That is all.</p>
+  <p>You will mark where ${W.length} words start and end. Each word gets its own screen: <b>click where the word starts, click where it ends, press Next.</b> That is all.</p>
   <p class="muted">Do pass 1 now. Do pass 2 at least one day later, without looking at pass 1. Your progress is saved in this browser as you go, so you can close the tab and come back.</p>
   <div class="row"><button class="primary big" id="p1">Start / continue pass 1</button>
   <button class="big" id="p2">Start / continue pass 2</button></div></div>`;
