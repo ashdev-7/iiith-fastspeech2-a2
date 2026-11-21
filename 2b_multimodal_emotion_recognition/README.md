@@ -44,7 +44,7 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
   A third pre-registered study ([plan](analysis/PREREGISTRATION_si_augmentation.md), [`augmentation_study.md`](Results/augmentation_study.md)):
   0.9×/1.1× speed augmentation halves the BiGRU's seed spread but does not improve it reliably; the linear head gains
   +1.1/+1.7 pp and reaches **72.0 % SI** †, the best result.
-  Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.6 → 54.8 % at 0 dB, vs. 58.5 → 28.1 % without it).
+  Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.5 → 54.8 % at 0 dB, vs. 58.5 → 28.0 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 
 Additional studies: speech front-end ablation ([`ablation_speech.md`](Results/ablation_speech.md): all 13 WavLM layers at 20 ms gives no gain, -3.5 pp SI, n.s.; freeing the layer weights moves them to the *lowest* layers and does not help SI), hand-crafted 44-feature prosody baseline ([`prosody_baseline.md`](Results/prosody_baseline.md)),
@@ -133,8 +133,11 @@ when saving, because `Results/` did not yet exist (now fixed in `common/config.p
 * `layer_probe.py` and `prosody_baseline.py` were then **re-run** in a separate Kaggle job (`logs/kaggle_run_analyses.log`,
   `python kaggle/make_kernel.py analyses`); their files in `Results/` are those genuine outputs. They agree with the values
   printed in the first job (prosody: identical; probes: within 0.05 pp, i.e. the 3-decimal print rounding).
-* `noise_robustness.py` needs the 66 trained checkpoints, which were not kept, so its tables and plot were rebuilt from the
-  printed per-run values by `analysis/recover_from_log.py`, which calls the script's own `report()` function. Accuracies were
-  printed with 3 decimals, so they are accurate to 0.1 pp; the clean-audio column matches the main accuracy table exactly.
+* `noise_robustness.py` needs the 66 trained checkpoints, which that job did not keep. Its results were first rebuilt from the
+  printed per-run values (`analysis/recover_from_log.py`), then **regenerated** in their own job (`python kaggle/make_kernel.py noise`,
+  `logs/kaggle_run_noise.log`), with checks registered in advance (`analysis/PREREGISTRATION_si_augmentation.md`, part N):
+  all 66 retrained runs give 100 % identical predictions to `runs/`, every clean and noisy Whisper transcript is identical,
+  and all 330 per-run noise accuracies match the log values to within 0.05 pp (`Results/noise_regeneration_check.md`).
+  The files in `Results/` are now the regenerated outputs.
 
-Kaggle jobs are built with `kaggle/make_kernel.py` (`full`, `ablation`, `analyses`).
+Kaggle jobs are built with `kaggle/make_kernel.py` (`full`, `ablation`, `analyses`, `capacity`, `augment`, `noise`).
