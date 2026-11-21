@@ -1,0 +1,57 @@
+/kaggle/src/script.py:8: DeprecationWarning: Python 3.14 will, by default, filter extracted tar archives and reject files or modify their metadata. Use the filter argument to control this behavior.
+  tarfile.open(fileobj=io.BytesIO(base64.b64decode(CODE_B64)), mode="r:gz").extractall(W)
+torch 2.11.0+cu130 cuda True Tesla T4
+
+$ python prepare_data.py --speech
+emotion  angry  disgust  fear  happy  neutral   ps  sad
+speaker                                                
+OAF        200      200   200    200      200  200  200
+YAF        200      200   200    200      200  200  200
+preprocess audio:   0%|          | 0/2800 [00:00<?, ?it/s]preprocess audio:  10%|▉         | 269/2800 [00:30<04:42,  8.96it/s]preprocess audio:  10%|▉         | 269/2800 [00:50<04:42,  8.96it/s]preprocess audio:  39%|███▉      | 1099/2800 [01:00<01:25, 19.95it/s]preprocess audio:  39%|███▉      | 1099/2800 [01:20<01:25, 19.95it/s]preprocess audio:  69%|██████▉   | 1939/2800 [01:30<00:36, 23.62it/s]preprocess audio:  69%|██████▉   | 1939/2800 [01:50<00:36, 23.62it/s]preprocess audio:  99%|█████████▊| 2763/2800 [02:00<00:01, 25.13it/s]preprocess audio: 100%|██████████| 2800/2800 [02:01<00:00, 23.06it/s]
+trimmed durations: mean 2.00s  min 1.11s  max 2.98s
+log-Mel:   0%|          | 0/2800 [00:00<?, ?it/s]log-Mel: 100%|██████████| 2800/2800 [00:09<00:00, 299.96it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 9755.38it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  40%|████      | 1122/2800 [00:30<00:44, 37.39it/s]WavLM:  40%|████      | 1122/2800 [00:49<00:44, 37.39it/s]WavLM:  94%|█████████▍| 2641/2800 [01:00<00:03, 45.17it/s]WavLM: 100%|██████████| 2800/2800 [01:03<00:00, 44.37it/s]
+  -> exit 0 in 240 s
+
+$ python -c import torch, transformers, librosa, sklearn; print(torch.__version__, transformers.__version__, librosa.__version__, sklearn.__version__)
+2.11.0+cu130 5.20.2 0.11.0 1.6.1
+  -> exit 0 in 7 s
+
+$ python analysis/final_features.py
+7 copies of 2800 clips in 134 s
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/488 [00:00<?, ?it/s]Loading weights: 100%|██████████| 488/488 [00:00<00:00, 10837.54it/s]
+wavlm_large orig: (2800, 13, 2048) in 123 s
+wavlm_large sp090: (2800, 13, 2048) in 135 s
+wavlm_large sp110: (2800, 13, 2048) in 119 s
+wavlm_large pitchm4: (2800, 13, 2048) in 125 s
+wavlm_large pitchm2: (2800, 13, 2048) in 125 s
+wavlm_large pitchp2: (2800, 13, 2048) in 125 s
+wavlm_large pitchp4: (2800, 13, 2048) in 125 s
+Loading weights:   0%|          | 0/1259 [00:00<?, ?it/s]Loading weights:  20%|█▉        | 248/1259 [00:00<00:00, 2464.20it/s]Loading weights:  39%|███▉      | 495/1259 [00:00<00:00, 2254.76it/s]Loading weights:  60%|█████▉    | 751/1259 [00:00<00:00, 2385.21it/s]Loading weights:  80%|███████▉  | 1007/1259 [00:00<00:00, 2451.12it/s]Loading weights: 100%|██████████| 1259/1259 [00:00<00:00, 2441.68it/s]
+whisper_large orig: (2800, 17, 2560) in 499 s
+whisper_large sp090: (2800, 17, 2560) in 501 s
+whisper_large sp110: (2800, 17, 2560) in 496 s
+whisper_large pitchm4: (2800, 17, 2560) in 498 s
+whisper_large pitchm2: (2800, 17, 2560) in 498 s
+whisper_large pitchp2: (2800, 17, 2560) in 498 s
+whisper_large pitchp4: (2800, 17, 2560) in 498 s
+  -> exit 0 in 4543 s
+
+$ python analysis/final_study.py
+  OAF->YAF A-L1n(WL) fitted
+  OAF->YAF AP-L1n(WL) fitted
+  OAF->YAF A-L1n(W3) fitted
+  OAF->YAF AP-L1n(W3) fitted
+  OAF->YAF ST(A-L1n(WL)) done
+  -> exit -9 in 412 s
+STEP FAILED
+ALL_DONE
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 547459 bytes to __results__.html

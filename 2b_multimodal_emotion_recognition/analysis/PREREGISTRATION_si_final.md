@@ -110,3 +110,21 @@ promoted, whatever it scores**, and every row is reported.
 * Post hoc, labelled as such: the accuracy of the pseudo-labels in each self-training round. It is computed
   after the predictions are fixed and is never used to choose.
 * With two speakers, agreement between the two directions is descriptive, not a claim about speakers in general.
+
+## Amendment 1 (after the first run; nothing in the plan above is changed)
+
+Run 1 (`logs/kaggle_run_final_v1_failed.log`) extracted every feature and was then killed by the operating
+system during `final_study.py`: it ran out of memory (exit −9) while fitting FINAL in the first direction.
+The step prints only "fitted" / "done" lines, so **no accuracy, prediction or test was computed or seen**.
+
+The only changes are about memory:
+* The analysis now holds one encoder/recipe pair in memory at a time (the two FINAL members together).
+* The classifier runs step by step: the scaler works in place, followed by the float64 conversion that
+  LogisticRegression's lbfgs input check performs anyway.
+* The arithmetic is unchanged. On the null and planted-signal validation features, the new code gives 100 %
+  identical predictions (transductive and inductive, all 19 600 rows) and identical test statistics to the
+  committed version.
+* The job now keeps the features in its output, so that a further failure of the analysis would not require
+  re-extraction, and it prints the machine's RAM.
+
+The job is re-run unchanged otherwise.

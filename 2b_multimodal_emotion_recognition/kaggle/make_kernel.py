@@ -67,10 +67,12 @@ JOBS = {
                   ["analysis/backbone_study.py", "--c_sensitivity"]],
     # pre-registration 5 (analysis/PREREGISTRATION_si_final.md): Whisper-large-v3 encoder, pitch-shift
     # augmentation and self-training on top of frozen WavLM-Large
+    # Run 2 (amendment 1): features are kept in the job output (/kaggle/working/feat) so the analysis can be
+    # re-run without re-extraction, and the machine's RAM is printed.
     "final": [["prepare_data.py", "--speech"],
-              ["-c", "import torch, transformers, librosa, sklearn; print(torch.__version__, transformers.__version__, librosa.__version__, sklearn.__version__)"],
-              ["analysis/final_features.py"],
-              ["analysis/final_study.py"]],
+              ["-c", "import torch, transformers, librosa, sklearn, psutil; print(torch.__version__, transformers.__version__, librosa.__version__, sklearn.__version__, 'RAM GB', round(psutil.virtual_memory().total / 1e9, 1))"],
+              ["analysis/final_features.py", "--out_dir", "/kaggle/working/feat"],
+              ["analysis/final_study.py", "--feat_dir", "/kaggle/working/feat"]],
 }
 
 TEMPLATE = '''# Multimodal emotion recognition on TESS (Assignment 2b) - Kaggle job "{job}".

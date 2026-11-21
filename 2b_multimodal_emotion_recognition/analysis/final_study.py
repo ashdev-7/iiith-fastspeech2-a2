@@ -28,7 +28,8 @@ from analysis.capacity_inductive import calibration_words  # noqa: E402
 from analysis.capacity_study import DIRS, ROPE, boot, verdict  # noqa: E402
 from analysis.final_features import pitch_name  # noqa: E402
 from analysis.robustness_checks import holm  # noqa: E402
-from analysis.si_linear import clf  # noqa: E402
+from sklearn.linear_model import LogisticRegression  # noqa: E402
+from sklearn.preprocessing import StandardScaler  # noqa: E402
 from common.audio import PITCH_STEPS, SPEED_FACTORS  # noqa: E402
 from common.config import CACHE_DIR, EMOTIONS, RESULTS_DIR  # noqa: E402
 from common.data import load_index, make_split  # noqa: E402
@@ -42,8 +43,11 @@ ST_FRACTIONS = (0.25, 0.50, 0.75)                     # self-training rounds: sh
 C1_MIN = 99.0                                         # % identical predictions to study 4 for A-L1n(WL)
 
 
+FEAT_DIR = CACHE_DIR                                  # set by --feat_dir
+
+
 def load_feats(enc: str, copy: str) -> np.ndarray:
-    P = np.load(CACHE_DIR / f"pooled_{FILES[enc]}_{copy}.npy")
+    P = np.load(FEAT_DIR / f"pooled_{FILES[enc]}_{copy}.npy")
     return P.reshape(len(P), -1)
 
 
@@ -57,10 +61,17 @@ def member_data(enc, recipe, tr, te, cal_pos, ytr):
     return Xaug, yaug, {"T": zscore(X, te, te), "I": zscore(X, te, te[cal_pos])}
 
 
-def fit_predict(Xa, ya, Xe, C=C_FIXED):
-    m = clf(C).fit(Xa, ya)
+def fit_predict(Xa_parts, ya, Xe, C=C_FIXED):
+    """The A-L1n classifier (analysis/si_linear.py:clf = StandardScaler + LogisticRegression(C, max_iter=5000)),
+    run step by step to save memory (amendment 1): the scaler works in place on a fresh float32 copy, which is then
+    converted to float64 exactly as LogisticRegression's lbfgs input check would do. Same arithmetic as clf(C)."""
+    X = np.concatenate(Xa_parts)                                # always a fresh copy
+    sc = StandardScaler(copy=False).fit(X)
+    X = sc.transform(X).astype(np.float64)                      # in-place scaling, then lbfgs's own dtype
+    m = LogisticRegression(C=C, max_iter=5000).fit(X, ya)
+    del X
     assert list(m.classes_) == list(range(len(EMOTIONS)))
-    return m.predict_proba(Xe)
+    return m.predict_proba(sc.transform(Xe, copy=True))
 
 
 def self_train(members, P0, pool):
@@ -75,8 +86,7 @@ def self_train(members, P0, pool):
         sel = pool[np.argsort(-P[pool].max(1), kind="stable")[:k]]
         yp = P[sel].argmax(1)
         hist.append((sel, yp))
-        P = np.mean([fit_predict(np.concatenate([Xa, Xe[sel]]), np.concatenate([ya, yp]), Xe)
-                     for Xa, ya, Xe in members], 0)
+        P = np.mean([fit_predict([Xa, Xe[sel]], np.concatenate([ya, yp]), Xe) for Xa, ya, Xe in members], 0)
     return P, hist
 
 
@@ -87,28 +97,43 @@ def run_direction(df, fold, calib):
     tr, te = np.concatenate([s["train"], s["val"]]), s["test"]
     ytr = df.label.values[tr]                                   # the only labels this function reads
     cal_pos = np.flatnonzero(np.isin(df.word.values[te], list(calib)))
-    data = {(e, r): member_data(e, r, tr, te, cal_pos, ytr) for e in FILES for r in RECIPES}
-    probs, hist = {}, {}
-    for (e, r), (Xa, ya, Xe) in data.items():
-        probs[f"{r}-L1n({e})"] = {m: fit_predict(Xa, ya, Xe[m]) for m in "TI"}
-        print(f"  {DIRS[fold]} {r}-L1n({e}) fitted", flush=True)
-    probs["ENS2"] = {m: (probs["AP-L1n(WL)"][m] + probs["AP-L1n(W3)"][m]) / 2 for m in "TI"}
     pools = {"T": np.arange(len(te)), "I": cal_pos}             # I: the scored 160 words never enter the pool
-    for name, mem, base in (("ST(A-L1n(WL))", [("WL", "A")], "A-L1n(WL)"),
-                            ("FINAL", [("WL", "AP"), ("W3", "AP")], "ENS2")):
+    probs, hist = {}, {}
+
+    def base(keys):
+        data = {k: member_data(*k, tr, te, cal_pos, ytr) for k in keys}
+        for (e, r), (Xa, ya, Xe) in data.items():
+            probs[f"{r}-L1n({e})"] = {m: fit_predict([Xa], ya, Xe[m]) for m in "TI"}
+            print(f"  {DIRS[fold]} {r}-L1n({e}) fitted", flush=True)
+        return data
+
+    def st(name, data, start):
         probs[name] = {}
         for m in "TI":
-            members = [(data[k][0], data[k][1], data[k][2][m]) for k in mem]
-            probs[name][m], hist[(name, m)] = self_train(members, probs[base][m], pools[m])
+            members = [(Xa, ya, Xe[m]) for Xa, ya, Xe in data.values()]
+            probs[name][m], hist[(name, m)] = self_train(members, start[m], pools[m])
         print(f"  {DIRS[fold]} {name} done", flush=True)
+
+    # one encoder/recipe pair in memory at a time, except the two FINAL members (amendment 1: memory)
+    data = base([("WL", "A")])
+    st("ST(A-L1n(WL))", data, probs["A-L1n(WL)"])
+    del data
+    base([("W3", "A")])                                       # fitted, then its data is freed
+    data = base([("WL", "AP"), ("W3", "AP")])
+    probs["ENS2"] = {m: (probs["AP-L1n(WL)"][m] + probs["AP-L1n(W3)"][m]) / 2 for m in "TI"}
+    st("FINAL", data, probs["ENS2"])
+    del data
     return te, cal_pos, probs, hist
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results_dir", default=str(RESULTS_DIR))
+    ap.add_argument("--feat_dir", default=str(CACHE_DIR), help="folder with pooled_<enc>_<copy>.npy")
     ap.add_argument("--validation", action="store_true", help="null-feature validation: C1 is not enforced")
     args = ap.parse_args()
+    global FEAT_DIR
+    FEAT_DIR = Path(args.feat_dir)
     out = Path(args.results_dir)
     out.mkdir(parents=True, exist_ok=True)
     df = load_index()
