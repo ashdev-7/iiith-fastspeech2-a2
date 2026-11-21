@@ -1,8 +1,12 @@
 # Hand-labelled reference: annotation protocol
 
 **Why.** No aligner output can be checked without a reference. Hand labels by a trained person are the
-standard reference in the field: TIMIT and Buckeye are labelled this way. A careful annotator places
-most boundaries within about 20 ms of another annotator.
+standard reference in the field: TIMIT and Buckeye are labelled this way. Trained phoneticians agree on
+about 93 % of phone boundaries within 20 ms (Hosom 2000, as cited by Yuan et al., Interspeech 2013), and
+MFA 3.0's mean phone-boundary error on hand-labelled TIMIT is about 12 ms (McAuliffe et al., 2026, arXiv
+2606.18466). A non-specialist annotator will be less precise than that. So this reference is designed
+to resolve errors of tens to hundreds of milliseconds (the pause errors), and it measures its own
+precision instead of assuming it.
 This protocol measures *our own* error too: every word is marked twice, blind, and the two passes are
 compared. Aligner differences smaller than that pass-to-pass difference are reported as unresolvable.
 
