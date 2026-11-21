@@ -46,7 +46,7 @@ SpecAugment-style~\cite{specaugment} time masking regularises it.
 \textbf{Contextual modelling: BiGRU + attention.} The pretrained encoder already contextualises tokens; a light BiGRU adapts these frozen states to the task, and attention lets it weigh tokens.
 Here those tokens are the target word and the final punctuation mark.
 
-\textbf{Fusion: Gated Multimodal Unit~\cite{gmu}.} Early (feature-level) fusion is ill-posed because the sequences have different rates ($\approx$50 frames vs.\ 6--8 tokens).
+\textbf{Fusion: Gated Multimodal Unit~\cite{gmu}.} Early (feature-level) fusion would first need the two sequences aligned in time ($\approx$50 frames vs.\ 6--8 tokens), e.g.\ by a word-level forced alignment; we fuse the pooled representations instead.
 Plain concatenation treats both modalities as equally reliable.
 The GMU learns an input-dependent, per-dimension gate $z$, so it can rely on speech when the text is uninformative.
 Exactly that is needed for TESS, where text is uninformative by construction and the gate is directly interpretable (mean $z$ = reliance on speech).

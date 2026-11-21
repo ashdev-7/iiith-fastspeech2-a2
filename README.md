@@ -32,7 +32,7 @@ python prepare_data.py --all && python run_all.py
 **2b.**
 - Speech-only WavLM + BiGRU reaches 99.9 % with the speaker seen in training, but 58.5 % on an unseen speaker: it overfits the one training speaker.
 - A pre-registered low-capacity model (plan committed before the run) raises unseen-speaker accuracy to 66.0 % (70.6 % with label-free speaker normalisation).
-- A second pre-registered study (80 runs) finds the linear head beats the BiGRU by 10–18 pp on identical inputs in both directions; capacity, not recurrence, is the problem.
+- A second pre-registered study (80 runs) finds the linear head beats the BiGRU by 10–18 pp on identical inputs in both directions, robust to seed noise. Speaker normalisation does not rescue the BiGRU: it overfits its one training speaker.
 - Text with ground-truth transcripts is at chance by construction: every word appears with every emotion.
 - Whisper transcripts reach 2.1× chance, because ASR punctuation carries prosody.
 - Fusion is not significant on average. Where speech is uncertain, Whisper-text fusion gains +5.7 pp after a regression-to-the-mean control removes half of the raw +11.8 pp.
