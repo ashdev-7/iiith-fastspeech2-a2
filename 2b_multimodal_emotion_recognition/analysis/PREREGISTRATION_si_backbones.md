@@ -97,3 +97,11 @@ to show the size of the score that label exposure produces, not to claim anythin
   general.
 * Post hoc, and labelled as such: accuracy against C for each encoder (diagnostic only, never used to
   choose).
+
+## Amendment (after the first run; nothing in the plan above is changed)
+
+Run 1 (`logs/kaggle_run_backbones_v1_failed.log`) stopped at check C1: the reference file
+`Results/augmentation_lr_predictions.csv` was not packed into the Kaggle job. That run had already printed
+the per-encoder accuracies, but no test had been computed. The only fix is packaging (the file is now
+packed, `kaggle/make_kernel.py`). The job is re-run unchanged. Because the plan fixes every model, setting
+and test in advance, seeing those accuracies cannot steer any choice.

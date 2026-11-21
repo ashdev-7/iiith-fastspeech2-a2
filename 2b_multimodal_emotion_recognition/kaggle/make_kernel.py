@@ -26,7 +26,8 @@ import tarfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CODE = ["common", "models", "analysis", "prepare_data.py", "run_all.py", "requirements.txt"]
+CODE = ["common", "models", "analysis", "prepare_data.py", "run_all.py", "requirements.txt",
+        "Results/augmentation_lr_predictions.csv"]  # reference for check C1 of pre-registration 4
 
 JOBS = {
     "full": [["prepare_data.py", "--speech", "--text", "--asr"], ["run_all.py", "--skip-prepare"]],
