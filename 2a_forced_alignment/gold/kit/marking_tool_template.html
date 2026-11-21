@@ -51,6 +51,7 @@ for (const [f, b64] of Object.entries(DATA.audio)) {
 }
 const W = DATA.targets;           // [{file, word_index, word, search_from_s}]
 let pass = null, marks = [], idx = 0, view = null, drag = null, ctx = null, playing = null;
+let rate = 0.5; try { rate = parseFloat(localStorage.getItem("gold_rate")) || 0.5; } catch (e) {}
 
 function key() { return "gold_marks_pass" + pass; }
 function save() { try { localStorage.setItem(key(), JSON.stringify({marks, idx})); } catch (e) {} }
@@ -109,6 +110,8 @@ function showWord() {
       <button class="primary" id="playSel">&#9654; Play my word <kbd>Space</kbd></button>
       <button id="playView">&#9654; Play everything shown <kbd>A</kbd></button>
       <button id="stop">&#9632; Stop</button>
+      <span class="muted" style="margin-left:6px">Speed:</span>
+      ${[0.25, 0.5, 0.75, 1].map(r => `<button class="rate${r === rate ? " primary" : ""}" data-r="${r}">${r === 1 ? "normal" : r + "&times;"}</button>`).join("")}
       <span class="spacer"></span>
       <button id="zin">Zoom in <kbd>+</kbd></button><button id="zout">Zoom out <kbd>&minus;</kbd></button>
       <button id="zstart">Zoom on start</button><button id="zend">Zoom on end</button>
@@ -139,6 +142,7 @@ function showWord() {
   document.getElementById("playSel").onclick = playSel;
   document.getElementById("playView").onclick = () => play(view[0], view[1]);
   document.getElementById("stop").onclick = stopAudio;
+  document.querySelectorAll("button.rate").forEach(bt => bt.onclick = () => { rate = parseFloat(bt.dataset.r); try { localStorage.setItem("gold_rate", rate); } catch (e) {} document.querySelectorAll("button.rate").forEach(o => o.classList.toggle("primary", o === bt)); });
   document.getElementById("zin").onclick = () => zoom(0.5);
   document.getElementById("zout").onclick = () => zoom(2);
   document.getElementById("zstart").onclick = () => zoomOn("start");
@@ -270,9 +274,9 @@ function play(a, b) {
   const x = audio[W[idx].file], i0 = Math.max(0, Math.floor(a * SR)), i1 = Math.min(x.length, Math.ceil(b * SR));
   if (i1 - i0 < 10) return;
   const buf = ctx.createBuffer(1, i1 - i0, SR); buf.getChannelData(0).set(x.subarray(i0, i1));
-  const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
+  const src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate; src.connect(ctx.destination);
   const t0 = ctx.currentTime; src.start();
-  const me = { src, pos: () => a + (ctx.currentTime - t0) }; playing = me;
+  const r = rate, me = { src, pos: () => a + (ctx.currentTime - t0) * r }; playing = me;
   src.onended = () => { if (playing === me) { playing = null; draw(); } };
   const tick = () => { if (playing === me) { draw(); requestAnimationFrame(tick); } }; requestAnimationFrame(tick);
 }
