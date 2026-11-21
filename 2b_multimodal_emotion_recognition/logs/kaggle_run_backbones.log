@@ -1,0 +1,500 @@
+/kaggle/src/script.py:8: DeprecationWarning: Python 3.14 will, by default, filter extracted tar archives and reject files or modify their metadata. Use the filter argument to control this behavior.
+  tarfile.open(fileobj=io.BytesIO(base64.b64decode(CODE_B64)), mode="r:gz").extractall(W)
+torch 2.11.0+cu130 cuda True Tesla T4
+
+$ python prepare_data.py --speech --speed_perturb
+emotion  angry  disgust  fear  happy  neutral   ps  sad
+speaker                                                
+OAF        200      200   200    200      200  200  200
+YAF        200      200   200    200      200  200  200
+preprocess audio:   0%|          | 0/2800 [00:00<?, ?it/s]preprocess audio:   5%|▌         | 142/2800 [00:30<09:22,  4.73it/s]preprocess audio:   5%|▌         | 142/2800 [00:50<09:22,  4.73it/s]preprocess audio:  19%|█▊        | 524/2800 [01:00<04:01,  9.43it/s]preprocess audio:  19%|█▊        | 524/2800 [01:20<04:01,  9.43it/s]preprocess audio:  33%|███▎      | 920/2800 [01:30<02:48, 11.15it/s]preprocess audio:  33%|███▎      | 920/2800 [01:50<02:48, 11.15it/s]preprocess audio:  47%|████▋     | 1305/2800 [02:00<02:06, 11.81it/s]preprocess audio:  47%|████▋     | 1305/2800 [02:20<02:06, 11.81it/s]preprocess audio:  61%|██████▏   | 1720/2800 [02:30<01:26, 12.53it/s]preprocess audio:  61%|██████▏   | 1720/2800 [02:50<01:26, 12.53it/s]preprocess audio:  76%|███████▋  | 2139/2800 [03:00<00:50, 13.01it/s]preprocess audio:  76%|███████▋  | 2139/2800 [03:20<00:50, 13.01it/s]preprocess audio:  92%|█████████▏| 2563/2800 [03:30<00:17, 13.37it/s]preprocess audio: 100%|██████████| 2800/2800 [03:47<00:00, 12.29it/s]
+trimmed durations: mean 2.00s  min 1.11s  max 2.98s
+log-Mel:   0%|          | 0/2800 [00:00<?, ?it/s]log-Mel: 100%|██████████| 2800/2800 [00:08<00:00, 329.04it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 16039.90it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  43%|████▎     | 1207/2800 [00:30<00:39, 40.23it/s]WavLM:  43%|████▎     | 1207/2800 [00:44<00:39, 40.23it/s]WavLM:  98%|█████████▊| 2751/2800 [01:00<00:01, 46.84it/s]WavLM: 100%|██████████| 2800/2800 [01:00<00:00, 45.94it/s]
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 8017.35it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  48%|████▊     | 1344/2800 [00:30<00:32, 44.78it/s]WavLM:  48%|████▊     | 1344/2800 [00:46<00:32, 44.78it/s]WavLM:  97%|█████████▋| 2729/2800 [01:00<00:01, 45.58it/s]WavLM: 100%|██████████| 2800/2800 [01:01<00:00, 45.53it/s]
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 10045.95it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  58%|█████▊    | 1612/2800 [00:30<00:22, 53.71it/s]WavLM:  58%|█████▊    | 1612/2800 [00:48<00:22, 53.71it/s]WavLM: 100%|██████████| 2800/2800 [00:53<00:00, 52.37it/s]
+  -> exit 0 in 469 s
+
+$ python -m pip install -q funasr==1.4.28
+  -> exit 0 in 23 s
+
+$ python -c import torch, transformers, funasr; print(torch.__version__, transformers.__version__, funasr.__version__)
+/usr/local/lib/python3.13/dist-packages/pydub/utils.py:300: SyntaxWarning: invalid escape sequence '\('
+  m = re.match('([su]([0-9]{1,2})p?) \(([0-9]{1,2}) bit\)$', token)
+/usr/local/lib/python3.13/dist-packages/pydub/utils.py:301: SyntaxWarning: invalid escape sequence '\('
+  m2 = re.match('([su]([0-9]{1,2})p?)( \(default\))?$', token)
+/usr/local/lib/python3.13/dist-packages/pydub/utils.py:310: SyntaxWarning: invalid escape sequence '\('
+  elif re.match('(flt)p?( \(default\))?$', token):
+/usr/local/lib/python3.13/dist-packages/pydub/utils.py:314: SyntaxWarning: invalid escape sequence '\('
+  elif re.match('(dbl)p?( \(default\))?$', token):
+2.11.0+cu130 5.20.2 1.4.28
+  -> exit 0 in 32 s
+
+$ python analysis/backbone_features.py
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/488 [00:00<?, ?it/s]Loading weights: 100%|██████████| 488/488 [00:00<00:00, 8115.60it/s]
+wavlm_large orig: (2800, 13, 2048) in 126 s
+wavlm_large sp090: (2800, 13, 2048) in 139 s
+wavlm_large sp110: (2800, 13, 2048) in 120 s
+Loading weights:   0%|          | 0/422 [00:00<?, ?it/s]Loading weights: 100%|██████████| 422/422 [00:00<00:00, 14414.12it/s]
+hubert_large orig: (2800, 13, 2048) in 125 s
+hubert_large sp090: (2800, 13, 2048) in 136 s
+hubert_large sp110: (2800, 13, 2048) in 117 s
+funasr version: 1.4.28.
+2026-11-21 12:52:51,933 [INFO] download models from model hub: hf
+2026-11-21 12:52:52,017 [INFO] HTTP Request: GET https://huggingface.co/api/models/emotion2vec/emotion2vec_base/revision/main "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,081 [INFO] HTTP Request: GET https://huggingface.co/api/models/emotion2vec/emotion2vec_base/tree/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664?recursive=true&expand=false "HTTP/1.1 200 OK"
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]2026-11-21 12:52:52,120 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_base/resolve/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:52:52,152 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/README.md?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2FREADME.md=&etag=%223a2297330cb6ba5d37b6f79c0cbf633548427ae5%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,157 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_base/resolve/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/configuration.json "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:52:52,166 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_base/resolve/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/example/test.wav "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:52:52,174 [INFO] HTTP Request: GET https://huggingface.co/api/models/emotion2vec/emotion2vec_base/xet-read-token/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,178 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_base/resolve/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/.gitattributes "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:52:52,182 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_base/resolve/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/config.yaml "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:52:52,184 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/README.md?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2FREADME.md=&etag=%223a2297330cb6ba5d37b6f79c0cbf633548427ae5%22 "HTTP/1.1 200 OK"
+Fetching 7 files:  14%|█▍        | 1/7 [00:00<00:00,  9.65it/s]2026-11-21 12:52:52,189 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/configuration.json?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2Fconfiguration.json=&etag=%2256156f8e63427868e5ec9e75a6f0f80549afab5b%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,200 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/example%2Ftest.wav?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2Fexample%2Ftest.wav=&etag=%22002786ccb9d3fdbec1f754e3bc249486c9df87c5%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,209 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/.gitattributes?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2F.gitattributes=&etag=%22a64593593a8fb6afc0499b748a7fe13836ec8706%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,215 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/config.yaml?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2Fconfig.yaml=&etag=%225e65bc862699a2857b49adc23855b5cf20c9cc2f%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,229 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/configuration.json?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2Fconfiguration.json=&etag=%2256156f8e63427868e5ec9e75a6f0f80549afab5b%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,233 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/example%2Ftest.wav?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2Fexample%2Ftest.wav=&etag=%22002786ccb9d3fdbec1f754e3bc249486c9df87c5%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,241 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/.gitattributes?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2F.gitattributes=&etag=%22a64593593a8fb6afc0499b748a7fe13836ec8706%22 "HTTP/1.1 200 OK"
+2026-11-21 12:52:52,247 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_base/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/config.yaml?%2Femotion2vec%2Femotion2vec_base%2Fresolve%2F0c9a3152734f9d7a7a05b4ee6bfb3c109d288664%2Fconfig.yaml=&etag=%225e65bc862699a2857b49adc23855b5cf20c9cc2f%22 "HTTP/1.1 200 OK"
+Fetching 7 files:  86%|████████▌ | 6/7 [00:00<00:00, 12.20it/s]Fetching 7 files: 100%|██████████| 7/7 [00:08<00:00,  1.19s/it]
+2026-11-21 12:53:00,449 [WARNING] trust_remote_code: False
+2026-11-21 12:53:01,243 [INFO] Loading pretrained params from /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_base/snapshots/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/emotion2vec_base.pt
+2026-11-21 12:53:01,245 [INFO] ckpt: /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_base/snapshots/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/emotion2vec_base.pt
+2026-11-21 12:53:01,931 [INFO] scope_map: ['module.', 'None']
+2026-11-21 12:53:01,932 [INFO] excludes: None
+2026-11-21 12:53:01,972 [INFO] Loading ckpt: /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_base/snapshots/0c9a3152734f9d7a7a05b4ee6bfb3c109d288664/emotion2vec_base.pt, status: <All keys matched successfully>
+e2v_base orig: (2800, 1, 1536) in 67 s
+e2v_base sp090: (2800, 1, 1536) in 70 s
+e2v_base sp110: (2800, 1, 1536) in 67 s
+funasr version: 1.4.28.
+2026-11-21 12:56:27,454 [INFO] download models from model hub: hf
+2026-11-21 12:56:27,598 [INFO] HTTP Request: GET https://huggingface.co/api/models/emotion2vec/emotion2vec_plus_seed/revision/main "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,670 [INFO] HTTP Request: GET https://huggingface.co/api/models/emotion2vec/emotion2vec_plus_seed/tree/7be9a30d52bdc793cc24e6f7d25358d6648927c1?recursive=true&expand=false "HTTP/1.1 200 OK"
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]2026-11-21 12:56:27,708 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,723 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/README.md?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2FREADME.md=&etag=%22b6d8a61a7b2ba175204a13bd5af81da89178bad2%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,739 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/README.md?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2FREADME.md=&etag=%22b6d8a61a7b2ba175204a13bd5af81da89178bad2%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,753 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/.gitattributes "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,755 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/configuration.json "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,760 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/tokens.txt "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,762 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/example/test.wav "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,764 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/emotion2vec%2Bradar.png "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,765 [INFO] HTTP Request: GET https://huggingface.co/api/models/emotion2vec/emotion2vec_plus_seed/xet-read-token/7be9a30d52bdc793cc24e6f7d25358d6648927c1 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,769 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/.gitattributes?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2F.gitattributes=&etag=%22a64593593a8fb6afc0499b748a7fe13836ec8706%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,770 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/configuration.json?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Fconfiguration.json=&etag=%22f165bb611a674faee647fe64a9a7a00ad36f0a8f%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,786 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/.gitattributes?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2F.gitattributes=&etag=%22a64593593a8fb6afc0499b748a7fe13836ec8706%22 "HTTP/1.1 200 OK"
+Fetching 9 files:  33%|███▎      | 3/9 [00:00<00:00, 25.80it/s]2026-11-21 12:56:27,791 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/tokens.txt?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Ftokens.txt=&etag=%22a37477effa3e83ce6de62b596d2ce1de93726b65%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,793 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/example%2Ftest.wav?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Fexample%2Ftest.wav=&etag=%22002786ccb9d3fdbec1f754e3bc249486c9df87c5%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,795 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/emotion2vec%2Bradar.png?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Femotion2vec%2Bradar.png=&etag=%222e29f11035eeb2958f338b4fa334e7a9b4f1b854%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,804 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/configuration.json?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Fconfiguration.json=&etag=%22f165bb611a674faee647fe64a9a7a00ad36f0a8f%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,807 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/tokens.txt?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Ftokens.txt=&etag=%22a37477effa3e83ce6de62b596d2ce1de93726b65%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,811 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/example%2Ftest.wav?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Fexample%2Ftest.wav=&etag=%22002786ccb9d3fdbec1f754e3bc249486c9df87c5%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,813 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/emotion2vec%2Bradar.png?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Femotion2vec%2Bradar.png=&etag=%222e29f11035eeb2958f338b4fa334e7a9b4f1b854%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,815 [INFO] HTTP Request: HEAD https://huggingface.co/emotion2vec/emotion2vec_plus_seed/resolve/7be9a30d52bdc793cc24e6f7d25358d6648927c1/config.yaml "HTTP/1.1 307 Temporary Redirect"
+2026-11-21 12:56:27,831 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/config.yaml?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Fconfig.yaml=&etag=%225625920e6ae5a26903114251f0c1411178c4d5e2%22 "HTTP/1.1 200 OK"
+2026-11-21 12:56:27,863 [INFO] HTTP Request: GET https://huggingface.co/api/resolve-cache/models/emotion2vec/emotion2vec_plus_seed/7be9a30d52bdc793cc24e6f7d25358d6648927c1/config.yaml?%2Femotion2vec%2Femotion2vec_plus_seed%2Fresolve%2F7be9a30d52bdc793cc24e6f7d25358d6648927c1%2Fconfig.yaml=&etag=%225625920e6ae5a26903114251f0c1411178c4d5e2%22 "HTTP/1.1 200 OK"
+Fetching 9 files: 100%|██████████| 9/9 [00:07<00:00,  1.04it/s]Fetching 9 files: 100%|██████████| 9/9 [00:07<00:00,  1.15it/s]
+2026-11-21 12:56:35,530 [WARNING] trust_remote_code: False
+2026-11-21 12:56:36,190 [INFO] Loading pretrained params from /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+2026-11-21 12:56:36,191 [INFO] ckpt: /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+2026-11-21 12:56:36,819 [INFO] scope_map: ['d2v_model.', 'none', 'module.', 'None']
+2026-11-21 12:56:36,819 [INFO] excludes: None
+2026-11-21 12:56:36,819 [INFO] init param, map: modality_encoders.AUDIO.extra_tokens from d2v_model.modality_encoders.AUDIO.extra_tokens in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.alibi_scale from d2v_model.modality_encoders.AUDIO.alibi_scale in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.0.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.0.0.weight in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.0.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.0.2.1.weight in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.0.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.0.2.1.bias in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.1.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.1.0.weight in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.1.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.1.2.1.weight in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.1.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.1.2.1.bias in ckpt
+2026-11-21 12:56:36,820 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.2.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.2.0.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.2.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.2.2.1.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.2.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.2.2.1.bias in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.3.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.3.0.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.3.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.3.2.1.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.3.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.3.2.1.bias in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.4.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.4.0.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.4.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.4.2.1.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.4.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.4.2.1.bias in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.5.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.5.0.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.5.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.5.2.1.weight in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.5.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.5.2.1.bias in ckpt
+2026-11-21 12:56:36,821 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.6.0.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.6.0.weight in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.6.2.1.weight from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.6.2.1.weight in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.local_encoder.conv_layers.6.2.1.bias from d2v_model.modality_encoders.AUDIO.local_encoder.conv_layers.6.2.1.bias in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.project_features.1.weight from d2v_model.modality_encoders.AUDIO.project_features.1.weight in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.project_features.1.bias from d2v_model.modality_encoders.AUDIO.project_features.1.bias in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.project_features.2.weight from d2v_model.modality_encoders.AUDIO.project_features.2.weight in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.project_features.2.bias from d2v_model.modality_encoders.AUDIO.project_features.2.bias in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.1.0.weight from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.1.0.weight in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.1.0.bias from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.1.0.bias in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.2.0.weight from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.2.0.weight in ckpt
+2026-11-21 12:56:36,822 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.2.0.bias from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.2.0.bias in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.3.0.weight from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.3.0.weight in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.3.0.bias from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.3.0.bias in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.4.0.weight from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.4.0.weight in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.4.0.bias from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.4.0.bias in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.5.0.weight from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.5.0.weight in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.relative_positional_encoder.5.0.bias from d2v_model.modality_encoders.AUDIO.relative_positional_encoder.5.0.bias in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.norm1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.norm1.weight in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.norm1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.norm1.bias in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.attn.qkv.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,823 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.attn.qkv.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.attn.proj.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.attn.proj.weight in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.attn.proj.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.attn.proj.bias in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.norm2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.norm2.weight in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.norm2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.norm2.bias in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.0.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.norm1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.norm1.weight in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.norm1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.norm1.bias in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.attn.qkv.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,824 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.attn.qkv.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.attn.proj.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.attn.proj.weight in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.attn.proj.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.attn.proj.bias in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.norm2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.norm2.weight in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.norm2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.norm2.bias in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.1.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.norm1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.norm1.weight in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.norm1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.norm1.bias in ckpt
+2026-11-21 12:56:36,825 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.attn.qkv.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.attn.qkv.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.attn.proj.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.attn.proj.weight in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.attn.proj.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.attn.proj.bias in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.norm2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.norm2.weight in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.norm2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.norm2.bias in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.2.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.norm1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.norm1.weight in ckpt
+2026-11-21 12:56:36,826 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.norm1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.norm1.bias in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.attn.qkv.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.attn.qkv.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.attn.proj.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.attn.proj.weight in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.attn.proj.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.attn.proj.bias in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.norm2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.norm2.weight in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.norm2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.norm2.bias in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc1.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc1.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc2.weight from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc2.bias from d2v_model.modality_encoders.AUDIO.context_encoder.blocks.3.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.norm.weight from d2v_model.modality_encoders.AUDIO.context_encoder.norm.weight in ckpt
+2026-11-21 12:56:36,827 [INFO] init param, map: modality_encoders.AUDIO.context_encoder.norm.bias from d2v_model.modality_encoders.AUDIO.context_encoder.norm.bias in ckpt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.0.0.weight, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.0.0.bias, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.1.0.weight, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.1.0.bias, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.2.0.weight, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.2.0.bias, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.3.0.weight, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.blocks.3.0.bias, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.proj.weight, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+Warning, miss key in ckpt: modality_encoders.AUDIO.decoder.proj.bias, /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt
+2026-11-21 12:56:36,828 [INFO] init param, map: blocks.0.norm1.weight from d2v_model.blocks.0.norm1.weight in ckpt
+2026-11-21 12:56:36,828 [INFO] init param, map: blocks.0.norm1.bias from d2v_model.blocks.0.norm1.bias in ckpt
+2026-11-21 12:56:36,828 [INFO] init param, map: blocks.0.attn.qkv.weight from d2v_model.blocks.0.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,828 [INFO] init param, map: blocks.0.attn.qkv.bias from d2v_model.blocks.0.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.attn.proj.weight from d2v_model.blocks.0.attn.proj.weight in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.attn.proj.bias from d2v_model.blocks.0.attn.proj.bias in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.norm2.weight from d2v_model.blocks.0.norm2.weight in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.norm2.bias from d2v_model.blocks.0.norm2.bias in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.mlp.fc1.weight from d2v_model.blocks.0.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.mlp.fc1.bias from d2v_model.blocks.0.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.mlp.fc2.weight from d2v_model.blocks.0.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.0.mlp.fc2.bias from d2v_model.blocks.0.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.1.norm1.weight from d2v_model.blocks.1.norm1.weight in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.1.norm1.bias from d2v_model.blocks.1.norm1.bias in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.1.attn.qkv.weight from d2v_model.blocks.1.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,829 [INFO] init param, map: blocks.1.attn.qkv.bias from d2v_model.blocks.1.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.attn.proj.weight from d2v_model.blocks.1.attn.proj.weight in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.attn.proj.bias from d2v_model.blocks.1.attn.proj.bias in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.norm2.weight from d2v_model.blocks.1.norm2.weight in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.norm2.bias from d2v_model.blocks.1.norm2.bias in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.mlp.fc1.weight from d2v_model.blocks.1.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.mlp.fc1.bias from d2v_model.blocks.1.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.mlp.fc2.weight from d2v_model.blocks.1.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.1.mlp.fc2.bias from d2v_model.blocks.1.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.2.norm1.weight from d2v_model.blocks.2.norm1.weight in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.2.norm1.bias from d2v_model.blocks.2.norm1.bias in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.2.attn.qkv.weight from d2v_model.blocks.2.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,830 [INFO] init param, map: blocks.2.attn.qkv.bias from d2v_model.blocks.2.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.attn.proj.weight from d2v_model.blocks.2.attn.proj.weight in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.attn.proj.bias from d2v_model.blocks.2.attn.proj.bias in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.norm2.weight from d2v_model.blocks.2.norm2.weight in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.norm2.bias from d2v_model.blocks.2.norm2.bias in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.mlp.fc1.weight from d2v_model.blocks.2.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.mlp.fc1.bias from d2v_model.blocks.2.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.mlp.fc2.weight from d2v_model.blocks.2.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.2.mlp.fc2.bias from d2v_model.blocks.2.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.3.norm1.weight from d2v_model.blocks.3.norm1.weight in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.3.norm1.bias from d2v_model.blocks.3.norm1.bias in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.3.attn.qkv.weight from d2v_model.blocks.3.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,831 [INFO] init param, map: blocks.3.attn.qkv.bias from d2v_model.blocks.3.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.attn.proj.weight from d2v_model.blocks.3.attn.proj.weight in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.attn.proj.bias from d2v_model.blocks.3.attn.proj.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.norm2.weight from d2v_model.blocks.3.norm2.weight in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.norm2.bias from d2v_model.blocks.3.norm2.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.mlp.fc1.weight from d2v_model.blocks.3.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.mlp.fc1.bias from d2v_model.blocks.3.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.mlp.fc2.weight from d2v_model.blocks.3.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.3.mlp.fc2.bias from d2v_model.blocks.3.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.4.norm1.weight from d2v_model.blocks.4.norm1.weight in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.4.norm1.bias from d2v_model.blocks.4.norm1.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.4.attn.qkv.weight from d2v_model.blocks.4.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.4.attn.qkv.bias from d2v_model.blocks.4.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,832 [INFO] init param, map: blocks.4.attn.proj.weight from d2v_model.blocks.4.attn.proj.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.attn.proj.bias from d2v_model.blocks.4.attn.proj.bias in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.norm2.weight from d2v_model.blocks.4.norm2.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.norm2.bias from d2v_model.blocks.4.norm2.bias in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.mlp.fc1.weight from d2v_model.blocks.4.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.mlp.fc1.bias from d2v_model.blocks.4.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.mlp.fc2.weight from d2v_model.blocks.4.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.4.mlp.fc2.bias from d2v_model.blocks.4.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.5.norm1.weight from d2v_model.blocks.5.norm1.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.5.norm1.bias from d2v_model.blocks.5.norm1.bias in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.5.attn.qkv.weight from d2v_model.blocks.5.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.5.attn.qkv.bias from d2v_model.blocks.5.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.5.attn.proj.weight from d2v_model.blocks.5.attn.proj.weight in ckpt
+2026-11-21 12:56:36,833 [INFO] init param, map: blocks.5.attn.proj.bias from d2v_model.blocks.5.attn.proj.bias in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.5.norm2.weight from d2v_model.blocks.5.norm2.weight in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.5.norm2.bias from d2v_model.blocks.5.norm2.bias in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.5.mlp.fc1.weight from d2v_model.blocks.5.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.5.mlp.fc1.bias from d2v_model.blocks.5.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.5.mlp.fc2.weight from d2v_model.blocks.5.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.5.mlp.fc2.bias from d2v_model.blocks.5.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.6.norm1.weight from d2v_model.blocks.6.norm1.weight in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.6.norm1.bias from d2v_model.blocks.6.norm1.bias in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.6.attn.qkv.weight from d2v_model.blocks.6.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.6.attn.qkv.bias from d2v_model.blocks.6.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,834 [INFO] init param, map: blocks.6.attn.proj.weight from d2v_model.blocks.6.attn.proj.weight in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.attn.proj.bias from d2v_model.blocks.6.attn.proj.bias in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.norm2.weight from d2v_model.blocks.6.norm2.weight in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.norm2.bias from d2v_model.blocks.6.norm2.bias in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.mlp.fc1.weight from d2v_model.blocks.6.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.mlp.fc1.bias from d2v_model.blocks.6.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.mlp.fc2.weight from d2v_model.blocks.6.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.6.mlp.fc2.bias from d2v_model.blocks.6.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.7.norm1.weight from d2v_model.blocks.7.norm1.weight in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.7.norm1.bias from d2v_model.blocks.7.norm1.bias in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.7.attn.qkv.weight from d2v_model.blocks.7.attn.qkv.weight in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.7.attn.qkv.bias from d2v_model.blocks.7.attn.qkv.bias in ckpt
+2026-11-21 12:56:36,835 [INFO] init param, map: blocks.7.attn.proj.weight from d2v_model.blocks.7.attn.proj.weight in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.attn.proj.bias from d2v_model.blocks.7.attn.proj.bias in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.norm2.weight from d2v_model.blocks.7.norm2.weight in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.norm2.bias from d2v_model.blocks.7.norm2.bias in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.mlp.fc1.weight from d2v_model.blocks.7.mlp.fc1.weight in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.mlp.fc1.bias from d2v_model.blocks.7.mlp.fc1.bias in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.mlp.fc2.weight from d2v_model.blocks.7.mlp.fc2.weight in ckpt
+2026-11-21 12:56:36,836 [INFO] init param, map: blocks.7.mlp.fc2.bias from d2v_model.blocks.7.mlp.fc2.bias in ckpt
+2026-11-21 12:56:36,877 [INFO] Loading ckpt: /root/.cache/huggingface/hub/models--emotion2vec--emotion2vec_plus_seed/snapshots/7be9a30d52bdc793cc24e6f7d25358d6648927c1/model.pt, status: <All keys matched successfully>
+e2v_plus_seed orig: (2800, 1, 1536) in 67 s
+e2v_plus_seed sp090: (2800, 1, 1536) in 71 s
+e2v_plus_seed sp110: (2800, 1, 1536) in 68 s
+e2v_plus_seed zero-shot scores saved
+  -> exit 0 in 1311 s
+
+$ python analysis/backbone_study.py --c_sensitivity
+B OAF->YAF: A-L1n(B) 76.36, L1n(B) 75.29
+B YAF->OAF: A-L1n(B) 67.71, L1n(B) 66.00
+WL OAF->YAF: A-L1n(WL) 80.00, L1n(WL) 79.79
+WL YAF->OAF: A-L1n(WL) 71.36, L1n(WL) 70.29
+HL OAF->YAF: A-L1n(HL) 75.79, L1n(HL) 74.86
+HL YAF->OAF: A-L1n(HL) 66.64, L1n(HL) 66.79
+E OAF->YAF: A-L1n(E) 68.29, L1n(E) 66.64
+E YAF->OAF: A-L1n(E) 67.79, L1n(E) 64.57
+LC OAF->YAF: A-L1n(LC) 100.00, L1n(LC) 99.79
+LC YAF->OAF: A-L1n(LC) 99.79, L1n(LC) 98.36
+B OAF->YAF: A-L1n(B) 74.36
+B YAF->OAF: A-L1n(B) 66.14
+B OAF->YAF: A-L1n(B) 75.64
+B YAF->OAF: A-L1n(B) 66.43
+B OAF->YAF: A-L1n(B) 76.36
+B YAF->OAF: A-L1n(B) 67.71
+B OAF->YAF: A-L1n(B) 76.86
+B YAF->OAF: A-L1n(B) 68.64
+B OAF->YAF: A-L1n(B) 77.07
+B YAF->OAF: A-L1n(B) 69.00
+B OAF->YAF: A-L1n(B) 77.29
+B YAF->OAF: A-L1n(B) 67.57
+B OAF->YAF: A-L1n(B) 74.64
+B YAF->OAF: A-L1n(B) 68.43
+WL OAF->YAF: A-L1n(WL) 79.00
+WL YAF->OAF: A-L1n(WL) 69.93
+WL OAF->YAF: A-L1n(WL) 79.79
+WL YAF->OAF: A-L1n(WL) 70.71
+WL OAF->YAF: A-L1n(WL) 80.00
+WL YAF->OAF: A-L1n(WL) 71.36
+WL OAF->YAF: A-L1n(WL) 80.29
+WL YAF->OAF: A-L1n(WL) 71.71
+WL OAF->YAF: A-L1n(WL) 79.79
+WL YAF->OAF: A-L1n(WL) 72.43
+WL OAF->YAF: A-L1n(WL) 79.14
+WL YAF->OAF: A-L1n(WL) 71.00
+WL OAF->YAF: A-L1n(WL) 78.86
+WL YAF->OAF: A-L1n(WL) 70.64
+HL OAF->YAF: A-L1n(HL) 75.36
+HL YAF->OAF: A-L1n(HL) 66.07
+HL OAF->YAF: A-L1n(HL) 75.29
+HL YAF->OAF: A-L1n(HL) 66.43
+HL OAF->YAF: A-L1n(HL) 75.79
+HL YAF->OAF: A-L1n(HL) 66.64
+HL OAF->YAF: A-L1n(HL) 75.64
+HL YAF->OAF: A-L1n(HL) 66.79
+HL OAF->YAF: A-L1n(HL) 76.86
+HL YAF->OAF: A-L1n(HL) 70.36
+HL OAF->YAF: A-L1n(HL) 76.14
+HL YAF->OAF: A-L1n(HL) 60.29
+HL OAF->YAF: A-L1n(HL) 71.64
+HL YAF->OAF: A-L1n(HL) 60.21
+E OAF->YAF: A-L1n(E) 65.93
+E YAF->OAF: A-L1n(E) 62.21
+E OAF->YAF: A-L1n(E) 67.79
+E YAF->OAF: A-L1n(E) 65.21
+E OAF->YAF: A-L1n(E) 68.29
+E YAF->OAF: A-L1n(E) 67.79
+E OAF->YAF: A-L1n(E) 68.64
+E YAF->OAF: A-L1n(E) 69.57
+E OAF->YAF: A-L1n(E) 69.07
+E YAF->OAF: A-L1n(E) 70.93
+E OAF->YAF: A-L1n(E) 69.86
+E YAF->OAF: A-L1n(E) 71.29
+E OAF->YAF: A-L1n(E) 70.29
+E YAF->OAF: A-L1n(E) 72.43
+LC OAF->YAF: A-L1n(LC) 100.00
+LC YAF->OAF: A-L1n(LC) 99.79
+LC OAF->YAF: A-L1n(LC) 100.00
+LC YAF->OAF: A-L1n(LC) 99.79
+LC OAF->YAF: A-L1n(LC) 100.00
+LC YAF->OAF: A-L1n(LC) 99.79
+LC OAF->YAF: A-L1n(LC) 100.00
+LC YAF->OAF: A-L1n(LC) 99.86
+LC OAF->YAF: A-L1n(LC) 99.93
+LC YAF->OAF: A-L1n(LC) 99.86
+LC OAF->YAF: A-L1n(LC) 99.86
+LC YAF->OAF: A-L1n(LC) 99.86
+LC OAF->YAF: A-L1n(LC) 99.93
+LC YAF->OAF: A-L1n(LC) 99.86
+# Pre-registered encoder study (SI)
+
+Plan: `analysis/PREREGISTRATION_si_backbones.md` (pushed before the run). † transductive per-speaker normalisation; I = inductive (test-speaker statistics from 40 calibration words only, scored on the other 160 words).
+
+## Audits
+
+* D1 (word identity carries no label information): PASS: every (speaker, word) pair has each of the 7 emotions exactly once (400 pairs).
+* D2 (OAF->YAF): PASS: training rows only OAF, test rows only YAF, no shared clip.
+* D2 (YAF->OAF): PASS: training rows only YAF, test rows only OAF, no shared clip.
+* D3: PASS by construction: `zscore()` receives features and row indices only.
+* D4: PASS by construction: perturbed copies are indexed with training rows only.
+* C1 (A-L1n(B) reproduces study 3): PASS: 100.00 % identical predictions (2800 clips).
+
+## Accuracy (%)
+
+| model                                   | direction   |    acc |   acc_160 |   acc_inductive_160 |   mean_of_directions |
+|:----------------------------------------|:------------|-------:|----------:|--------------------:|---------------------:|
+| A-L1n(B)                                | OAF->YAF    |  76.36 |     76.61 |               76.52 |                72.04 |
+| L1n(B)                                  | OAF->YAF    |  75.29 |     75.62 |               75.27 |                70.65 |
+| A-L1n(WL)                               | OAF->YAF    |  80    |     80.09 |               80.09 |                75.68 |
+| L1n(WL)                                 | OAF->YAF    |  79.79 |     79.82 |               79.91 |                75.04 |
+| A-L1n(HL)                               | OAF->YAF    |  75.79 |     76.25 |               75.98 |                71.22 |
+| L1n(HL)                                 | OAF->YAF    |  74.86 |     75.54 |               75.18 |                70.82 |
+| A-L1n(E)                                | OAF->YAF    |  68.29 |     68.21 |               67.68 |                68.04 |
+| L1n(E)                                  | OAF->YAF    |  66.64 |     66.96 |               66.25 |                65.6  |
+| A-L1n(LC)                               | OAF->YAF    | 100    |    100    |              100    |                99.9  |
+| L1n(LC)                                 | OAF->YAF    |  99.79 |     99.73 |               99.73 |                99.08 |
+| ENS                                     | OAF->YAF    |  77.79 |     78.04 |               77.95 |                72.93 |
+| LC-a zero-shot (emotion2vec+ seed head) | OAF->YAF    |  85.71 |    nan    |              nan    |                85.71 |
+| A-L1n(B)                                | YAF->OAF    |  67.71 |     67.86 |               67.5  |                72.04 |
+| L1n(B)                                  | YAF->OAF    |  66    |     65.8  |               65.18 |                70.65 |
+| A-L1n(WL)                               | YAF->OAF    |  71.36 |     71.25 |               71.16 |                75.68 |
+| L1n(WL)                                 | YAF->OAF    |  70.29 |     70.18 |               70    |                75.04 |
+| A-L1n(HL)                               | YAF->OAF    |  66.64 |     66.52 |               66.43 |                71.22 |
+| L1n(HL)                                 | YAF->OAF    |  66.79 |     66.88 |               66.79 |                70.82 |
+| A-L1n(E)                                | YAF->OAF    |  67.79 |     67.68 |               68.93 |                68.04 |
+| L1n(E)                                  | YAF->OAF    |  64.57 |     64.46 |               66.52 |                65.6  |
+| A-L1n(LC)                               | YAF->OAF    |  99.79 |     99.73 |               99.82 |                99.9  |
+| L1n(LC)                                 | YAF->OAF    |  98.36 |     98.57 |               98.57 |                99.08 |
+| ENS                                     | YAF->OAF    |  68.07 |     67.95 |               67.95 |                72.93 |
+| LC-a zero-shot (emotion2vec+ seed head) | YAF->OAF    |  85.71 |    nan    |              nan    |                85.71 |
+
+## Pre-registered tests
+
+Word-cluster bootstrap (10 000 resamples, seed 0); Holm over HB1 + HB2 (8 tests); verdicts with a ROPE of +-2 pp.
+
+| hypothesis   | comparison                                   | direction   |   delta_pp |   ci_lo |   ci_hi |   p_boot |   p_holm | verdict             |
+|:-------------|:---------------------------------------------|:------------|-----------:|--------:|--------:|---------:|---------:|:--------------------|
+| HB1          | ENS - A-L1n(B)                               | OAF->YAF    |       1.43 |    0.43 |    2.43 |   0.0052 |   0.026  | direction-specific  |
+| HB1          | ENS - A-L1n(B)                               | YAF->OAF    |       0.36 |   -0.43 |    1.14 |   0.434  |   1      | direction-specific  |
+| HB2          | A-L1n(WL) - A-L1n(B)                         | OAF->YAF    |       3.64 |    2.64 |    4.71 |   0      |   0      | replicated (+)      |
+| HB2          | A-L1n(WL) - A-L1n(B)                         | YAF->OAF    |       3.64 |    2.64 |    4.64 |   0      |   0      | replicated (+)      |
+| HB2          | A-L1n(HL) - A-L1n(B)                         | OAF->YAF    |      -0.57 |   -1.79 |    0.64 |   0.377  |   1      | equivalent (+-2 pp) |
+| HB2          | A-L1n(HL) - A-L1n(B)                         | YAF->OAF    |      -1.07 |   -2    |   -0.14 |   0.0314 |   0.1256 | equivalent (+-2 pp) |
+| HB2          | A-L1n(E) - A-L1n(B)                          | OAF->YAF    |      -8.07 |  -10.07 |   -6.07 |   0      |   0      | direction-specific  |
+| HB2          | A-L1n(E) - A-L1n(B)                          | YAF->OAF    |       0.07 |   -1.79 |    1.86 |   0.9582 |   1      | direction-specific  |
+| HB3          | ENS inductive - ENS transductive (160 words) | OAF->YAF    |      -0.09 |   -0.45 |    0.18 |   0.7756 | nan      | equivalent (+-2 pp) |
+| HB3          | ENS inductive - ENS transductive (160 words) | YAF->OAF    |       0    |   -0.27 |    0.27 |   1      | nan      | equivalent (+-2 pp) |
+
+* **HB1 (primary, ENS > A-L1n(B) in both directions): NOT SUPPORTED** (direction-specific).
+* **HB3 (inductive ENS within 2 pp of transductive): SUPPORTED.**
+* LC (emotion2vec+ seed) is a leakage control, never a candidate; its rows only show what label exposure that may include TESS produces.
+
+## POST HOC: accuracy against C (diagnostic only; reads the test speaker; never used to choose)
+
+| model     |      C |   OAF->YAF |   YAF->OAF |   mean |
+|:----------|-------:|-----------:|-----------:|-------:|
+| A-L1n(B)  | 0.0001 |      74.36 |      66.14 |  70.25 |
+| A-L1n(B)  | 0.0003 |      75.64 |      66.43 |  71.04 |
+| A-L1n(B)  | 0.001  |      76.36 |      67.71 |  72.04 |
+| A-L1n(B)  | 0.003  |      76.86 |      68.64 |  72.75 |
+| A-L1n(B)  | 0.01   |      77.07 |      69    |  73.04 |
+| A-L1n(B)  | 0.03   |      77.29 |      67.57 |  72.43 |
+| A-L1n(B)  | 0.1    |      74.64 |      68.43 |  71.54 |
+| A-L1n(WL) | 0.0001 |      79    |      69.93 |  74.46 |
+| A-L1n(WL) | 0.0003 |      79.79 |      70.71 |  75.25 |
+| A-L1n(WL) | 0.001  |      80    |      71.36 |  75.68 |
+| A-L1n(WL) | 0.003  |      80.29 |      71.71 |  76    |
+| A-L1n(WL) | 0.01   |      79.79 |      72.43 |  76.11 |
+| A-L1n(WL) | 0.03   |      79.14 |      71    |  75.07 |
+| A-L1n(WL) | 0.1    |      78.86 |      70.64 |  74.75 |
+| A-L1n(HL) | 0.0001 |      75.36 |      66.07 |  70.71 |
+| A-L1n(HL) | 0.0003 |      75.29 |      66.43 |  70.86 |
+| A-L1n(HL) | 0.001  |      75.79 |      66.64 |  71.21 |
+| A-L1n(HL) | 0.003  |      75.64 |      66.79 |  71.21 |
+| A-L1n(HL) | 0.01   |      76.86 |      70.36 |  73.61 |
+| A-L1n(HL) | 0.03   |      76.14 |      60.29 |  68.21 |
+| A-L1n(HL) | 0.1    |      71.64 |      60.21 |  65.93 |
+| A-L1n(E)  | 0.0001 |      65.93 |      62.21 |  64.07 |
+| A-L1n(E)  | 0.0003 |      67.79 |      65.21 |  66.5  |
+| A-L1n(E)  | 0.001  |      68.29 |      67.79 |  68.04 |
+| A-L1n(E)  | 0.003  |      68.64 |      69.57 |  69.11 |
+| A-L1n(E)  | 0.01   |      69.07 |      70.93 |  70    |
+| A-L1n(E)  | 0.03   |      69.86 |      71.29 |  70.57 |
+| A-L1n(E)  | 0.1    |      70.29 |      72.43 |  71.36 |
+| A-L1n(LC) | 0.0001 |     100    |      99.79 |  99.89 |
+| A-L1n(LC) | 0.0003 |     100    |      99.79 |  99.89 |
+| A-L1n(LC) | 0.001  |     100    |      99.79 |  99.89 |
+| A-L1n(LC) | 0.003  |     100    |      99.86 |  99.93 |
+| A-L1n(LC) | 0.01   |      99.93 |      99.86 |  99.89 |
+| A-L1n(LC) | 0.03   |      99.86 |      99.86 |  99.86 |
+| A-L1n(LC) | 0.1    |      99.93 |      99.86 |  99.89 |
+
+  -> exit 0 in 893 s
+ALL_DONE
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 396613 bytes to __results__.html

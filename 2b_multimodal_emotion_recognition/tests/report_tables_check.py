@@ -203,6 +203,22 @@ def main():
                  (a.ensemble + b.ensemble) / 2] if m == "A-B2" else [a["mean"], b["mean"], (a["mean"] + b["mean"]) / 2])
         check("Table capacity", lab, got, want, 1)
 
+    bb = pd.read_csv(R / "backbone_scores.csv").set_index(["model", "direction"]).acc
+    bt = pd.read_csv(R / "backbone_tests.csv").set_index(["comparison", "direction"])
+    dirs = ("OAF->YAF", "YAF->OAF")
+    for lab, m in (("B: WavLM-Base+", "A-L1n(B)"), ("WL: WavLM-Large", "A-L1n(WL)"), ("HL: HuBERT-Large", "A-L1n(HL)"),
+                   ("E: emotion2vec base", "A-L1n(E)"), ("ENS (primary", "ENS"), ("LC: emotion2vec+ seed, our", "A-L1n(LC)"),
+                   ("LC: its own head", "LC-a zero-shot (emotion2vec+ seed head)")):
+        line = [l for l in TEX if l.strip().startswith(lab)][0]
+        body = line.split("&", 1)[1].replace("\textbf{", "").replace("}", "").replace("$-$", "-")
+        got = [float(x) for x in re.findall(r"-?\d+\.\d+", body)]
+        want = [bb[(m, d)] for d in dirs] + [(bb[(m, dirs[0])] + bb[(m, dirs[1])]) / 2]
+        if m not in ("A-L1n(B)",) and not m.startswith(("A-L1n(LC", "LC")):
+            for d in dirs:
+                r = bt.loc[(f"{m} - A-L1n(B)", d)]
+                want += [r.delta_pp, r.ci_lo, r.ci_hi]
+        check("Table backbones", lab, got, want, 1)
+
     print(f"{CHECKED[0]} table cells checked, {len(FAILS)} mismatches")
     for f in FAILS:
         print("  MISMATCH", f)

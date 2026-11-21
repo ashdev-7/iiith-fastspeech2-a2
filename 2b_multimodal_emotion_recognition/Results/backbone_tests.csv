@@ -1,0 +1,11 @@
+hypothesis,comparison,direction,delta_pp,ci_lo,ci_hi,p_boot,p_holm,verdict
+HB1,ENS - A-L1n(B),OAF->YAF,1.43,0.43,2.43,0.0052,0.026,direction-specific
+HB1,ENS - A-L1n(B),YAF->OAF,0.36,-0.43,1.14,0.434,1.0,direction-specific
+HB2,A-L1n(WL) - A-L1n(B),OAF->YAF,3.64,2.64,4.71,0.0,0.0,replicated (+)
+HB2,A-L1n(WL) - A-L1n(B),YAF->OAF,3.64,2.64,4.64,0.0,0.0,replicated (+)
+HB2,A-L1n(HL) - A-L1n(B),OAF->YAF,-0.57,-1.79,0.64,0.377,1.0,equivalent (+-2 pp)
+HB2,A-L1n(HL) - A-L1n(B),YAF->OAF,-1.07,-2.0,-0.14,0.0314,0.1256,equivalent (+-2 pp)
+HB2,A-L1n(E) - A-L1n(B),OAF->YAF,-8.07,-10.07,-6.07,0.0,0.0,direction-specific
+HB2,A-L1n(E) - A-L1n(B),YAF->OAF,0.07,-1.79,1.86,0.9582,1.0,direction-specific
+HB3,ENS inductive - ENS transductive (160 words),OAF->YAF,-0.09,-0.45,0.18,0.7756,,equivalent (+-2 pp)
+HB3,ENS inductive - ENS transductive (160 words),YAF->OAF,0.0,-0.27,0.27,1.0,,equivalent (+-2 pp)

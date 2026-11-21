@@ -19,3 +19,5 @@ matplotlib==3.10.8
 tqdm==4.67.1
 tabulate>=0.9
 kaggle==2.2.4
+# encoder study (pre-registration 4) only: emotion2vec loader; installed after the WavLM-Base+ stores are built
+funasr==1.4.28

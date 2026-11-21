@@ -43,7 +43,14 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
   the BiGRU, and it works from a 40-word unlabelled enrolment sample (within 0.6 pp of using the whole test set).
   A third pre-registered study ([plan](analysis/PREREGISTRATION_si_augmentation.md), [`augmentation_study.md`](Results/augmentation_study.md)):
   0.9×/1.1× speed augmentation halves the BiGRU's seed spread but does not improve it reliably; the linear head gains
-  +1.1/+1.7 pp and reaches **72.0 % SI** †, the best result.
+  +1.1/+1.7 pp and reaches 72.0 % SI †.
+  A fourth pre-registered study ([plan](analysis/PREREGISTRATION_si_backbones.md), [`backbone_study.md`](Results/backbone_study.md)):
+  with the same recipe, frozen **WavLM-Large reaches 75.7 % SI** † (80.0 / 71.4 %; +3.6 pp over WavLM-Base+ in both directions,
+  Holm p < 0.001), the best clean result; HuBERT-Large is equivalent and emotion2vec base is not better. The pre-registered
+  primary model (an ensemble of all four encoders) is not reliably better (+1.4 / +0.4 pp). Leakage control: emotion2vec+ seed,
+  whose training data (EmoBox) contains TESS, scores **99.9 %** on the "unseen" speaker, and its own head labels every
+  pleasant-surprise clip "other" ([`lc_zero_shot_check.md`](Results/lc_zero_shot_check.md)). Models whose training data may
+  contain TESS are therefore excluded from every result.
   Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.5 → 54.8 % at 0 dB, vs. 58.5 → 28.0 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 
@@ -102,6 +109,7 @@ python analysis/noise_robustness.py                    # test-time noise (needs 
 python run_all.py --skip-prepare --skip-train --skip-analyses --ablations   # speech front-end ablation (48 runs)
 python analysis/si_linear.py                           # pre-registered SI experiment (CPU, cached features)
 python analysis/c_sensitivity.py                       # post-hoc: how much the linear model depends on C
+python analysis/backbone_features.py && python analysis/backbone_study.py --c_sensitivity   # encoder study (GPU; Kaggle job 'backbones')
 python analysis/robustness_checks.py                   # Holm correction, per-direction tests, regression-to-mean control
 python analysis/capacity_study.py                      # pre-registered head-capacity study (runs_capacity/, Kaggle job 'capacity')
 python tests/test_invariants.py && python tests/report_tables_check.py   # leakage/alignment tests; table cells vs data
@@ -140,4 +148,4 @@ when saving, because `Results/` did not yet exist (now fixed in `common/config.p
   and all 330 per-run noise accuracies match the log values to within 0.05 pp (`Results/noise_regeneration_check.md`).
   The files in `Results/` are now the regenerated outputs.
 
-Kaggle jobs are built with `kaggle/make_kernel.py` (`full`, `ablation`, `analyses`, `capacity`, `augment`, `noise`).
+Kaggle jobs are built with `kaggle/make_kernel.py` (`full`, `ablation`, `analyses`, `capacity`, `augment`, `noise`, `backbones`).
