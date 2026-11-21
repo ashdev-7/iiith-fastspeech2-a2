@@ -1,4 +1,8 @@
 # Python 3.11-3.13. For a CUDA GPU install torch first from https://pytorch.org (e.g. --index-url https://download.pytorch.org/whl/cu126)
+# The reported numbers were produced on Kaggle (Tesla T4) with: torch 2.11.0+cu130, transformers 5.20.2,
+# librosa 0.11.0, pandas 2.3.3 (printed at the top of logs/kaggle_run_v2.log). The CPU analyses (linear models,
+# statistics, tests) ran locally with the pins below. Either set reproduces the pipeline; bit-exact neural
+# predictions are only guaranteed on the Kaggle versions and GPU.
 torch==2.9.1
 torchaudio==2.9.1
 transformers==5.23.0
@@ -10,6 +14,7 @@ soundfile==0.14.0
 numpy==2.2.6
 pandas==2.3.2
 scikit-learn==1.8.0
+scipy==1.16.3
 matplotlib==3.10.8
 tqdm==4.67.1
 tabulate>=0.9

@@ -1,0 +1,49 @@
+model,C,direction,accuracy
+L1 (no norm),1e-05,OAF->YAF,63.64
+L1 (no norm),1e-05,YAF->OAF,63.36
+L1 (no norm),3e-05,OAF->YAF,65.86
+L1 (no norm),3e-05,YAF->OAF,63.29
+L1 (no norm),0.0001,OAF->YAF,66.86
+L1 (no norm),0.0001,YAF->OAF,63.57
+L1 (no norm),0.0003,OAF->YAF,67.79
+L1 (no norm),0.0003,YAF->OAF,63.29
+L1 (no norm),0.001,OAF->YAF,68.43
+L1 (no norm),0.001,YAF->OAF,63.5
+L1 (no norm),0.003,OAF->YAF,69.07
+L1 (no norm),0.003,YAF->OAF,64.07
+L1 (no norm),0.01,OAF->YAF,69.07
+L1 (no norm),0.01,YAF->OAF,65.14
+L1 (no norm),0.03,OAF->YAF,68.79
+L1 (no norm),0.03,YAF->OAF,65.43
+L1 (no norm),0.1,OAF->YAF,69.64
+L1 (no norm),0.1,YAF->OAF,62.64
+L1 (no norm),0.3,OAF->YAF,69.43
+L1 (no norm),0.3,YAF->OAF,66.79
+L1 (no norm),1.0,OAF->YAF,69.43
+L1 (no norm),1.0,YAF->OAF,66.79
+L1 (no norm),10.0,OAF->YAF,69.43
+L1 (no norm),10.0,YAF->OAF,66.79
+L1n (speaker norm †),1e-05,OAF->YAF,69.21
+L1n (speaker norm †),1e-05,YAF->OAF,64.21
+L1n (speaker norm †),3e-05,OAF->YAF,72.07
+L1n (speaker norm †),3e-05,YAF->OAF,64.21
+L1n (speaker norm †),0.0001,OAF->YAF,73.79
+L1n (speaker norm †),0.0001,YAF->OAF,64.64
+L1n (speaker norm †),0.0003,OAF->YAF,74.5
+L1n (speaker norm †),0.0003,YAF->OAF,65.21
+L1n (speaker norm †),0.001,OAF->YAF,75.29
+L1n (speaker norm †),0.001,YAF->OAF,66.0
+L1n (speaker norm †),0.003,OAF->YAF,76.07
+L1n (speaker norm †),0.003,YAF->OAF,66.5
+L1n (speaker norm †),0.01,OAF->YAF,76.86
+L1n (speaker norm †),0.01,YAF->OAF,67.93
+L1n (speaker norm †),0.03,OAF->YAF,76.5
+L1n (speaker norm †),0.03,YAF->OAF,68.86
+L1n (speaker norm †),0.1,OAF->YAF,76.07
+L1n (speaker norm †),0.1,YAF->OAF,67.36
+L1n (speaker norm †),0.3,OAF->YAF,75.21
+L1n (speaker norm †),0.3,YAF->OAF,67.86
+L1n (speaker norm †),1.0,OAF->YAF,75.29
+L1n (speaker norm †),1.0,YAF->OAF,67.86
+L1n (speaker norm †),10.0,OAF->YAF,75.29
+L1n (speaker norm †),10.0,YAF->OAF,67.86

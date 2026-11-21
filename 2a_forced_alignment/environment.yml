@@ -7,3 +7,8 @@ dependencies:
   - matplotlib                      # figures in scripts/analyze_alignments.py
   - pandas
   - tabulate
+  - numpy
+  - scipy
+  - pip
+  - pip:
+      - praat-parselmouth==0.4.7     # Praat 6.1.38 inside Python: figures, intensity/voicing checks, reference_check.py

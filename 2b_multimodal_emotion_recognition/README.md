@@ -37,6 +37,7 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
 * **The bottleneck is speaker shift: the BiGRU overfits the training speaker** (100 % on its held-out words, 58.5 % on the other speaker).
   A **pre-registered** low-capacity model ([plan](analysis/PREREGISTRATION_si_linear.md), committed before the run) reaches **66.0 % SI**
   (70.6 % with label-free speaker normalisation †): [`si_linear.md`](Results/si_linear.md).
+  A post-hoc check over C = 1e-5 … 10 ([`c_sensitivity.md`](Results/c_sensitivity.md)) keeps it at 63.5–68.1 % (66.7–72.7 % †), so it is not an artefact of the tie-broken C.
   A second pre-registered study (80 runs, [`capacity_study.md`](Results/capacity_study.md)): on identical normalised inputs the
   linear head beats the BiGRU by 10–18 pp in both directions (robust to seed noise). Normalisation helps the linear head but not
   the BiGRU, and it works from a 40-word unlabelled enrolment sample (within 0.6 pp of using the whole test set).
@@ -97,6 +98,7 @@ python analysis/prosody_baseline.py                    # hand-crafted prosody ba
 python analysis/noise_robustness.py                    # test-time noise (needs checkpoints + GPU)
 python run_all.py --skip-prepare --skip-train --skip-analyses --ablations   # speech front-end ablation (48 runs)
 python analysis/si_linear.py                           # pre-registered SI experiment (CPU, cached features)
+python analysis/c_sensitivity.py                       # post-hoc: how much the linear model depends on C
 python analysis/robustness_checks.py                   # Holm correction, per-direction tests, regression-to-mean control
 python analysis/capacity_study.py                      # pre-registered head-capacity study (runs_capacity/, Kaggle job 'capacity')
 python tests/test_invariants.py && python tests/report_tables_check.py   # leakage/alignment tests; table cells vs data

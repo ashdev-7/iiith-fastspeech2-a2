@@ -164,7 +164,7 @@ The linear model beats 5 of the 6 BiGRU runs (exact McNemar $p\le0.011$ for each
 With speaker normalisation, it beats all 6 runs of its BiGRU counterpart in both directions ($+14.1$\pp{} on average).
 Its main practical gain is \emph{stability}: no seed lottery.
 Two disclosures: the training-speaker CV scores 100\% for every $C$, so it cannot discriminate, and ties fall to the strongest regularisation in the grid ($C=0.001$, the first value; a code default, not written in the plan).
-Within-speaker selection cannot measure transfer to a new speaker, which is the core difficulty of SI with two speakers.
+Within-speaker selection cannot measure transfer to a new speaker, which is the core difficulty of SI with two speakers. Because $C$ was not really selected, we checked afterwards how much it matters (post hoc, reading the test speaker; \texttt{Results/c\_sensitivity.md}). Over $C=10^{-5}$ to $10$, the mean SI accuracy stays within 63.5--68.1\% without and 66.7--72.7\% with normalisation. The registered value is not the best one, and every value beats the BiGRU, so the result is not an artefact of the tie-break.
 As a sanity check, the same feature store reproduces every per-layer probe of Table~\ref{tab:probe}.
 
 \subsection{Why does the BiGRU lose? A second pre-registered study}\label{sec:capacity}
@@ -189,7 +189,7 @@ We therefore add a \textbf{post-hoc} bootstrap over words \emph{and} seeds, whic
 \begin{itemize}\setlength\itemsep{1pt}
 \item \textbf{H2, robust:} the logistic regression beats the BiGRU on identical normalised inputs by +18.0 and +10.3\pp{} ([11.6, 24.7] and [7.0, 13.6]). Under one training speaker, the linear probe is clearly the better head.
 \item \textbf{H3, consistent but not robust:} the small BiGRU beats the large one by +4.2 and +4.5\pp{} and halves the seed spread in one direction. Once seed noise is included, the CIs ([$-2.3$, 11.3], [$-0.9$, 9.9]) include zero.
-\item \textbf{H4, refuted:} dropping recurrence does not help. Attentive statistics pooling is \emph{worse} than the small BiGRU ($-3.2$, $-4.7$\pp; robust in one direction). What matters is capacity, not recurrence: B4 has 4.6$\times$ B3's parameters.
+\item \textbf{H4, refuted:} dropping recurrence does not help. Attentive statistics pooling is \emph{worse} than the small BiGRU ($-3.2$, $-4.7$\pp; robust in one direction). B4 is also no better than the full BiGRU on the same inputs (56.9 vs.\ 56.5\%). B4 differs from B3 in both recurrence and size (4.6$\times$ the parameters), so the design cannot separate the two. The pattern fits capacity mattering more than recurrence, but does not prove it.
 \item \textbf{H1, refuted:} speaker normalisation does \emph{not} help the BiGRU ($+0.1$\pp; $-5.7$\pp, CI [$-10.3$, $-1.7$]), although it helps the linear probe in both directions. The BiGRU's deficit is therefore not just speaker shift in the input statistics.
 \item \textbf{H5, supported:} averaging the 10 seeds' posteriors gains +4.8 / +1.1\pp{} for B2, and more for B3 (66.3\% mean).
 \item \textbf{H6, supported:} normalisation statistics from 40 calibration words are within 0.6\pp{} of the transductive ones, for the probe and for the BiGRU. Normalisation therefore needs only a short unlabelled enrolment sample of a new speaker, not their whole test set.
