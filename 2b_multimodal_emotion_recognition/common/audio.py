@@ -42,6 +42,16 @@ def speed_perturb(y: np.ndarray, factor: float, sr: int = SAMPLE_RATE) -> np.nda
     return (0.95 * z / (np.max(np.abs(z)) + 1e-9)).astype(np.float32)
 
 
+PITCH_STEPS = (-4, -2, 2, 4)
+
+
+def pitch_shift(y: np.ndarray, n_steps: float, sr: int = SAMPLE_RATE) -> np.ndarray:
+    """Shift pitch by `n_steps` semitones while keeping tempo (librosa phase-vocoder + resampling), then
+    peak-normalise to 0.95. Used only for training-speaker augmentation (analysis/PREREGISTRATION_si_final.md)."""
+    z = librosa.effects.pitch_shift(y.astype(np.float32), sr=sr, n_steps=n_steps)
+    return (0.95 * z / (np.max(np.abs(z)) + 1e-9)).astype(np.float32)
+
+
 def speed_store_name(factor: float) -> str:
     return f"wavlm_sp{int(round(100 * factor)):03d}"
 

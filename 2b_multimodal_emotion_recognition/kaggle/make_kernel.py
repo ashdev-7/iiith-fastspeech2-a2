@@ -11,6 +11,7 @@ Results/ was produced by these jobs (logs in logs/).
     python kaggle/make_kernel.py augment   --user <kaggle-username>   # pre-registered augmentation study
     python kaggle/make_kernel.py noise     --user <kaggle-username>   # retrain + regenerate the noise study
     python kaggle/make_kernel.py backbones --user <kaggle-username>   # pre-registered encoder study (4)
+    python kaggle/make_kernel.py final     --user <kaggle-username>   # pre-registered final study (5)
     kaggle kernels push -p kaggle/build/<job>
     kaggle kernels output <kaggle-username>/mer-tess-<job> -p <dir>  # then copy runs/ and Results/ back
 
@@ -27,7 +28,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CODE = ["common", "models", "analysis", "prepare_data.py", "run_all.py", "requirements.txt",
-        "Results/augmentation_lr_predictions.csv"]  # reference for check C1 of pre-registration 4
+        "Results/augmentation_lr_predictions.csv",   # reference for check C1 of pre-registration 4
+        "Results/backbone_predictions.csv"]          # reference for check C1 of pre-registration 5
 
 JOBS = {
     "full": [["prepare_data.py", "--speech", "--text", "--asr"], ["run_all.py", "--skip-prepare"]],
@@ -63,6 +65,12 @@ JOBS = {
                   ["-c", "import torch, transformers, funasr; print(torch.__version__, transformers.__version__, funasr.__version__)"],
                   ["analysis/backbone_features.py"],
                   ["analysis/backbone_study.py", "--c_sensitivity"]],
+    # pre-registration 5 (analysis/PREREGISTRATION_si_final.md): Whisper-large-v3 encoder, pitch-shift
+    # augmentation and self-training on top of frozen WavLM-Large
+    "final": [["prepare_data.py", "--speech"],
+              ["-c", "import torch, transformers, librosa, sklearn; print(torch.__version__, transformers.__version__, librosa.__version__, sklearn.__version__)"],
+              ["analysis/final_features.py"],
+              ["analysis/final_study.py"]],
 }
 
 TEMPLATE = '''# Multimodal emotion recognition on TESS (Assignment 2b) - Kaggle job "{job}".
