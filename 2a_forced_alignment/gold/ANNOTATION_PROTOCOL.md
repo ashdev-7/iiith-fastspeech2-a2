@@ -34,7 +34,15 @@ boundary.
 7. **Put boundaries on a zero crossing** of the waveform where possible (Praat: Ctrl+0 moves the cursor
    to the nearest zero crossing).
 
-## Quick way: the guided script (recommended)
+## Easiest way: the browser tool (recommended)
+`python scripts/marking_tool.py build` writes `gold/kit/marking_tool.html` (the six recordings are
+embedded; it shows no aligner output). Open it in a browser. Each word gets one screen with the
+waveform and a spectrogram: click the start, click the end, play to check, zoom to fine-tune, **Next**.
+Progress is kept in the browser. At the end it downloads `gold_passN_marks.json`; then
+`python scripts/marking_tool.py convert gold_passN_marks.json` writes `kit/passN/*.TextGrid`
+(boundaries moved to a zero crossing only if one lies within 2.5 ms), the same files the Praat routes give.
+
+## Guided Praat script
 In Praat: **Open → Open Praat script…** → `gold/kit/mark.praat` → **Run** (Ctrl+R) → choose pass 1 or 2.
 For each word the script opens the right file, zooms to where the word is and waits. Drag across the word
 (rules 4–5), then click **Save word**. Tick **Touches previous word** when there is no pause (rule 6).

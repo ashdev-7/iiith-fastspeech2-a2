@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word Marking Tool</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#5d6670; --line:#d9dde2;
+          --start:#1a8f3c; --end:#c62828; --accent:#2457c5; --prev:#8a8f96; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  .wrap { max-width:1200px; margin:0 auto; padding:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-bottom:14px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  .muted { color:var(--muted); }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button.big { font-size:19px; padding:14px 26px; }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .spacer { flex:1; }
+  .top { display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  .word { font-size:44px; font-weight:700; letter-spacing:.5px; }
+  .progress { height:8px; background:var(--line); border-radius:4px; overflow:hidden; margin-top:8px; }
+  .progress > div { height:100%; background:var(--accent); }
+  .step { font-size:20px; font-weight:600; margin:4px 0 10px; }
+  .step .s { color:var(--start); } .step .e { color:var(--end); }
+  #viewer { position:relative; user-select:none; cursor:crosshair; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  canvas { display:block; width:100%; }
+  .legend { font-size:14px; }
+  .chip { display:inline-block; width:12px; height:12px; border-radius:2px; vertical-align:-1px; margin-right:4px; }
+  details summary { cursor:pointer; font-weight:600; }
+  details ul { margin:8px 0 0; padding-left:20px; }
+  .msg { color:var(--end); font-weight:600; min-height:1.4em; }
+  label.touch { display:flex; gap:8px; align-items:center; font-size:16px; }
+  button.primary kbd { background:transparent; color:#fff; border-color:rgba(255,255,255,.6); }
+  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 5px; font-size:13px; background:#fafafa; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const DATA = /*DATA*/null;
+const SR = DATA.sample_rate;
+const audio = {};
+for (const [f, b64] of Object.entries(DATA.audio)) {
+  const bin = atob(b64), n = bin.length >> 1, out = new Float32Array(n);
+  for (let i = 0; i < n; i++) { let v = bin.charCodeAt(2*i) | (bin.charCodeAt(2*i+1) << 8); if (v >= 32768) v -= 65536; out[i] = v / 32768; }
+  audio[f] = out;
+}
+const W = DATA.targets;           // [{file, word_index, word, search_from_s}]
+let pass = null, marks = [], idx = 0, view = null, drag = null, ctx = null, playing = null;
+
+function key() { return "gold_marks_pass" + pass; }
+function save() { try { localStorage.setItem(key(), JSON.stringify({marks, idx})); } catch (e) {} }
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(key()) || "null"); if (s) { marks = s.marks; idx = s.idx; return; } } catch (e) {}
+  marks = W.map(() => null); idx = 0;
+}
+const app = document.getElementById("app");
+const dur = f => audio[f].length / SR;
+const fmt = t => t.toFixed(3) + " s";
+
+function startScreen() {
+  app.innerHTML = `
+  <div class="card"><h1>Word marking tool</h1>
+  <p>You will mark where 27 words start and end. Each word gets its own screen: <b>click where the word starts, click where it ends, press Next.</b> That is all.</p>
+  <p class="muted">Do pass 1 now. Do pass 2 at least one day later, without looking at pass 1. Your progress is saved in this browser as you go, so you can close the tab and come back.</p>
+  <div class="row"><button class="primary big" id="p1">Start / continue pass 1</button>
+  <button class="big" id="p2">Start / continue pass 2</button></div></div>`;
+  document.getElementById("p1").onclick = () => begin(1);
+  document.getElementById("p2").onclick = () => begin(2);
+}
+function begin(p) { pass = p; load(); if (idx >= W.length) return doneScreen(); showWord(); }
+
+function prevSameFile(i) { return i > 0 && W[i-1].file === W[i].file ? i - 1 : -1; }
+function defaultView(i) {
+  const t = W[i], d = dur(t.file);
+  if (t.file.startsWith("ISLE")) return [0, d];
+  return [Math.max(0, t.search_from_s - 0.5), Math.min(d, t.search_from_s + 2.5)];
+}
+
+function showWord() {
+  const t = W[idx];
+  if (!marks[idx]) marks[idx] = {start: null, end: null, touches_prev: false};
+  view = defaultView(idx);
+  const m = marks[idx], pi = prevSameFile(idx);
+  if (m.start !== null && m.end !== null) view = [Math.max(0, m.start - 0.6), Math.min(dur(t.file), m.end + 0.6)];
+  const done = marks.filter(x => x && x.start !== null && x.end !== null && x.saved).length;
+  app.innerHTML = `
+  <div class="card">
+    <div class="top"><span class="muted">Pass ${pass} &middot; word ${idx+1} of ${W.length}</span>
+      <span class="spacer"></span><button id="home">Back to start</button></div>
+    <div class="top" style="margin-top:6px"><span class="word">${t.word}</span>
+      <span class="muted">${t.file.startsWith("ISLE") ? "short sentence: &ldquo;" + DATA.sentences[t.file] + "&rdquo;" : "news recording, starts somewhere after " + t.search_from_s + " s"}</span></div>
+    <div class="progress"><div style="width:${100*done/W.length}%"></div></div>
+  </div>
+  <div class="card">
+    <div class="step" id="step"></div>
+    <div id="viewer"><canvas id="cv" height="360"></canvas></div>
+    <div class="row legend" style="margin-top:8px">
+      <span><span class="chip" style="background:var(--start)"></span>start</span>
+      <span><span class="chip" style="background:var(--end)"></span>end</span>
+      ${pi >= 0 ? '<span><span class="chip" style="background:var(--prev)"></span>end of the previous word</span>' : ''}
+      <span class="spacer"></span><span class="muted">Click to place a line. Drag a line to move it.</span>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="playSel">&#9654; Play my word <kbd>Space</kbd></button>
+      <button id="playView">&#9654; Play everything shown <kbd>A</kbd></button>
+      <button id="stop">&#9632; Stop</button>
+      <span class="spacer"></span>
+      <button id="zin">Zoom in <kbd>+</kbd></button><button id="zout">Zoom out <kbd>&minus;</kbd></button>
+      <button id="zstart">Zoom on start</button><button id="zend">Zoom on end</button>
+      <button id="zreset">Show all</button>
+    </div>
+    ${pi >= 0 ? `<label class="touch" style="margin-top:12px"><input type="checkbox" id="touch" ${m.touches_prev ? "checked" : ""}>
+      No pause before this word: it starts exactly where <b>&nbsp;${W[pi].word}&nbsp;</b> ended</label>` : ""}
+    <div class="msg" id="msg"></div>
+    <div class="row" style="margin-top:6px">
+      <button id="back" ${idx === 0 ? "disabled" : ""}>&larr; Previous word</button>
+      <button id="clear">Clear my lines</button>
+      <span class="spacer"></span>
+      <button class="primary big" id="next">Next &rarr;</button>
+    </div>
+  </div>
+  <div class="card"><details><summary>Where exactly is the start and the end? (open if unsure)</summary>
+    <ul>
+      <li>Listen first. Play the whole view, find the word, then place the lines and play just your word to check it sounds complete and contains nothing else.</li>
+      <li><b>Start</b> = first sign of the word's first sound in the dark picture (the spectrogram):
+        vowels and l, m, n, r, w, y: where the dark horizontal bands begin;
+        s, f, sh, z: where the grey fuzzy noise at the top begins;
+        p, t, k, b, d, g after a pause: the thin vertical spike;
+        p, t, k, b, d, g right after another word: where the previous sound's darkness stops.</li>
+      <li><b>End</b> = last sign of the word's last sound: the bands or the fuzz fade out. If the word ends in t, d, k, p, b or g, include its small spike.</li>
+      <li>Zoom in (<kbd>+</kbd> or the zoom buttons) for the final placement. Precision of a few hundredths of a second is good.</li>
+    </ul></details></div>`;
+  document.getElementById("home").onclick = () => { save(); startScreen(); };
+  document.getElementById("playSel").onclick = playSel;
+  document.getElementById("playView").onclick = () => play(view[0], view[1]);
+  document.getElementById("stop").onclick = stopAudio;
+  document.getElementById("zin").onclick = () => zoom(0.5);
+  document.getElementById("zout").onclick = () => zoom(2);
+  document.getElementById("zstart").onclick = () => zoomOn("start");
+  document.getElementById("zend").onclick = () => zoomOn("end");
+  document.getElementById("zreset").onclick = () => { view = defaultView(idx); draw(); };
+  document.getElementById("clear").onclick = () => { m.start = m.end = null; m.touches_prev = false; const c = document.getElementById("touch"); if (c) c.checked = false; save(); draw(); };
+  document.getElementById("back").onclick = () => { save(); idx--; showWord(); };
+  document.getElementById("next").onclick = next;
+  const tc = document.getElementById("touch");
+  if (tc) tc.onchange = () => { m.touches_prev = tc.checked; if (tc.checked) { m.start = marks[pi].end; if (m.end !== null && m.end <= m.start) m.end = null; } save(); draw(); };
+  setupCanvas();
+  draw();
+}
+
+function setupCanvas() {
+  const cv = document.getElementById("cv");
+  const rect = () => cv.getBoundingClientRect();
+  const timeAt = ev => view[0] + (ev.clientX - rect().left) / rect().width * (view[1] - view[0]);
+  const xOf = t => (t - view[0]) / (view[1] - view[0]) * rect().width;
+  cv.onmousedown = ev => {
+    const m = marks[idx], t = timeAt(ev), px = ev.clientX - rect().left;
+    for (const k of ["start", "end"]) {
+      if (m[k] !== null && Math.abs(xOf(m[k]) - px) < 8 && !(k === "start" && m.touches_prev)) { drag = k; return; }
+    }
+    if (m.start === null && !m.touches_prev) m.start = t;
+    else if (m.end === null) { if (t < m.start && !m.touches_prev) { m.end = m.start; m.start = t; } else m.end = t; }
+    else {
+      const k = m.touches_prev ? "end" : (Math.abs(t - m.start) < Math.abs(t - m.end) ? "start" : "end");
+      m[k] = t; drag = k;
+    }
+    fix(); save(); draw();
+  };
+  window.onmousemove = ev => { if (!drag) return; marks[idx][drag] = Math.min(view[1], Math.max(view[0], timeAt(ev))); fix(); draw(); };
+  window.onmouseup = () => { if (drag) { drag = null; save(); } };
+  window.onresize = draw;
+  window.onkeydown = ev => {
+    if (ev.target.tagName === "INPUT") return;
+    if (ev.key === " ") { ev.preventDefault(); playSel(); }
+    else if (ev.key === "a" || ev.key === "A") play(view[0], view[1]);
+    else if (ev.key === "+" || ev.key === "=") zoom(0.5);
+    else if (ev.key === "-") zoom(2);
+  };
+}
+function fix() { const m = marks[idx]; if (m.start !== null && m.end !== null && m.end < m.start) { const a = m.start; m.start = m.end; m.end = a; if (drag) drag = drag === "start" ? "end" : "start"; } }
+
+function zoom(f) {
+  const m = marks[idx], d = dur(W[idx].file);
+  const c = m.start !== null && m.end !== null ? (m.start + m.end) / 2 : m.start !== null ? m.start : (view[0] + view[1]) / 2;
+  const half = Math.min(d / 2, Math.max(0.04, (view[1] - view[0]) * f / 2));
+  view = [Math.max(0, c - half), Math.min(d, c + half)]; draw();
+}
+function zoomOn(k) { const m = marks[idx]; if (m[k] === null) return msg("Place the " + k + " line first."); const d = dur(W[idx].file); view = [Math.max(0, m[k] - 0.15), Math.min(d, m[k] + 0.15)]; draw(); }
+function msg(s) { const e = document.getElementById("msg"); if (e) e.textContent = s; }
+
+function draw() {
+  const cv = document.getElementById("cv"); if (!cv) return;
+  const Wd = Math.max(300, Math.round(cv.getBoundingClientRect().width)); cv.width = Wd;
+  const H = cv.height, wfH = 110, axH = 22, spH = H - wfH - axH;
+  const g = cv.getContext("2d"), x = audio[W[idx].file];
+  const i0 = Math.floor(view[0] * SR), i1 = Math.ceil(view[1] * SR), per = (i1 - i0) / Wd;
+  g.fillStyle = "#fff"; g.fillRect(0, 0, Wd, H);
+  // waveform
+  let peak = 1e-4; for (let i = i0; i < i1; i++) peak = Math.max(peak, Math.abs(x[i] || 0));
+  g.strokeStyle = "#33415c"; g.beginPath();
+  for (let c = 0; c < Wd; c++) {
+    let lo = 1, hi = -1; const a = Math.floor(i0 + c * per), b = Math.max(a + 1, Math.floor(i0 + (c + 1) * per));
+    for (let i = a; i < b; i++) { const v = x[i] || 0; if (v < lo) lo = v; if (v > hi) hi = v; }
+    g.moveTo(c + .5, wfH / 2 - hi / peak * (wfH / 2 - 4)); g.lineTo(c + .5, wfH / 2 - lo / peak * (wfH / 2 - 4) + 1);
+  }
+  g.stroke();
+  g.fillStyle = "#e9ecef"; g.fillRect(0, wfH, Wd, 1);
+  // spectrogram: 5 ms Hann window zero-padded to 256, 0-5 kHz, pre-emphasis, 50 dB range
+  const N = 256, L = Math.round(0.005 * SR), half = L >> 1, fmax = 5000, nb = Math.floor(fmax / SR * N);
+  const win = new Float32Array(L); for (let i = 0; i < L; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (L - 1));
+  const cols = []; let mx = -1e9;
+  for (let c = 0; c < Wd; c++) {
+    const ctr = Math.floor(i0 + (c + .5) * per), re = new Float32Array(N), im = new Float32Array(N);
+    for (let i = 0; i < L; i++) { const k = ctr - half + i; const v = (x[k] || 0) - 0.97 * (x[k - 1] || 0); re[i] = v * win[i]; }
+    fft(re, im);
+    const col = new Float32Array(nb);
+    for (let b = 0; b < nb; b++) { col[b] = 10 * Math.log10(re[b] * re[b] + im[b] * im[b] + 1e-12); if (col[b] > mx) mx = col[b]; }
+    cols.push(col);
+  }
+  const img = g.createImageData(Wd, spH);
+  for (let c = 0; c < Wd; c++) for (let y = 0; y < spH; y++) {
+    const b = Math.min(nb - 1, Math.floor((1 - y / spH) * nb));
+    const v = Math.max(0, Math.min(1, (cols[c][b] - (mx - 50)) / 50)), s = Math.round(255 * (1 - v));
+    const o = 4 * (y * Wd + c); img.data[o] = img.data[o + 1] = img.data[o + 2] = s; img.data[o + 3] = 255;
+  }
+  g.putImageData(img, 0, wfH + 1);
+  // time axis
+  const ay = H - axH; g.fillStyle = "#fff"; g.fillRect(0, ay, Wd, axH); g.fillStyle = "#5d6670"; g.font = "12px system-ui";
+  const span = view[1] - view[0], step = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1].find(s => span / s <= 12) || 1;
+  for (let t = Math.ceil(view[0] / step) * step; t <= view[1]; t += step) {
+    const px = (t - view[0]) / span * Wd; g.fillRect(px, ay, 1, 5); g.fillText(t.toFixed(step < 0.1 ? 2 : 1) + " s", px + 2, ay + 16);
+  }
+  // marks
+  const m = marks[idx], pi = prevSameFile(idx);
+  const line = (t, col, dash, lab) => { if (t === null || t < view[0] || t > view[1]) return; const px = (t - view[0]) / span * Wd;
+    g.save(); g.strokeStyle = col; g.lineWidth = 2; g.setLineDash(dash); g.beginPath(); g.moveTo(px, 0); g.lineTo(px, ay); g.stroke(); g.restore();
+    g.fillStyle = col; g.font = "bold 13px system-ui"; g.fillText(lab, Math.min(px + 4, Wd - 60), 14); };
+  if (m.start !== null && m.end !== null) { g.fillStyle = "rgba(36,87,197,.10)"; const a = (m.start - view[0]) / span * Wd, b = (m.end - view[0]) / span * Wd; g.fillRect(a, 0, b - a, ay); }
+  if (pi >= 0 && marks[pi] && marks[pi].end !== null) line(marks[pi].end, "#8a8f96", [5, 4], "prev. end");
+  line(m.start, "#1a8f3c", [], "start"); line(m.end, "#c62828", [], "end");
+  if (playing) { const px = (playing.pos() - view[0]) / span * Wd; g.fillStyle = "#2457c5"; g.fillRect(px, 0, 2, ay); }
+  // instruction
+  const st = document.getElementById("step");
+  st.innerHTML = m.start === null ? 'Step 1: listen, then click where the word <span class="s">starts</span>.'
+    : m.end === null ? 'Step 2: click where the word <span class="e">ends</span>.'
+    : 'Step 3: play your word to check it, zoom in to fine-tune the lines, then press <b>Next</b>.';
+  msg("");
+}
+
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; } }
+  for (let len = 2; len <= n; len <<= 1) {
+    const a = -2 * Math.PI / len, wr = Math.cos(a), wi = Math.sin(a);
+    for (let i = 0; i < n; i += len) { let cr = 1, ci = 0;
+      for (let k = 0; k < len / 2; k++) { const ur = re[i + k], ui = im[i + k], vr = re[i + k + len / 2] * cr - im[i + k + len / 2] * ci, vi = re[i + k + len / 2] * ci + im[i + k + len / 2] * cr;
+        re[i + k] = ur + vr; im[i + k] = ui + vi; re[i + k + len / 2] = ur - vr; im[i + k + len / 2] = ui - vi;
+        const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t; } }
+  }
+}
+
+function stopAudio() { if (playing) { try { playing.src.stop(); } catch (e) {} playing = null; draw(); } }
+function play(a, b) {
+  stopAudio(); if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const x = audio[W[idx].file], i0 = Math.max(0, Math.floor(a * SR)), i1 = Math.min(x.length, Math.ceil(b * SR));
+  if (i1 - i0 < 10) return;
+  const buf = ctx.createBuffer(1, i1 - i0, SR); buf.getChannelData(0).set(x.subarray(i0, i1));
+  const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
+  const t0 = ctx.currentTime; src.start();
+  const me = { src, pos: () => a + (ctx.currentTime - t0) }; playing = me;
+  src.onended = () => { if (playing === me) { playing = null; draw(); } };
+  const tick = () => { if (playing === me) { draw(); requestAnimationFrame(tick); } }; requestAnimationFrame(tick);
+}
+function playSel() { const m = marks[idx]; if (m.start !== null && m.end !== null) play(m.start, m.end); else play(view[0], view[1]); }
+
+function next() {
+  const m = marks[idx];
+  if (m.start === null || m.end === null) return msg("Place both lines first: click where the word starts and where it ends.");
+  if (m.end - m.start < 0.02) return msg("The word is too short. Drag the lines so they cover the whole word.");
+  const pi = prevSameFile(idx);
+  if (pi >= 0 && marks[pi] && m.start < marks[pi].end - 1e-6) return msg("This word starts before the previous word ends. Move the start line right, or tick the 'No pause' box.");
+  m.saved = new Date().toISOString(); stopAudio(); save();
+  idx++; save();
+  if (idx >= W.length) return doneScreen();
+  showWord();
+}
+
+function doneScreen() {
+  const out = { pass, tool: "marking_tool.html", finished: new Date().toISOString(),
+    marks: W.map((t, i) => ({ file: t.file, word_index: t.word_index, word: t.word, start: marks[i].start, end: marks[i].end,
+                              touches_prev: !!marks[i].touches_prev, marked_at: marks[i].saved })) };
+  const blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
+  const url = URL.createObjectURL(blob), name = "gold_pass" + pass + "_marks.json";
+  app.innerHTML = `<div class="card"><h1>Pass ${pass} finished</h1>
+    <p>Your marks are being downloaded as <b>${name}</b> (to your Downloads folder). If nothing downloaded, click the button.</p>
+    <div class="row"><a href="${url}" download="${name}" id="dl"><button class="primary big">Download ${name}</button></a>
+    <button id="rev">Go back and review words</button><button id="home2">Back to start</button></div>
+    <p class="muted" style="margin-top:14px">Then tell Claude: <b>pass ${pass} done</b>.</p></div>`;
+  document.getElementById("dl").click();
+  document.getElementById("rev").onclick = () => { idx = W.length - 1; showWord(); };
+  document.getElementById("home2").onclick = startScreen;
+}
+startScreen();
+</script>
+</body>
+</html>

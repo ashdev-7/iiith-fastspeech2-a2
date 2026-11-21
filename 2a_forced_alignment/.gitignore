@@ -7,3 +7,5 @@ report/*.log
 report/*.out
 # rebuilt from data/raw by the sanity stage
 corpus_untouched/
+# built by `python scripts/marking_tool.py build` (embeds the recordings)
+gold/kit/marking_tool.html
