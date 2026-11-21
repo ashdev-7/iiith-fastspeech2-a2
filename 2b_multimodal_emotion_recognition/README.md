@@ -41,6 +41,9 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
   A second pre-registered study (80 runs, [`capacity_study.md`](Results/capacity_study.md)): on identical normalised inputs the
   linear head beats the BiGRU by 10–18 pp in both directions (robust to seed noise). Normalisation helps the linear head but not
   the BiGRU, and it works from a 40-word unlabelled enrolment sample (within 0.6 pp of using the whole test set).
+  A third pre-registered study ([plan](analysis/PREREGISTRATION_si_augmentation.md), [`augmentation_study.md`](Results/augmentation_study.md)):
+  0.9×/1.1× speed augmentation halves the BiGRU's seed spread but does not improve it reliably; the linear head gains
+  +1.1/+1.7 pp and reaches **72.0 % SI** †, the best result.
   Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.6 → 54.8 % at 0 dB, vs. 58.5 → 28.1 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 

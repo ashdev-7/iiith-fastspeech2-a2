@@ -4,7 +4,7 @@ Written and committed before the augmentation results were downloaded.
 
 Inputs: A-B2 runs (default runs_augment/speech/wavlm_spknorm_augspeed), B2 runs (runs_capacity/), and
 Results/augmentation_lr_predictions.csv (L1n and A-L1n, written by analysis/augmentation_lr.py).
-Output: Results/augmentation_study.md, Results/augmentation_tests.csv.
+Output: Results/augmentation_study.md, Results/augmentation_tests.csv, Results/augmentation_scores.csv.
 
 Primary test: bootstrap over the 200 test words AND the 10 seeds (10 000 resamples, seed 0); the
 word-only bootstrap of study 2 is secondary. Holm over HA1-HA3 x 2 directions.
@@ -125,6 +125,7 @@ def main():
     t["prediction_supported"] = [supported(r) for r in t.itertuples()]
     a = pd.DataFrame(acc_rows)
     t.to_csv(RESULTS_DIR / "augmentation_tests.csv", index=False)
+    a.to_csv(RESULTS_DIR / "augmentation_scores.csv", index=False)
     (RESULTS_DIR / "augmentation_study.md").write_text(
         "# Pre-registered augmentation study (SI)\n\nPlan: `analysis/PREREGISTRATION_si_augmentation.md` "
         "(pushed before the runs). A- = trained on the training speaker's original clips plus 0.9x and 1.1x "

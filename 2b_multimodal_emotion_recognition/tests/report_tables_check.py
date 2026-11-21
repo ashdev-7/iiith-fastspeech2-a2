@@ -192,6 +192,17 @@ def main():
             want = [a["mean"], b["mean"], (a["mean"] + b["mean"]) / 2]
         check("Table capacity", lab, got, want, 1)
 
+    aug = pd.read_csv(R / "augmentation_scores.csv")
+    for lab, m in (("A-B2 = B2", "A-B2"), ("A-L1n = L1n", "A-L1n")):
+        line = [l for l in TEX if l.strip().startswith(lab)][0]
+        body = line.split("&", 2)[2].replace("\\textbf{", "").replace("}", "")
+        got = [float(x) for x in re.findall(r"\d+\.\d+", body)]
+        a = aug[(aug.model == m) & (aug.direction == "OAF->YAF")].iloc[0]
+        b = aug[(aug.model == m) & (aug.direction == "YAF->OAF")].iloc[0]
+        want = ([a["mean"], a["min"], a["max"], b["mean"], b["min"], b["max"], (a["mean"] + b["mean"]) / 2,
+                 (a.ensemble + b.ensemble) / 2] if m == "A-B2" else [a["mean"], b["mean"], (a["mean"] + b["mean"]) / 2])
+        check("Table capacity", lab, got, want, 1)
+
     print(f"{CHECKED[0]} table cells checked, {len(FAILS)} mismatches")
     for f in FAILS:
         print("  MISMATCH", f)

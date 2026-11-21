@@ -1,0 +1,302 @@
+/kaggle/src/script.py:8: DeprecationWarning: Python 3.14 will, by default, filter extracted tar archives and reject files or modify their metadata. Use the filter argument to control this behavior.
+  tarfile.open(fileobj=io.BytesIO(base64.b64decode(CODE_B64)), mode="r:gz").extractall(W)
+torch 2.11.0+cu130 cuda True Tesla T4
+
+$ python prepare_data.py --speech --speed_perturb
+emotion  angry  disgust  fear  happy  neutral   ps  sad
+speaker                                                
+OAF        200      200   200    200      200  200  200
+YAF        200      200   200    200      200  200  200
+preprocess audio:   0%|          | 0/2800 [00:00<?, ?it/s]preprocess audio:   4%|▍         | 122/2800 [00:30<10:59,  4.06it/s]preprocess audio:   4%|▍         | 122/2800 [00:50<10:59,  4.06it/s]preprocess audio:  18%|█▊        | 508/2800 [01:00<04:08,  9.24it/s]preprocess audio:  18%|█▊        | 508/2800 [01:20<04:08,  9.24it/s]preprocess audio:  33%|███▎      | 911/2800 [01:30<02:49, 11.14it/s]preprocess audio:  33%|███▎      | 911/2800 [01:50<02:49, 11.14it/s]preprocess audio:  47%|████▋     | 1308/2800 [02:00<02:04, 11.96it/s]preprocess audio:  47%|████▋     | 1308/2800 [02:20<02:04, 11.96it/s]preprocess audio:  61%|██████    | 1703/2800 [02:30<01:28, 12.39it/s]preprocess audio:  61%|██████    | 1703/2800 [02:50<01:28, 12.39it/s]preprocess audio:  75%|███████▍  | 2099/2800 [03:00<00:55, 12.66it/s]preprocess audio:  75%|███████▍  | 2099/2800 [03:20<00:55, 12.66it/s]preprocess audio:  88%|████████▊ | 2477/2800 [03:30<00:25, 12.63it/s]preprocess audio:  88%|████████▊ | 2477/2800 [03:50<00:25, 12.63it/s]preprocess audio: 100%|██████████| 2800/2800 [03:55<00:00, 11.90it/s]
+trimmed durations: mean 2.00s  min 1.11s  max 2.98s
+log-Mel:   0%|          | 0/2800 [00:00<?, ?it/s]log-Mel: 100%|██████████| 2800/2800 [00:09<00:00, 295.60it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 11795.25it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  39%|███▊      | 1083/2800 [00:30<00:47, 36.10it/s]WavLM:  39%|███▊      | 1083/2800 [00:45<00:47, 36.10it/s]WavLM:  88%|████████▊ | 2451/2800 [01:00<00:08, 41.68it/s]WavLM: 100%|██████████| 2800/2800 [01:06<00:00, 42.06it/s]
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 14260.47it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  52%|█████▏    | 1458/2800 [00:30<00:27, 48.57it/s]WavLM:  52%|█████▏    | 1458/2800 [00:41<00:27, 48.57it/s]WavLM: 100%|██████████| 2800/2800 [00:58<00:00, 47.91it/s]
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 10683.60it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  56%|█████▌    | 1558/2800 [00:30<00:23, 51.91it/s]WavLM:  56%|█████▌    | 1558/2800 [00:46<00:23, 51.91it/s]WavLM: 100%|██████████| 2800/2800 [00:54<00:00, 51.50it/s]
+  -> exit 0 in 484 s
+
+$ python models/speech_pipeline/train.py --protocol si --si_seeds 10 --spk_norm true --augment speed
+  ep 01 train_loss=1.6607 val_loss=0.5446 val_acc=0.8381 (7s)
+  ep 02 train_loss=0.3856 val_loss=0.0288 val_acc=1.0000 (12s)
+  ep 03 train_loss=0.2821 val_loss=0.0282 val_acc=1.0000 (17s)
+  ep 04 train_loss=0.2697 val_loss=0.0337 val_acc=1.0000 (22s)
+  ep 05 train_loss=0.2631 val_loss=0.0341 val_acc=1.0000 (28s)
+  ep 06 train_loss=0.2625 val_loss=0.0417 val_acc=1.0000 (33s)
+  ep 07 train_loss=0.2617 val_loss=0.0385 val_acc=1.0000 (38s)
+  ep 08 train_loss=0.2615 val_loss=0.0373 val_acc=1.0000 (43s)
+  ep 09 train_loss=0.2623 val_loss=0.0369 val_acc=1.0000 (48s)
+  ep 10 train_loss=0.2613 val_loss=0.0351 val_acc=1.0000 (54s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed0: val_acc=1.0000 (10 ep, 53.8s)
+  ep 01 train_loss=1.6731 val_loss=0.5437 val_acc=0.9667 (5s)
+  ep 02 train_loss=0.3800 val_loss=0.0381 val_acc=0.9952 (11s)
+  ep 03 train_loss=0.2896 val_loss=0.0289 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2717 val_loss=0.0358 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2763 val_loss=0.0419 val_acc=0.9952 (26s)
+  ep 06 train_loss=0.2640 val_loss=0.0343 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2650 val_loss=0.0670 val_acc=0.9952 (37s)
+  ep 08 train_loss=0.2638 val_loss=0.0435 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2611 val_loss=0.0376 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2610 val_loss=0.0381 val_acc=1.0000 (52s)
+  ep 11 train_loss=0.2606 val_loss=0.0385 val_acc=1.0000 (58s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed1: val_acc=1.0000 (11 ep, 57.8s)
+  ep 01 train_loss=1.6695 val_loss=0.6082 val_acc=0.9048 (5s)
+  ep 02 train_loss=0.4112 val_loss=0.1072 val_acc=0.9762 (11s)
+  ep 03 train_loss=0.2828 val_loss=0.0342 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2682 val_loss=0.0692 val_acc=0.9857 (21s)
+  ep 05 train_loss=0.2857 val_loss=0.0326 val_acc=1.0000 (27s)
+  ep 06 train_loss=0.2656 val_loss=0.0345 val_acc=1.0000 (32s)
+  ep 07 train_loss=0.2623 val_loss=0.0371 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2670 val_loss=0.0411 val_acc=1.0000 (43s)
+  ep 09 train_loss=0.2633 val_loss=0.0687 val_acc=0.9905 (48s)
+  ep 10 train_loss=0.2800 val_loss=0.0423 val_acc=1.0000 (53s)
+  ep 11 train_loss=0.2616 val_loss=0.0403 val_acc=1.0000 (59s)
+  ep 12 train_loss=0.2612 val_loss=0.0378 val_acc=1.0000 (64s)
+  ep 13 train_loss=0.2628 val_loss=0.0397 val_acc=1.0000 (69s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed2: val_acc=1.0000 (13 ep, 69.1s)
+  ep 01 train_loss=1.6706 val_loss=0.5581 val_acc=0.9524 (5s)
+  ep 02 train_loss=0.4053 val_loss=0.0278 val_acc=1.0000 (11s)
+  ep 03 train_loss=0.2751 val_loss=0.0311 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2856 val_loss=0.0333 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2756 val_loss=0.0345 val_acc=1.0000 (27s)
+  ep 06 train_loss=0.2652 val_loss=0.0358 val_acc=1.0000 (32s)
+  ep 07 train_loss=0.2626 val_loss=0.0368 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2618 val_loss=0.0428 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2730 val_loss=0.0376 val_acc=1.0000 (46s)
+  ep 10 train_loss=0.2637 val_loss=0.0426 val_acc=1.0000 (51s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed3: val_acc=1.0000 (10 ep, 51.3s)
+  ep 01 train_loss=1.6717 val_loss=0.6334 val_acc=0.9000 (5s)
+  ep 02 train_loss=0.4187 val_loss=0.0541 val_acc=0.9905 (10s)
+  ep 03 train_loss=0.2819 val_loss=0.0361 val_acc=1.0000 (15s)
+  ep 04 train_loss=0.2798 val_loss=0.0323 val_acc=1.0000 (19s)
+  ep 05 train_loss=0.2676 val_loss=0.0360 val_acc=1.0000 (25s)
+  ep 06 train_loss=0.2653 val_loss=0.0355 val_acc=1.0000 (30s)
+  ep 07 train_loss=0.2625 val_loss=0.0332 val_acc=1.0000 (35s)
+  ep 08 train_loss=0.2617 val_loss=0.0352 val_acc=1.0000 (40s)
+  ep 09 train_loss=0.2620 val_loss=0.0392 val_acc=1.0000 (46s)
+  ep 10 train_loss=0.2615 val_loss=0.0371 val_acc=1.0000 (51s)
+  ep 11 train_loss=0.2614 val_loss=0.0416 val_acc=1.0000 (56s)
+  ep 12 train_loss=0.2613 val_loss=0.0409 val_acc=1.0000 (61s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed4: val_acc=1.0000 (12 ep, 61.4s)
+  ep 01 train_loss=1.6907 val_loss=0.6390 val_acc=0.9476 (5s)
+  ep 02 train_loss=0.3982 val_loss=0.0348 val_acc=0.9952 (11s)
+  ep 03 train_loss=0.2782 val_loss=0.0308 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2827 val_loss=0.0361 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2804 val_loss=0.0301 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2632 val_loss=0.0392 val_acc=1.0000 (32s)
+  ep 07 train_loss=0.2617 val_loss=0.0422 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2612 val_loss=0.0390 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2611 val_loss=0.0412 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2609 val_loss=0.0430 val_acc=1.0000 (53s)
+  ep 11 train_loss=0.2607 val_loss=0.0409 val_acc=1.0000 (58s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed5: val_acc=1.0000 (11 ep, 57.9s)
+  ep 01 train_loss=1.7142 val_loss=0.7284 val_acc=0.7381 (5s)
+  ep 02 train_loss=0.4374 val_loss=0.0464 val_acc=0.9952 (10s)
+  ep 03 train_loss=0.2779 val_loss=0.0316 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2653 val_loss=0.0310 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2848 val_loss=0.0431 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2668 val_loss=0.0391 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2615 val_loss=0.0380 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2608 val_loss=0.0395 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2607 val_loss=0.0395 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2607 val_loss=0.0399 val_acc=1.0000 (52s)
+  ep 11 train_loss=0.2604 val_loss=0.0402 val_acc=1.0000 (58s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed6: val_acc=1.0000 (11 ep, 57.6s)
+  ep 01 train_loss=1.6661 val_loss=0.6066 val_acc=0.8095 (5s)
+  ep 02 train_loss=0.4008 val_loss=0.0366 val_acc=1.0000 (11s)
+  ep 03 train_loss=0.2826 val_loss=0.0371 val_acc=0.9952 (16s)
+  ep 04 train_loss=0.2747 val_loss=0.0401 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2648 val_loss=0.0417 val_acc=0.9952 (26s)
+  ep 06 train_loss=0.2645 val_loss=0.0485 val_acc=1.0000 (32s)
+  ep 07 train_loss=0.2680 val_loss=0.0504 val_acc=0.9952 (37s)
+  ep 08 train_loss=0.2897 val_loss=0.0369 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2639 val_loss=0.0416 val_acc=1.0000 (48s)
+  ep 10 train_loss=0.2616 val_loss=0.0398 val_acc=1.0000 (53s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed7: val_acc=1.0000 (10 ep, 52.9s)
+  ep 01 train_loss=1.6739 val_loss=0.6118 val_acc=0.8524 (5s)
+  ep 02 train_loss=0.4023 val_loss=0.0275 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2867 val_loss=0.0411 val_acc=0.9952 (16s)
+  ep 04 train_loss=0.2845 val_loss=0.0342 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2654 val_loss=0.0318 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2636 val_loss=0.0366 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2615 val_loss=0.0366 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2612 val_loss=0.0406 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2614 val_loss=0.0369 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2745 val_loss=0.0323 val_acc=1.0000 (52s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed8: val_acc=1.0000 (10 ep, 52.5s)
+  ep 01 train_loss=1.6939 val_loss=0.6508 val_acc=0.8857 (5s)
+  ep 02 train_loss=0.3872 val_loss=0.0284 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2780 val_loss=0.0281 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2759 val_loss=0.0338 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2628 val_loss=0.0369 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2618 val_loss=0.0378 val_acc=1.0000 (32s)
+  ep 07 train_loss=0.2615 val_loss=0.0410 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2613 val_loss=0.0380 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2607 val_loss=0.0395 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2607 val_loss=0.0367 val_acc=1.0000 (53s)
+[train] speech/wavlm_spknorm_augspeed/si_fold0_seed9: val_acc=1.0000 (10 ep, 52.7s)
+  ep 01 train_loss=1.6525 val_loss=0.3774 val_acc=0.9952 (5s)
+  ep 02 train_loss=0.3088 val_loss=0.0562 val_acc=0.9857 (10s)
+  ep 03 train_loss=0.2676 val_loss=0.0361 val_acc=1.0000 (15s)
+  ep 04 train_loss=0.2635 val_loss=0.0311 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2618 val_loss=0.0375 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2614 val_loss=0.0368 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2609 val_loss=0.0382 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2607 val_loss=0.0325 val_acc=1.0000 (41s)
+  ep 09 train_loss=0.2605 val_loss=0.0419 val_acc=1.0000 (46s)
+  ep 10 train_loss=0.2605 val_loss=0.0368 val_acc=1.0000 (51s)
+  ep 11 train_loss=0.2600 val_loss=0.0395 val_acc=1.0000 (56s)
+  ep 12 train_loss=0.2604 val_loss=0.0381 val_acc=1.0000 (62s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed0: val_acc=1.0000 (12 ep, 61.8s)
+  ep 01 train_loss=1.6589 val_loss=0.3438 val_acc=0.9952 (5s)
+  ep 02 train_loss=0.3032 val_loss=0.0291 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2667 val_loss=0.0310 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2649 val_loss=0.0377 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2628 val_loss=0.0368 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2617 val_loss=0.0387 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2609 val_loss=0.0387 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2606 val_loss=0.0392 val_acc=1.0000 (41s)
+  ep 09 train_loss=0.2605 val_loss=0.0365 val_acc=1.0000 (46s)
+  ep 10 train_loss=0.2602 val_loss=0.0389 val_acc=1.0000 (52s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed1: val_acc=1.0000 (10 ep, 51.7s)
+  ep 01 train_loss=1.6773 val_loss=0.3174 val_acc=1.0000 (5s)
+  ep 02 train_loss=0.3016 val_loss=0.0301 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2659 val_loss=0.0292 val_acc=1.0000 (15s)
+  ep 04 train_loss=0.2689 val_loss=0.0498 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2693 val_loss=0.0363 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2673 val_loss=0.0388 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2607 val_loss=0.0355 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2607 val_loss=0.0397 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2626 val_loss=0.0360 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2717 val_loss=0.0423 val_acc=1.0000 (52s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed2: val_acc=1.0000 (10 ep, 52.1s)
+  ep 01 train_loss=1.6771 val_loss=0.4372 val_acc=1.0000 (5s)
+  ep 02 train_loss=0.3140 val_loss=0.0272 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2663 val_loss=0.0322 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2635 val_loss=0.0313 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2622 val_loss=0.0352 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2622 val_loss=0.0494 val_acc=0.9952 (31s)
+  ep 07 train_loss=0.2819 val_loss=0.0350 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2627 val_loss=0.0421 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2612 val_loss=0.0384 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2613 val_loss=0.0417 val_acc=1.0000 (52s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed3: val_acc=1.0000 (10 ep, 52.4s)
+  ep 01 train_loss=1.6586 val_loss=0.3712 val_acc=0.9952 (5s)
+  ep 02 train_loss=0.3163 val_loss=0.0407 val_acc=0.9905 (10s)
+  ep 03 train_loss=0.2667 val_loss=0.0317 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2740 val_loss=0.0427 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2709 val_loss=0.0341 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2660 val_loss=0.0370 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2627 val_loss=0.0508 val_acc=0.9952 (37s)
+  ep 08 train_loss=0.2610 val_loss=0.0506 val_acc=0.9952 (42s)
+  ep 09 train_loss=0.2606 val_loss=0.0487 val_acc=0.9952 (47s)
+  ep 10 train_loss=0.2606 val_loss=0.0487 val_acc=0.9952 (53s)
+  ep 11 train_loss=0.2609 val_loss=0.0430 val_acc=1.0000 (58s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed4: val_acc=1.0000 (11 ep, 57.8s)
+  ep 01 train_loss=1.6501 val_loss=0.3972 val_acc=0.9619 (5s)
+  ep 02 train_loss=0.3196 val_loss=0.0273 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2669 val_loss=0.0320 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2641 val_loss=0.0363 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2630 val_loss=0.0403 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2612 val_loss=0.0360 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2610 val_loss=0.0389 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2606 val_loss=0.0387 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2603 val_loss=0.0383 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2605 val_loss=0.0413 val_acc=1.0000 (52s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed5: val_acc=1.0000 (10 ep, 52.2s)
+  ep 01 train_loss=1.6638 val_loss=0.3887 val_acc=0.9476 (5s)
+  ep 02 train_loss=0.3176 val_loss=0.0330 val_acc=0.9952 (10s)
+  ep 03 train_loss=0.2669 val_loss=0.0344 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2633 val_loss=0.0361 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2619 val_loss=0.0350 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2611 val_loss=0.0403 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2786 val_loss=0.0340 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2612 val_loss=0.0363 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2606 val_loss=0.0389 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2679 val_loss=0.0381 val_acc=1.0000 (52s)
+  ep 11 train_loss=0.2631 val_loss=0.0384 val_acc=1.0000 (57s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed6: val_acc=1.0000 (11 ep, 57.3s)
+  ep 01 train_loss=1.6560 val_loss=0.4251 val_acc=0.9524 (5s)
+  ep 02 train_loss=0.3352 val_loss=0.0399 val_acc=0.9952 (10s)
+  ep 03 train_loss=0.2696 val_loss=0.0330 val_acc=1.0000 (15s)
+  ep 04 train_loss=0.2643 val_loss=0.0311 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2694 val_loss=0.0319 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2645 val_loss=0.0348 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2627 val_loss=0.0381 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2613 val_loss=0.0436 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2613 val_loss=0.0411 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2610 val_loss=0.0385 val_acc=1.0000 (52s)
+  ep 11 train_loss=0.2607 val_loss=0.0374 val_acc=1.0000 (57s)
+  ep 12 train_loss=0.2608 val_loss=0.0389 val_acc=1.0000 (62s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed7: val_acc=1.0000 (12 ep, 62.4s)
+  ep 01 train_loss=1.6535 val_loss=0.3455 val_acc=1.0000 (5s)
+  ep 02 train_loss=0.3224 val_loss=0.0282 val_acc=1.0000 (10s)
+  ep 03 train_loss=0.2694 val_loss=0.0308 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2636 val_loss=0.0331 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2621 val_loss=0.0366 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2615 val_loss=0.0358 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2608 val_loss=0.0372 val_acc=1.0000 (36s)
+  ep 08 train_loss=0.2607 val_loss=0.0369 val_acc=1.0000 (41s)
+  ep 09 train_loss=0.2608 val_loss=0.0404 val_acc=1.0000 (46s)
+  ep 10 train_loss=0.2602 val_loss=0.0412 val_acc=1.0000 (52s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed8: val_acc=1.0000 (10 ep, 51.6s)
+  ep 01 train_loss=1.6505 val_loss=0.3344 val_acc=0.9857 (5s)
+  ep 02 train_loss=0.3126 val_loss=0.0468 val_acc=0.9905 (11s)
+  ep 03 train_loss=0.2691 val_loss=0.0317 val_acc=1.0000 (16s)
+  ep 04 train_loss=0.2639 val_loss=0.0323 val_acc=1.0000 (21s)
+  ep 05 train_loss=0.2712 val_loss=0.0345 val_acc=1.0000 (26s)
+  ep 06 train_loss=0.2616 val_loss=0.0353 val_acc=1.0000 (31s)
+  ep 07 train_loss=0.2610 val_loss=0.0377 val_acc=1.0000 (37s)
+  ep 08 train_loss=0.2607 val_loss=0.0354 val_acc=1.0000 (42s)
+  ep 09 train_loss=0.2602 val_loss=0.0368 val_acc=1.0000 (47s)
+  ep 10 train_loss=0.2603 val_loss=0.0411 val_acc=1.0000 (52s)
+  ep 11 train_loss=0.2603 val_loss=0.0382 val_acc=1.0000 (57s)
+[train] speech/wavlm_spknorm_augspeed/si_fold1_seed9: val_acc=1.0000 (11 ep, 57.4s)
+(no evaluated runs yet - run test.py)
+  -> exit 0 in 1146 s
+
+$ python models/speech_pipeline/test.py --protocol si --si_seeds 10 --spk_norm true --augment speed
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed0: acc=0.5014 macroF1=0.4754
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed1: acc=0.4500 macroF1=0.4606
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed2: acc=0.5757 macroF1=0.5478
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed3: acc=0.5593 macroF1=0.5226
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed4: acc=0.5700 macroF1=0.5294
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed5: acc=0.5579 macroF1=0.5168
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed6: acc=0.4586 macroF1=0.4205
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed7: acc=0.6393 macroF1=0.6087
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed8: acc=0.5714 macroF1=0.5545
+[test]  speech/wavlm_spknorm_augspeed/si_fold0_seed9: acc=0.5643 macroF1=0.5479
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed0: acc=0.5707 macroF1=0.4949
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed1: acc=0.6350 macroF1=0.6018
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed2: acc=0.6064 macroF1=0.5449
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed3: acc=0.6529 macroF1=0.5771
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed4: acc=0.6086 macroF1=0.5293
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed5: acc=0.5350 macroF1=0.4266
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed6: acc=0.5571 macroF1=0.4773
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed7: acc=0.6021 macroF1=0.5403
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed8: acc=0.5779 macroF1=0.5116
+[test]  speech/wavlm_spknorm_augspeed/si_fold1_seed9: acc=0.5914 macroF1=0.5426
+
+== speech/wavlm_spknorm_augspeed (test set, mean +- std over runs) ==
+         accuracy             macro_f1            
+             mean   std count     mean   std count
+protocol                                          
+si          56.92  5.31    20    52.15  5.07    20
+  -> exit 0 in 39 s
+
+$ python analysis/augmentation_lr.py
+L1n    OAF->YAF: 75.29
+A-L1n  OAF->YAF: 76.36
+L1n    YAF->OAF: 66.00
+A-L1n  YAF->OAF: 67.71
+  -> exit 0 in 38 s
+ALL_DONE
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 356363 bytes to __results__.html

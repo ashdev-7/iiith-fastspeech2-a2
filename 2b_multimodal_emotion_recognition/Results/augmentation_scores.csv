@@ -1,0 +1,9 @@
+direction,model,seeds,mean,sd,min,max,ensemble,l1n_identical_to_study2_pct
+OAF->YAF,B2,10,57.26,10.72,43.5,72.79,62.07,
+OAF->YAF,A-B2,10,54.48,5.8,45.0,63.93,56.36,
+OAF->YAF,L1n,1,75.29,,,,,100.0
+OAF->YAF,A-L1n,1,76.36,,,,,
+YAF->OAF,B2,10,55.71,5.3,48.64,62.57,56.79,
+YAF->OAF,A-B2,10,59.37,3.53,53.5,65.29,58.43,
+YAF->OAF,L1n,1,66.0,,,,,100.0
+YAF->OAF,A-L1n,1,67.71,,,,,
