@@ -90,9 +90,37 @@ def self_train(members, P0, pool):
     return P, hist
 
 
-def run_direction(df, fold, calib):
-    """All pre-registered models for one direction -> {model: {mode: proba over test rows}}, self-training
-    history. mode T = transductive †, I = inductive (40 calibration words; scored on the other 160)."""
+def mem() -> str:
+    """Memory report for the log (amendment 2): this process's RSS and peak, and the container's usage."""
+    import psutil
+    out = f"rss {psutil.Process().memory_info().rss / 1e9:.1f} GB"
+    try:
+        import resource                                         # Linux: peak RSS in kB
+        out += f", peak {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.1f} GB"
+    except ImportError:
+        pass
+    for cur, mx in (("/sys/fs/cgroup/memory.current", "/sys/fs/cgroup/memory.max"),
+                    ("/sys/fs/cgroup/memory/memory.usage_in_bytes", "/sys/fs/cgroup/memory/memory.limit_in_bytes")):
+        try:
+            c, m = Path(cur).read_text().strip(), Path(mx).read_text().strip()
+            out += f"; container {int(c) / 1e9:.1f} GB of {m if not m.isdigit() else f'{int(m) / 1e9:.1f} GB'}"
+            break
+        except OSError:
+            pass
+    return out
+
+
+STAGES = ("R", "W3A", "FINAL-T", "FINAL-I")
+
+
+def run_stage(fold, stage, feat_dir):
+    """One stage of one direction, run in a fresh process (amendment 2) so that all of its memory is returned to
+    the operating system afterwards. Returns {model: {mode: proba over test rows}} and the self-training history.
+    mode T = transductive †, I = inductive (40 calibration words; scored on the other 160)."""
+    global FEAT_DIR
+    FEAT_DIR = Path(feat_dir)
+    df = load_index()
+    calib = calibration_words(df)
     s = make_split(df, "si", 0, fold)
     tr, te = np.concatenate([s["train"], s["val"]]), s["test"]
     ytr = df.label.values[tr]                                   # the only labels this function reads
@@ -100,30 +128,51 @@ def run_direction(df, fold, calib):
     pools = {"T": np.arange(len(te)), "I": cal_pos}             # I: the scored 160 words never enter the pool
     probs, hist = {}, {}
 
-    def base(keys):
+    def base(keys, modes="TI"):
         data = {k: member_data(*k, tr, te, cal_pos, ytr) for k in keys}
         for (e, r), (Xa, ya, Xe) in data.items():
-            probs[f"{r}-L1n({e})"] = {m: fit_predict([Xa], ya, Xe[m]) for m in "TI"}
-            print(f"  {DIRS[fold]} {r}-L1n({e}) fitted", flush=True)
+            P = fit_predict([Xa], ya, np.concatenate([Xe[m] for m in modes]))   # one fit, both test variants
+            probs[f"{r}-L1n({e})"] = dict(zip(modes, np.split(P, len(modes))))
+            print(f"  {DIRS[fold]} {r}-L1n({e}) fitted [{mem()}]", flush=True)
         return data
 
-    def st(name, data, start):
+    def st(name, data, start, modes="TI"):
         probs[name] = {}
-        for m in "TI":
+        for m in modes:
             members = [(Xa, ya, Xe[m]) for Xa, ya, Xe in data.values()]
             probs[name][m], hist[(name, m)] = self_train(members, start[m], pools[m])
-        print(f"  {DIRS[fold]} {name} done", flush=True)
+        print(f"  {DIRS[fold]} {name} {modes} done [{mem()}]", flush=True)
 
-    # one encoder/recipe pair in memory at a time, except the two FINAL members (amendment 1: memory)
-    data = base([("WL", "A")])
-    st("ST(A-L1n(WL))", data, probs["A-L1n(WL)"])
-    del data
-    base([("W3", "A")])                                       # fitted, then its data is freed
-    data = base([("WL", "AP"), ("W3", "AP")])
-    probs["ENS2"] = {m: (probs["AP-L1n(WL)"][m] + probs["AP-L1n(W3)"][m]) / 2 for m in "TI"}
-    st("FINAL", data, probs["ENS2"])
-    del data
-    return te, cal_pos, probs, hist
+    if stage == "R":
+        data = base([("WL", "A")])
+        st("ST(A-L1n(WL))", data, probs["A-L1n(WL)"])
+    elif stage == "W3A":
+        base([("W3", "A")])
+    else:                                                       # FINAL-T / FINAL-I: the two FINAL members
+        m = stage[-1]
+        data = base([("WL", "AP"), ("W3", "AP")], modes=m)
+        probs["ENS2"] = {m: (probs["AP-L1n(WL)"][m] + probs["AP-L1n(W3)"][m]) / 2}
+        st("FINAL", data, probs["ENS2"], modes=m)
+    return probs, hist
+
+
+def run_direction(df, fold, calib):
+    """All pre-registered models for one direction -> (test rows, calibration positions, probs, history)."""
+    import multiprocessing as mp
+    s = make_split(df, "si", 0, fold)
+    te = s["test"]
+    cal_pos = np.flatnonzero(np.isin(df.word.values[te], list(calib)))
+    probs, hist = {}, {}
+    ctx = mp.get_context("spawn")
+    for stage in STAGES:
+        with ctx.Pool(1) as pool:
+            p, h = pool.apply(run_stage, (fold, stage, str(FEAT_DIR)))
+        for k, v in p.items():
+            probs.setdefault(k, {}).update(v)
+        hist.update(h)
+        print(f"  {DIRS[fold]} stage {stage} finished [{mem()}]", flush=True)
+    order = ["A-L1n(WL)", "AP-L1n(WL)", "A-L1n(W3)", "AP-L1n(W3)", "ENS2", "ST(A-L1n(WL))", "FINAL"]
+    return te, cal_pos, {k: probs[k] for k in order}, hist
 
 
 def main():

@@ -128,3 +128,25 @@ The only changes are about memory:
   re-extraction, and it prints the machine's RAM.
 
 The job is re-run unchanged otherwise.
+
+## Amendment 2 (after runs 2 and 3; nothing in the plan above is changed)
+
+* **Run 2** (Kaggle version 2) stayed queued and never started, so it produced nothing. It was resubmitted
+  unchanged as version 3.
+* **Run 3** (`logs/kaggle_run_final_v3_failed.log`) failed the same way as run 1. All features were extracted
+  and saved, and `final_study.py` was then killed for running out of memory (exit −9) at the same point, on a
+  33.7 GB machine. Again it printed only "fitted" / "done" lines, so **no accuracy, prediction or test was
+  computed or seen**.
+* **Diagnosis.** Both runs died after about 14 model fits, although they held different amounts of data
+  in memory. This points to memory accumulating across fits within one process, not to a single large peak.
+* **Changes** (packaging and memory only; the arithmetic is unchanged):
+  1. Each analysis stage of each direction runs in a fresh process, which returns all of its memory to the
+     operating system when it ends. The stages are R + ST(R), A-L1n(W3), FINAL †, and FINAL inductive.
+  2. Each base model is fitted once and predicts both test variants. Before, it was fitted twice on
+     identical data, which gives an identical deterministic model.
+  3. Memory use is printed after every fit.
+* **Verification.** On the null and planted-signal validation features, the predictions (19 600 rows,
+  transductive and inductive), the test table and the self-training diagnostic are all 100 % identical to
+  the committed version.
+* **Run 4** (job `final_analysis`, CPU only) runs only the analysis, on the features saved by run 3, which are
+  attached as a kernel source and not re-extracted.

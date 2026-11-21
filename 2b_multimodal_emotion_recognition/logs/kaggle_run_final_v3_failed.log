@@ -1,0 +1,57 @@
+/kaggle/src/script.py:8: DeprecationWarning: Python 3.14 will, by default, filter extracted tar archives and reject files or modify their metadata. Use the filter argument to control this behavior.
+  tarfile.open(fileobj=io.BytesIO(base64.b64decode(CODE_B64)), mode="r:gz").extractall(W)
+torch 2.11.0+cu130 cuda True Tesla T4
+
+$ python prepare_data.py --speech
+emotion  angry  disgust  fear  happy  neutral   ps  sad
+speaker                                                
+OAF        200      200   200    200      200  200  200
+YAF        200      200   200    200      200  200  200
+preprocess audio:   0%|          | 0/2800 [00:00<?, ?it/s]preprocess audio:   4%|▍         | 106/2800 [00:30<12:44,  3.53it/s]preprocess audio:   4%|▍         | 106/2800 [00:50<12:44,  3.53it/s]preprocess audio:  17%|█▋        | 485/2800 [01:00<04:20,  8.88it/s]preprocess audio:  17%|█▋        | 485/2800 [01:20<04:20,  8.88it/s]preprocess audio:  31%|███       | 863/2800 [01:30<03:03, 10.57it/s]preprocess audio:  31%|███       | 863/2800 [01:50<03:03, 10.57it/s]preprocess audio:  45%|████▍     | 1257/2800 [02:00<02:13, 11.58it/s]preprocess audio:  45%|████▍     | 1257/2800 [02:20<02:13, 11.58it/s]preprocess audio:  59%|█████▉    | 1653/2800 [02:30<01:34, 12.16it/s]preprocess audio:  59%|█████▉    | 1653/2800 [02:50<01:34, 12.16it/s]preprocess audio:  74%|███████▎  | 2062/2800 [03:00<00:58, 12.65it/s]preprocess audio:  74%|███████▎  | 2062/2800 [03:20<00:58, 12.65it/s]preprocess audio:  88%|████████▊ | 2475/2800 [03:30<00:24, 13.01it/s]preprocess audio:  88%|████████▊ | 2475/2800 [03:50<00:24, 13.01it/s]preprocess audio: 100%|██████████| 2800/2800 [03:53<00:00, 11.97it/s]
+trimmed durations: mean 2.00s  min 1.11s  max 2.98s
+log-Mel:   0%|          | 0/2800 [00:00<?, ?it/s]log-Mel: 100%|██████████| 2800/2800 [00:08<00:00, 311.14it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/248 [00:00<?, ?it/s]Loading weights: 100%|██████████| 248/248 [00:00<00:00, 10264.84it/s]
+WavLM:   0%|          | 0/2800 [00:00<?, ?it/s]WavLM:  35%|███▍      | 975/2800 [00:30<00:56, 32.48it/s]WavLM:  35%|███▍      | 975/2800 [00:44<00:56, 32.48it/s]WavLM:  94%|█████████▍| 2631/2800 [01:00<00:03, 45.83it/s]WavLM: 100%|██████████| 2800/2800 [01:03<00:00, 44.42it/s]
+  -> exit 0 in 369 s
+
+$ python -c import torch, transformers, librosa, sklearn, psutil; print(torch.__version__, transformers.__version__, librosa.__version__, sklearn.__version__, 'RAM GB', round(psutil.virtual_memory().total / 1e9, 1))
+2.11.0+cu130 5.20.2 0.11.0 1.6.1 RAM GB 33.7
+  -> exit 0 in 6 s
+
+$ python analysis/final_features.py --out_dir /kaggle/working/feat
+7 copies of 2800 clips in 121 s
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/488 [00:00<?, ?it/s]Loading weights: 100%|██████████| 488/488 [00:00<00:00, 13754.22it/s]
+wavlm_large orig: (2800, 13, 2048) in 117 s
+wavlm_large sp090: (2800, 13, 2048) in 130 s
+wavlm_large sp110: (2800, 13, 2048) in 115 s
+wavlm_large pitchm4: (2800, 13, 2048) in 120 s
+wavlm_large pitchm2: (2800, 13, 2048) in 120 s
+wavlm_large pitchp2: (2800, 13, 2048) in 119 s
+wavlm_large pitchp4: (2800, 13, 2048) in 119 s
+Loading weights:   0%|          | 0/1259 [00:00<?, ?it/s]Loading weights:  20%|██        | 255/1259 [00:00<00:00, 2539.20it/s]Loading weights:  41%|████      | 515/1259 [00:00<00:00, 2573.34it/s]Loading weights:  61%|██████▏   | 773/1259 [00:00<00:00, 2560.93it/s]Loading weights:  82%|████████▏ | 1034/1259 [00:00<00:00, 2577.23it/s]Loading weights: 100%|██████████| 1259/1259 [00:00<00:00, 2593.84it/s]
+whisper_large orig: (2800, 17, 2560) in 481 s
+whisper_large sp090: (2800, 17, 2560) in 482 s
+whisper_large sp110: (2800, 17, 2560) in 477 s
+whisper_large pitchm4: (2800, 17, 2560) in 479 s
+whisper_large pitchm2: (2800, 17, 2560) in 482 s
+whisper_large pitchp2: (2800, 17, 2560) in 482 s
+whisper_large pitchp4: (2800, 17, 2560) in 481 s
+  -> exit 0 in 4370 s
+
+$ python analysis/final_study.py --feat_dir /kaggle/working/feat
+  OAF->YAF A-L1n(WL) fitted
+  OAF->YAF ST(A-L1n(WL)) done
+  OAF->YAF A-L1n(W3) fitted
+  OAF->YAF AP-L1n(WL) fitted
+  OAF->YAF AP-L1n(W3) fitted
+  -> exit -9 in 401 s
+STEP FAILED
+ALL_DONE
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 548939 bytes to __results__.html
