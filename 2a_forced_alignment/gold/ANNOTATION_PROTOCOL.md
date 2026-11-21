@@ -34,7 +34,14 @@ boundary.
 7. **Put boundaries on a zero crossing** of the waveform where possible (Praat: Ctrl+0 moves the cursor
    to the nearest zero crossing).
 
-## How to do it in Praat (about 45–60 min per pass)
+## Quick way: the guided script (recommended)
+In Praat: **Open → Open Praat script…** → `gold/kit/mark.praat` → **Run** (Ctrl+R) → choose pass 1 or 2.
+For each word the script opens the right file, zooms to where the word is and waits. Drag across the word
+(rules 4–5), then click **Save word**. Tick **Touches previous word** when there is no pause (rule 6).
+The script snaps boundaries to zero crossings (rule 7), writes the label, and saves each finished file
+into `kit/pass1` or `kit/pass2`. Close its pause window to stop; finished files are skipped next time.
+
+## Manual way in Praat (about 45–60 min per pass)
 1. Open Praat. *Open → Read from file…* → `corpus/<speaker>/<file>.wav`. Then *Open → Read from file…* →
    `gold/kit/pass1/<file>.TextGrid` (an empty tier called `gold`).
 2. Select both objects in the object list (Ctrl+click), then click **View & Edit**.
