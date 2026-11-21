@@ -10,6 +10,7 @@ Results/ was produced by these jobs (logs in logs/).
     python kaggle/make_kernel.py capacity  --user <kaggle-username>   # pre-registered head-capacity study (~1.5 h)
     python kaggle/make_kernel.py augment   --user <kaggle-username>   # pre-registered augmentation study
     python kaggle/make_kernel.py noise     --user <kaggle-username>   # retrain + regenerate the noise study
+    python kaggle/make_kernel.py backbones --user <kaggle-username>   # pre-registered encoder study (4)
     kaggle kernels push -p kaggle/build/<job>
     kaggle kernels output <kaggle-username>/mer-tess-<job> -p <dir>  # then copy runs/ and Results/ back
 
@@ -54,6 +55,13 @@ JOBS = {
                         ("fusion_pipeline", ["--fusion", "gated", "--transcripts", "asr"]),
                         ("fusion_pipeline", ["--fusion", "gated", "--transcripts", "asr", "--spk_norm", "true"]))
         for proto in ("sd", "si") for s in ("train", "test")] + [["analysis/noise_robustness.py"]],
+    # pre-registration 4 (analysis/PREREGISTRATION_si_backbones.md): frozen WavLM-Large, HuBERT-Large,
+    # emotion2vec base (+ the emotion2vec+ seed leakage control). The B stores are built before funasr is installed.
+    "backbones": [["prepare_data.py", "--speech", "--speed_perturb"],
+                  ["-m", "pip", "install", "-q", "funasr==1.4.28"],
+                  ["-c", "import torch, transformers, funasr; print(torch.__version__, transformers.__version__, funasr.__version__)"],
+                  ["analysis/backbone_features.py"],
+                  ["analysis/backbone_study.py", "--c_sensitivity"]],
 }
 
 TEMPLATE = '''# Multimodal emotion recognition on TESS (Assignment 2b) - Kaggle job "{job}".
