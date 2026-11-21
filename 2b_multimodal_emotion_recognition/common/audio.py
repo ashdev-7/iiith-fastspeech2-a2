@@ -30,6 +30,22 @@ def load_and_preprocess(path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
     return (0.95 * y / peak).astype(np.float32)
 
 
+SPEED_FACTORS = (0.9, 1.1)
+
+
+def speed_perturb(y: np.ndarray, factor: float, sr: int = SAMPLE_RATE) -> np.ndarray:
+    """Kaldi/sox-style speed perturbation: resample so that tempo AND pitch change by `factor`
+    (factor 1.1 -> 10 % faster and higher; the clip becomes 1/factor as long), then peak-normalise
+    to 0.95 like the original preprocessing. Used only for training-speaker augmentation
+    (analysis/PREREGISTRATION_si_augmentation.md)."""
+    z = librosa.resample(y.astype(np.float32), orig_sr=int(round(sr * factor)), target_sr=sr)
+    return (0.95 * z / (np.max(np.abs(z)) + 1e-9)).astype(np.float32)
+
+
+def speed_store_name(factor: float) -> str:
+    return f"wavlm_sp{int(round(100 * factor)):03d}"
+
+
 def log_mel(y: np.ndarray, sr: int = SAMPLE_RATE, n_mels: int = 80) -> np.ndarray:
     """80-d log-Mel filterbank, 25 ms window / 10 ms hop -> (frames, 80)."""
     m = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=400, win_length=400, hop_length=160,

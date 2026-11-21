@@ -12,7 +12,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import ConcatDataset, DataLoader, Dataset
 
 from .config import EMOTIONS, NUM_CLASSES, PROTOCOLS, RUNS_DIR
 from .data import load_index, make_split, run_name
@@ -21,11 +21,15 @@ from .modules import MODELS
 
 DEFAULTS = dict(dim=256, dropout=0.2, lr=1e-3, weight_decay=1e-2, batch_size=32, epochs=40,
                 patience=8, label_smoothing=0.05, modality_dropout=0.0, preload=False, skip_existing=True,
-                spk_norm=False, layer_wd=-1.0, layer_lr_mult=1.0, head="bigru")
+                spk_norm=False, layer_wd=-1.0, layer_lr_mult=1.0, head="bigru", augment="none")
 # layer_wd / layer_lr_mult: weight decay and learning-rate multiplier for the softmax layer-weight
 # logits only (ablation). layer_wd < 0 means "same as weight_decay" (the setting of all main runs).
 # head: speech temporal head, "bigru" (main) or "attnpool" (attentive statistics pooling, no recurrence;
 # head-capacity study, analysis/PREREGISTRATION_si_capacity.md).
+# augment: "none" (all main runs) or "speed" = the TRAINING split is used three times, from the original
+# features and from the 0.9x / 1.1x speed-perturbed features; each perturbed copy is normalised with its own
+# statistics (a pseudo-speaker). Validation and test always use the original audio.
+# (analysis/PREREGISTRATION_si_augmentation.md)
 
 
 # ---------------------------------------------------------------- data
@@ -82,6 +86,20 @@ def norm_spec(cfg, stores, df) -> dict:
         return {}
     spk = df.speaker.values
     return {"speech": (spk, speaker_stats(stores["speech"].name, spk))}
+
+
+def augmented_train_sets(cfg, rows, labels, df) -> list:
+    """Speed-perturbed copies of the training rows (speech pipeline only). Each copy reads its own
+    feature store and, with spk_norm, is normalised by that store's own per-speaker statistics, so
+    every perturbed copy of the training speaker is its own pseudo-speaker."""
+    from .audio import SPEED_FACTORS, speed_store_name
+    assert cfg["pipeline"] == "speech" and cfg["speech_features"] == "wavlm", "augmentation: WavLM speech only"
+    out = []
+    for f in SPEED_FACTORS:
+        st = {"speech": VarLenStore(speed_store_name(f))}
+        assert len(st["speech"]) == len(df)
+        out.append(FeatureDataset(rows, labels, st, cfg["preload"], norm_spec(cfg, st, df)))
+    return out
 
 
 def model_meta(stores):
@@ -157,10 +175,15 @@ def train_run(cfg: dict) -> dict:
     labels = df.label.values
     mods = list(stores)
     norm = norm_spec(cfg, stores, df)
-    dl = lambda rows, shuffle: DataLoader(FeatureDataset(rows, labels, stores, cfg["preload"], norm),
-                                          batch_size=cfg["batch_size"], shuffle=shuffle,
-                                          collate_fn=lambda b: collate(b, mods))
-    tr, va = dl(split["train"], True), dl(split["val"], False)
+    dl = lambda ds, shuffle: DataLoader(ds, batch_size=cfg["batch_size"], shuffle=shuffle,
+                                        collate_fn=lambda b: collate(b, mods))
+    train_ds = FeatureDataset(split["train"], labels, stores, cfg["preload"], norm)
+    if cfg.get("augment", "none") == "speed":
+        train_ds = ConcatDataset([train_ds] + augmented_train_sets(cfg, split["train"], labels, df))
+    elif cfg.get("augment", "none") != "none":
+        raise ValueError(f"unknown augment {cfg['augment']!r}")
+    tr = dl(train_ds, True)
+    va = dl(FeatureDataset(split["val"], labels, stores, cfg["preload"], norm), False)
 
     model = MODELS[cfg["pipeline"]](model_meta(stores), cfg).to(device)
     lw = [p for n, p in model.named_parameters() if n.endswith("layer_logits")]
@@ -312,4 +335,5 @@ def speech_variant(args) -> str:
             + (f"_{args.head}" if args.head != d["head"] else "")
             + (f"_d{args.dim}" if args.dim != d["dim"] else "")
             + (f"_do{args.dropout:g}" if args.dropout != d["dropout"] else "")
-            + (f"_wd{args.weight_decay:g}" if args.weight_decay != d["weight_decay"] else ""))
+            + (f"_wd{args.weight_decay:g}" if args.weight_decay != d["weight_decay"] else "")
+            + (f"_aug{args.augment}" if args.augment != d["augment"] else ""))

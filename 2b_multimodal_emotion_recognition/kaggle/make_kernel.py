@@ -8,6 +8,8 @@ Results/ was produced by these jobs (logs in logs/).
     python kaggle/make_kernel.py ablation  --user <kaggle-username>   # speech front-end ablation (~1 h)
     python kaggle/make_kernel.py analyses  --user <kaggle-username>   # layer probes + prosody baseline (~20 min)
     python kaggle/make_kernel.py capacity  --user <kaggle-username>   # pre-registered head-capacity study (~1.5 h)
+    python kaggle/make_kernel.py augment   --user <kaggle-username>   # pre-registered augmentation study
+    python kaggle/make_kernel.py noise     --user <kaggle-username>   # retrain + regenerate the noise study
     kaggle kernels push -p kaggle/build/<job>
     kaggle kernels output <kaggle-username>/mer-tess-<job> -p <dir>  # then copy runs/ and Results/ back
 
@@ -38,6 +40,20 @@ JOBS = {
                   ["--spk_norm", "true", "--dim", "64", "--dropout", "0.5", "--weight_decay", "0.05"],
                   ["--spk_norm", "true", "--head", "attnpool"])
         for s in ("train", "test")] + [["analysis/capacity_inductive.py"]],
+    # pre-registration 3, part A (analysis/PREREGISTRATION_si_augmentation.md): speed-perturbation augmentation
+    "augment": [["prepare_data.py", "--speech", "--speed_perturb"]] + [
+        [f"models/speech_pipeline/{s}.py", "--protocol", "si", "--si_seeds", "10", "--spk_norm", "true",
+         "--augment", "speed"] for s in ("train", "test")] + [["analysis/augmentation_lr.py"]],
+    # pre-registration 3, part N: retrain the six noise-study models (SD + SI) and regenerate the noise study
+    "noise": [["prepare_data.py", "--speech", "--text", "--asr"]] + [
+        [f"models/{pipe}/{s}.py", "--protocol", proto, *a]
+        for pipe, a in (("speech_pipeline", ["--features", "wavlm"]),
+                        ("speech_pipeline", ["--features", "wavlm", "--spk_norm", "true"]),
+                        ("text_pipeline", ["--transcripts", "asr"]),
+                        ("fusion_pipeline", ["--fusion", "gated", "--transcripts", "gt"]),
+                        ("fusion_pipeline", ["--fusion", "gated", "--transcripts", "asr"]),
+                        ("fusion_pipeline", ["--fusion", "gated", "--transcripts", "asr", "--spk_norm", "true"]))
+        for proto in ("sd", "si") for s in ("train", "test")] + [["analysis/noise_robustness.py"]],
 }
 
 TEMPLATE = '''# Multimodal emotion recognition on TESS (Assignment 2b) - Kaggle job "{job}".

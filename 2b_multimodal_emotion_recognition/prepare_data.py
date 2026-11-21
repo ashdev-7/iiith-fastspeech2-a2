@@ -5,6 +5,7 @@
     python prepare_data.py --speech       # preprocess audio, WavLM + log-Mel features
     python prepare_data.py --text         # DistilRoBERTa features for ground-truth transcripts
     python prepare_data.py --asr          # Whisper transcripts + their text features (extension)
+    python prepare_data.py --speed_perturb  # WavLM features of 0.9x / 1.1x speed copies (augmentation study)
 """
 from __future__ import annotations
 
@@ -64,7 +65,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 def main():
     ap = argparse.ArgumentParser()
-    for flag in ("all", "download", "speech", "speech_full", "text", "asr"):
+    for flag in ("all", "download", "speech", "speech_full", "speed_perturb", "text", "asr"):
         ap.add_argument(f"--{flag}", action="store_true")
     args = ap.parse_args()
     torch.set_num_threads(max(1, torch.get_num_threads()))
@@ -83,6 +84,13 @@ def main():
     if args.speech_full:  # ablation store: all 13 WavLM layers at native 20 ms (~5.6 GB, not part of --all)
         from common.features import SSL_FULL_LAYERS, extract_speech_ssl
         extract_speech_ssl(load_waves(df), name="wavlm_full", device=DEVICE, layers=SSL_FULL_LAYERS, pool=1)
+
+    if args.speed_perturb:  # augmentation study: WavLM features of 0.9x / 1.1x speed copies of every clip
+        from common.audio import SPEED_FACTORS, speed_perturb, speed_store_name
+        from common.features import extract_speech_ssl
+        waves = load_waves(df)
+        for f in SPEED_FACTORS:
+            extract_speech_ssl([speed_perturb(w, f) for w in waves], name=speed_store_name(f), device=DEVICE)
 
     if args.text or args.all:
         from common.features import extract_text
