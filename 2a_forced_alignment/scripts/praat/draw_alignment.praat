@@ -27,27 +27,28 @@ selectObject: sound
 spec = To Spectrogram: 0.005, 5000, 0.002, 20, "Gaussian"
 
 Erase all
-Font size: 10
+# drawn at its printed size: the report's text width (6.6 in), 9-pt text
+Font size: 9
 Line width: 1
 
 # waveform
-Select outer viewport: 0, 6, 0, 1.1
+Select outer viewport: 0, 6.6, 0, 0.65
 selectObject: sound
 Draw: t_start, t_end, 0, 0, "no", "Curve"
 
 # spectrogram
-Select outer viewport: 0, 6, 0.9, 2.9
+Select outer viewport: 0, 6.6, 0.3, 1.95
 selectObject: spec
 Paint: t_start, t_end, 0, 5000, 100, "yes", 50, 6, 0, "no"
 Marks left every: 1, 1000, "yes", "yes", "no"
 Text left: "yes", "Frequency (Hz)"
 
 # word + phone tiers with boundaries extended through the spectrogram
-Select outer viewport: 0, 6, 0.9, 4.2
+Select outer viewport: 0, 6.6, 0.3, 2.45
 selectObject: tg
 Draw: t_start, t_end, "yes", "yes", "yes"
 
-Select outer viewport: 0, 6, 0, 4.2
+Select outer viewport: 0, 6.6, 0, 2.45
 # PNG from the Praat GUI / Praat --run; EPS when run headless (parselmouth has no bitmap renderer)
 if endsWith (png_path$, ".eps")
     Save as EPS file: png_path$

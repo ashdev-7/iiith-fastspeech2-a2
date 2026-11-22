@@ -41,7 +41,8 @@ ABLATIONS = [
     ("speech_pipeline", ["--features", "wavlm", "--layer_wd", "0", "--layer_lr_mult", "10"]),
 ]
 ANALYSES = ["analysis/layer_probe.py", "analysis/prosody_baseline.py", "analysis/noise_robustness.py",
-            "analysis/make_results.py", "analysis/error_analysis.py"]
+            "analysis/make_results.py", "analysis/error_analysis.py",
+            "analysis/report_figures.py"]  # the report's figures, at print size, from the outputs above
 
 
 def sh(*args, check=True):

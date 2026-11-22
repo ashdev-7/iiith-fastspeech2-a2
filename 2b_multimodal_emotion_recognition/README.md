@@ -108,6 +108,7 @@ python models/fusion_pipeline/test.py
 # single run: add  --protocol si --fold 0 --seed 0
 python analysis/make_results.py                        # writes tables and plots to Results/
 python analysis/error_analysis.py                      # writes failure cases to Results/error_analysis.md
+python analysis/report_figures.py                      # the report's figures (Results/plots/fig_*.pdf), at print size
 python analysis/layer_probe.py                         # linear probes per frozen layer
 python analysis/prosody_baseline.py                    # hand-crafted prosody baseline
 python analysis/noise_robustness.py                    # test-time noise (needs checkpoints + GPU)

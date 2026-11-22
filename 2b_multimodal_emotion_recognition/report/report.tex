@@ -2,10 +2,25 @@
 \usepackage[margin=1.9cm]{geometry}
 \usepackage{mathptmx}  % Times text and math (Type 1)
 \usepackage{graphicx,booktabs,xcolor,float,tabularx,amsmath,amssymb}
-\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+\usepackage{hyperref}
+\definecolor{linkblue}{RGB}{0,62,138}
+\hypersetup{colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue}
+\makeatletter
+% section headings: "1. Title" with a normal word space, compact spacing
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname.\hspace{0.45em}}
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.4ex \@plus -0.6ex \@minus -0.2ex}{1.0ex \@plus 0.2ex}{\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-1.9ex \@plus -0.5ex \@minus -0.2ex}{0.7ex \@plus 0.2ex}{\normalfont\normalsize\bfseries}}
+% captions: one size everywhere, bold label
+\setlength\abovecaptionskip{5pt}\setlength\belowcaptionskip{3pt}
+\long\def\@makecaption#1#2{\vskip\abovecaptionskip
+  \sbox\@tempboxa{\small\textbf{#1.}\ #2}%
+  \ifdim\wd\@tempboxa>\hsize {\small\textbf{#1.}\ #2\par}\else\global\@minipagefalse\hb@xt@\hsize{\hfil\box\@tempboxa\hfil}\fi
+  \vskip\belowcaptionskip}
+\makeatother
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}\setlength{\intextsep}{8pt plus 2pt minus 2pt}
 \setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
 \graphicspath{{../Results/plots/}}
-\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\pp}{\,pp}
 \newcommand{\best}[1]{\textbf{#1}}
 \DeclareRobustCommand{\S}{\ensuremath{\mathsection}}  % Type 1 section sign, same reason
@@ -35,13 +50,18 @@ Speech carries the emotion. Text cannot: in TESS every word is spoken in all sev
 \textbf{Beyond the brief} (\S4.5--4.9). Five studies, each planned and committed before it was run, raise unseen-speaker accuracy to 75.7\% (linear head on frozen WavLM-Large, normalised with the unseen speaker's unlabelled clips~$\dagger$); all five use the same two speakers, so this is likely optimistic. A control shows that an encoder trained on data containing TESS scores 99.9\% on the ``unseen'' speaker, so such encoders are excluded from every result.
 \end{minipage}}\end{center}
 
+{\setlength{\parskip}{1pt}\tableofcontents
+\listoffigures
+\listoftables}
+\clearpage
+
 \input{sections/architecture}
 
 % =====================================================================
 \section{Experiments (B)}\label{sec:exp}
 \subsection{Main comparison of the three pipelines}
 \begin{table}[H]\centering\small
-\caption{Test accuracy (\%), mean $\pm$ std over runs (RAND/SD: 5 runs, SI: 6 runs). Classes are balanced, so accuracy = UAR. Macro-F1 for every row is in \code{Results/accuracy\_tables.md}. $\dagger$ = transductive speaker normalisation.}\label{tab:main}
+\caption[Main comparison of the three pipelines]{Test accuracy (\%), mean $\pm$ std over runs (RAND/SD: 5 runs, SI: 6 runs). Classes are balanced, so accuracy = UAR. Macro-F1 for every row is in \code{Results/accuracy\_tables.md}. $\dagger$ = transductive speaker normalisation.}\label{tab:main}
 \begin{tabular}{@{}llccc@{}}\toprule
 Pipeline & Variant & RAND & SD & SI (LOSO)\\\midrule
 Speech & log-Mel + BiGRU (baseline) & 99.67 $\pm$ 0.32 & 99.52 $\pm$ 0.56 & 41.57 $\pm$ 5.99\\
@@ -76,7 +96,7 @@ The zero-shot model is still at chance, so the signal is not lexical emotion; it
 
 \subsection{Paired significance tests}
 \begin{table}[H]\centering\small
-\caption{Paired comparisons (B vs.\ A, identical splits and seeds). $\Delta$ = mean per-run accuracy difference (pp) with 95\% $t$-CI; $p_t$ paired $t$-test over runs; fixes / breaks = test clips that A got wrong and B right / the reverse, summed over all runs (descriptive counts). RAND/SD rows are omitted: every $|\Delta|\le0.4$\pp. The full table is in \code{Results/statistics.md}.}\label{tab:sig}
+\caption[Paired significance tests (unseen speaker)]{Paired comparisons (B vs.\ A, identical splits and seeds). $\Delta$ = mean per-run accuracy difference (pp) with 95\% $t$-CI; $p_t$ paired $t$-test over runs; fixes / breaks = test clips that A got wrong and B right / the reverse, summed over all runs (descriptive counts). RAND/SD rows are omitted: every $|\Delta|\le0.4$\pp. The full table is in \code{Results/statistics.md}.}\label{tab:sig}
 \begin{tabular}{@{}llrrrr@{}}\toprule
 A & B (SI protocol) & $\Delta$ (pp) & 95\% CI & $p_t$ & fixes / breaks\\\midrule
 speech log-Mel & speech WavLM & $+16.90$ & $\pm13.24$ & \textbf{0.022} & 2252 / 832\\
@@ -97,7 +117,7 @@ No fusion variant can be distinguished from speech-only.
 
 \subsection{How strong is the speech model? A non-neural reference}
 \begin{table}[H]\centering\small
-\caption{Hand-crafted prosody baseline: 44 utterance-level functionals (duration, F0 statistics, energy, spectral shape, 13 MFCC means and stds), same splits as the neural models.}\label{tab:prosody}
+\caption[Hand-crafted prosody baseline]{Hand-crafted prosody baseline: 44 utterance-level functionals (duration, F0 statistics, energy, spectral shape, 13 MFCC means and stds), same splits as the neural models.}\label{tab:prosody}
 \begin{tabular}{@{}lcccc@{}}\toprule
 Model & speaker norm & RAND & SD & SI\\\midrule
 duration only (LogReg) & -- & 36.62 $\pm$ 2.07 & 35.43 $\pm$ 1.60 & 24.61 $\pm$ 4.19\\
@@ -114,7 +134,7 @@ That fits WavLM features being partly speaker-invariant already.
 
 \subsection{Layer-wise linear probes on the frozen encoders}
 \begin{table}[H]\centering\small
-\caption{Logistic-regression probes on pooled (mean+std) features of single frozen layers. Emotion: 7-class accuracy; speaker: OAF vs.\ YAF.}\label{tab:probe}
+\caption[Layer-wise linear probes on the frozen encoders]{Logistic-regression probes on pooled (mean+std) features of single frozen layers. Emotion: 7-class accuracy; speaker: OAF vs.\ YAF.}\label{tab:probe}
 \begin{tabular}{@{}lcccccccc@{}}\toprule
 & \multicolumn{7}{c}{WavLM-Base+ layer} & \\\cmidrule(lr){2-8}
 Probe & L0 & L2 & L4 & L6 & L8 & L10 & L12 & log-Mel\\\midrule
@@ -138,7 +158,7 @@ One interpretation (not tested further): trained on one speaker, the model prefe
 Our earlier guess that freeing the weights would find L8--L10 was wrong.
 
 \begin{table}[H]\centering\small
-\caption{Speech front-end ablation, paired against the main WavLM model on identical splits and seeds ($\Delta$ in pp, 95\% $t$-CI, paired $t$-test). Max weight = largest learned layer weight (uniform: 0.143 for 7 layers, 0.077 for 13).}\label{tab:ablation}
+\caption[Speech front-end ablation]{Speech front-end ablation, paired against the main WavLM model on identical splits and seeds ($\Delta$ in pp, 95\% $t$-CI, paired $t$-test). Max weight = largest learned layer weight (uniform: 0.143 for 7 layers, 0.077 for 13).}\label{tab:ablation}
 \begin{tabular}{@{}lccccc@{}}\toprule
 Variant & SD & SI & $\Delta$ SI (pp) & $p$ & max weight\\\midrule
 main: 7 layers (0,2,\dots,12), 40\,ms & 99.90 $\pm$ 0.13 & 58.48 $\pm$ 8.74 & -- & -- & 0.156\\
@@ -147,8 +167,8 @@ layer logits: no weight decay & 99.90 $\pm$ 0.13 & 58.42 $\pm$ 9.97 & $-0.06 \pm
 layer logits: no decay, 10$\times$ lr & 99.86 $\pm$ 0.13 & 59.45 $\pm$ 6.51 & $+0.98 \pm 7.57$ & 0.75 & 0.257\\\bottomrule
 \end{tabular}\end{table}
 \begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{ablation_layer_weights.png}
-\caption{Learned layer weights (mean over runs). Only the 10$\times$ learning-rate variant departs from uniform, and it shifts weight to the lowest layers.}\label{fig:ablation}
+\includegraphics[width=\linewidth]{fig_layer_weights.pdf}
+\caption[Learned layer weights of the speech model]{Learned layer weights (mean over runs). Only the 10$\times$ learning-rate variant departs from uniform, and it shifts weight to the lowest layers.}\label{fig:ablation}
 \end{figure}
 
 \subsection{Is the SI gap overfitting? A pre-registered test}\label{sec:prereg}
@@ -158,7 +178,7 @@ We tested one fix and wrote the plan down \emph{before} running it, committed to
 It uses mean and std over time of all 7 cached WavLM layers (no layer selection; 10\,752 dims), StandardScaler, and L2 logistic regression.
 $C$ is chosen by word-grouped 5-fold cross-validation on the \emph{training} speaker only, and the test speaker is used once.
 \begin{table}[H]\centering\small
-\caption{Pre-registered SI experiment (\code{Results/si\_linear.md}). The linear model is deterministic, so there is one run per direction; the BiGRU shows mean [min, max] over its 3 seeds.}\label{tab:prereg}
+\caption[Study 1: linear model on pooled features]{Pre-registered SI experiment (\code{Results/si\_linear.md}). The linear model is deterministic, so there is one run per direction; the BiGRU shows mean [min, max] over its 3 seeds.}\label{tab:prereg}
 \begin{tabular}{@{}lccc@{}}\toprule
 Model & Test YAF & Test OAF & mean\\\midrule
 WavLM + BiGRU (Table~\ref{tab:main}) & 53.0 [51.1, 55.9] & 63.9 [55.6, 74.7] & 58.5\\
@@ -180,7 +200,7 @@ We registered seven hypotheses before running (\code{analysis/PREREGISTRATION\_s
 The design: four neural heads, 10 seeds per direction each (80 runs), the logistic-regression controls, and an \emph{inductive} normalisation variant. In the inductive variant, the test speaker's statistics come from 40 fixed calibration words only, and every model is scored on the other 160 words.
 Every hyper-parameter was fixed in advance. Retrained seeds 0--2 reproduce the original runs prediction for prediction (100\% identical).
 \begin{table}[H]\centering\small
-\caption{Head-capacity study (SI; \code{Results/capacity\_study.md}). Neural heads: mean [min, max] over 10 seeds, and the accuracy of the seed ensemble (averaged posteriors). $\dagger$ = transductive speaker normalisation.}\label{tab:capacity}
+\caption[Study 2: head capacity]{Head-capacity study (SI; \code{Results/capacity\_study.md}). Neural heads: mean [min, max] over 10 seeds, and the accuracy of the seed ensemble (averaged posteriors). $\dagger$ = transductive speaker normalisation.}\label{tab:capacity}
 \begin{tabular}{@{}lrcccc@{}}\toprule
 Head & params & Test YAF & Test OAF & mean & ensemble\\\midrule
 B1 BiGRU (main) & 858k & 57.2 [44.9, 72.1] & 61.5 [53.6, 74.7] & 59.3 & 62.9\\
@@ -229,7 +249,7 @@ The primary model was fixed in advance as the equal-weight ensemble (ENS) of the
 Excluded by rule: every emotion2vec+ model, because the seed model is fine-tuned with labels on EmoBox~\cite{emobox}, which contains TESS. The larger emotion2vec+ models use undisclosed pseudo-labelled data.
 All registered audits pass: each (speaker, word) pair occurs once in every emotion, so word identity carries no label information; no clip or speaker is shared between training and test; and A-L1n(B), recomputed in the job, gives 100\% identical predictions to study~3.
 \begin{table}[H]\centering\small
-\caption{Encoder study (SI, A-L1n recipe, $\dagger$; \code{Results/backbone\_study.md}). $\Delta$ = difference from WavLM-Base+ with the 95\% word-bootstrap CI. LC rows are a leakage control, never a candidate.}\label{tab:backbones}
+\caption[Study 4: frozen speech encoders]{Encoder study (SI, A-L1n recipe, $\dagger$; \code{Results/backbone\_study.md}). $\Delta$ = difference from WavLM-Base+ with the 95\% word-bootstrap CI. LC rows are a leakage control, never a candidate.}\label{tab:backbones}
 \begin{tabular}{@{}lccccc@{}}\toprule
 Encoder & Test YAF & Test OAF & mean & $\Delta$ test YAF & $\Delta$ test OAF\\\midrule
 B: WavLM-Base+ (= A-L1n) & 76.4 & 67.7 & 72.0 & -- & --\\
@@ -259,7 +279,7 @@ The primary model, FINAL, applies S to the equal-weight ensemble of the P-augmen
 Excluded by rule: other labelled corpora; encoders trained with emotion labels; and any use of TESS's design at test time (each word in all seven emotions, equal class sizes).
 All audits pass. In the inductive variant no scored clip is ever pseudo-labelled (D5), and the reference model, with its features re-extracted, gives 100\% identical predictions to study~4 (C1).
 \begin{table}[H]\centering\small
-\caption{Study 5 (SI, $\dagger$; \code{Results/final\_study.md}). $\Delta$ = difference from the reference R, with the 95\% word-bootstrap CI.}\label{tab:final}
+\caption[Study 5: Whisper encoder, pitch augmentation and self-training]{Study 5 (SI, $\dagger$; \code{Results/final\_study.md}). $\Delta$ = difference from the reference R, with the 95\% word-bootstrap CI.}\label{tab:final}
 \begin{tabular}{@{}lccccc@{}}\toprule
 Model & Test YAF & Test OAF & mean & $\Delta$ test YAF & $\Delta$ test OAF\\\midrule
 R: A-L1n, WavLM-Large (study 4) & 80.0 & 71.4 & \textbf{75.7} & -- & --\\
@@ -282,7 +302,7 @@ Across studies 1--5, no clean lever beyond the larger encoder improved both dire
 \section{Analysis (C)}
 \subsection{Which emotions are easiest and hardest?}
 \begin{table}[H]\centering\small
-\caption{Per-class F1 (\%) under SI, mean over 6 runs. Under RAND/SD every class is $\ge98.8$ for all audio models.}\label{tab:f1}
+\caption[Per-class F1 on the unseen speaker]{Per-class F1 (\%) under SI, mean over 6 runs. Under RAND/SD every class is $\ge98.8$ for all audio models.}\label{tab:f1}
 \begin{tabular}{@{}lccccccc@{}}\toprule
 Model & Angry & Disgust & Fear & Happy & Neutral & Pl.\ surprise & Sad\\\midrule
 Speech log-Mel & 20.7 & 51.0 & 30.9 & 0.6 & 83.8 & 13.6 & 52.7\\
@@ -293,9 +313,8 @@ Fusion cross-attn (GT) & 24.6 & 69.6 & \textbf{77.1} & 6.3 & \textbf{95.1} & \te
 \end{tabular}\end{table}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.42\linewidth]{confusion_speech_wavlm_si.png}\hfill
-\includegraphics[width=0.42\linewidth]{confusion_text_asr_sd.png}
-\caption{Row-normalised confusion matrices. Left: speech WavLM, SI (6 runs). Right: text model on Whisper transcripts, SD. It can only separate classes whose ASR punctuation differs, and pleasant surprise is the most distinctive.}\label{fig:conf}
+\includegraphics[width=\linewidth]{fig_confusions.pdf}
+\caption[Confusion matrices of the speech and text models]{Row-normalised confusion matrices. Left: speech WavLM, SI (6 runs). Right: text model on Whisper transcripts, SD. It can only separate classes whose ASR punctuation differs, and pleasant surprise is the most distinctive.}\label{fig:conf}
 \end{figure}
 
 \textbf{Easiest: neutral, sad, fear} (SI F1 90--95, 82--92 and 66--77 for the WavLM-based models).
@@ -321,7 +340,7 @@ Knowing which word was said lets cross-attention condition the speech pooling on
 With six runs we cannot confirm this.
 
 \begin{table}[H]\centering\small
-\caption{What Whisper-small writes for each emotion (\% of clips). The trained text model can only read these marks; the target word is recognised for 84--92\% of clips regardless of emotion.}\label{tab:asr}
+\caption[Punctuation in Whisper transcripts by emotion]{What Whisper-small writes for each emotion (\% of clips). The trained text model can only read these marks; the target word is recognised for 84--92\% of clips regardless of emotion.}\label{tab:asr}
 \begin{tabular}{@{}lccccccc@{}}\toprule
 & Angry & Disgust & Fear & Happy & Neutral & Pl.\ surprise & Sad\\\midrule
 ends with ``!'' & 9.2 & 4.5 & 32.0 & 42.8 & 0.0 & \textbf{72.2} & 0.0\\
@@ -337,9 +356,8 @@ The text model's best class is pleasant surprise (F1 56 in SD), exactly the clas
 However, this text signal is a lossy, quantised copy of information the speech branch already has, so it adds little \emph{on average} (GMU-Whisper vs.\ GMU-GT: $+0.4$\pp, $p=0.91$).
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.46\linewidth]{fusion_gate_distribution.png}\hfill
-\includegraphics[width=0.50\linewidth]{fusion_gain_vs_confidence_gated_wavlm_asr.png}
-\caption{Left: distribution of the mean GMU gate per test clip (1 = speech). Right: SI accuracy of speech-only vs.\ GMU fusion (Whisper), binned by the speech-only model's confidence on the same clip.}\label{fig:gate}
+\includegraphics[width=\linewidth]{fig_fusion.pdf}
+\caption[Fusion gate and accuracy by speech confidence]{Left: distribution of the mean GMU gate per test clip (1 = speech). Right: SI accuracy of speech-only vs.\ GMU fusion (Whisper), binned by the speech-only model's confidence on the same clip.}\label{fig:gate}
 \end{figure}
 
 \textbf{Fusion helps when the speech evidence is weak.}
@@ -372,8 +390,8 @@ The most frequent confusions (true class predicted as another) are happy as angr
 For each case below, we compare the clip's prosody with \emph{the same speaker's} average for the true and predicted classes (\code{Results/error\_analysis.md}):
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.72\linewidth]{error_analysis_cases.png}
-\caption{Five clips misclassified by GMU fusion in all SI seeds: log-Mel spectrogram with F0 (left) and mean posterior (right; orange = predicted, green = true).}\label{fig:errors}
+\includegraphics[width=\linewidth]{fig_error_cases.pdf}
+\caption[Five systematic failure cases]{Five clips misclassified by GMU fusion in all SI seeds: log-Mel spectrogram with F0 (left) and mean posterior (right; orange = predicted, green = true).}\label{fig:errors}
 \end{figure}
 \begin{enumerate}\setlength\itemsep{1pt}
 \item \textbf{YAF\_puff\_happy, predicted angry (p = 0.96).} F0 median (294\,Hz) and energy ($-16.2$\,dB) are close to YAF's \emph{happy} means (280\,Hz, $-15.9$\,dB) and far from angry (237\,Hz, $-18.0$\,dB); the F0 range fits both classes (218 vs.\ 202/216\,Hz), and the duration is shorter than either (1.42\,s). Its own prosody points to the correct class rather than the predicted one, so this is a pure \emph{cross-speaker mapping} error. The region the OAF-trained model calls ``angry'' covers YAF's happy, the most frequent confusion overall (123 clips).
@@ -389,8 +407,8 @@ The confidences are also \emph{high} (0.84--0.96): errors are confident, not bor
 
 \subsection{Separability of the temporal, contextual and fusion blocks}
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth]{tsne_required_blocks.png}
-\caption{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, trained on OAF, tested on YAF). Panel silhouettes (cosine, in the original 256-d space) are for the run shown; the table below gives means over all runs. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
+\includegraphics[width=\linewidth]{fig_tsne.pdf}
+\caption[Separability of the temporal, contextual and fusion blocks]{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, trained on OAF, tested on YAF). Panel silhouettes (cosine, in the original 256-d space) are for the run shown; the table below gives means over all runs. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
 \end{figure}
 
 \begin{center}\small
@@ -412,8 +430,8 @@ Under SI they are slightly less separated than speech alone (0.54 with ground-tr
 
 \subsection{Robustness to noise and the value of speaker normalisation}\label{sec:noise}
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth]{noise_robustness.png}
-\caption{Test-time additive white noise. Models are trained on clean audio; WavLM, Whisper and DistilRoBERTa features are recomputed from the noisy audio. Mean $\pm$ std over 5 (SD) / 6 (SI) runs.}\label{fig:noise}
+\includegraphics[width=\linewidth]{fig_noise.pdf}
+\caption[Robustness to additive white noise]{Test-time additive white noise. Models are trained on clean audio; WavLM, Whisper and DistilRoBERTa features are recomputed from the noisy audio. Mean $\pm$ std over 5 (SD) / 6 (SI) runs.}\label{fig:noise}
 \end{figure}
 \begin{center}\small
 \begin{tabular}{@{}llccccc@{}}\toprule

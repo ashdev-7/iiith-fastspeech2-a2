@@ -179,6 +179,7 @@ def stage_adapt():
 
 def stage_analyze():
     subprocess.check_call([sys.executable, str(ROOT / "scripts" / "analyze_alignments.py")])
+    subprocess.check_call([sys.executable, str(ROOT / "scripts" / "report_figures.py")])  # report figures, print size
 
 
 CORPUS_UNTOUCHED = ROOT / "corpus_untouched"

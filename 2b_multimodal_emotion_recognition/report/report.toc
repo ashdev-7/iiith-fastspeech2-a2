@@ -1,0 +1,20 @@
+\contentsline {section}{\numberline {1}Dataset and what it implies}{3}{section.1}%
+\contentsline {section}{\numberline {2}Architecture decisions (A)}{3}{section.2}%
+\contentsline {section}{\numberline {3}Experimental protocol}{4}{section.3}%
+\contentsline {section}{\numberline {4}Experiments (B)}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Main comparison of the three pipelines}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Paired significance tests}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}How strong is the speech model? A non-neural reference}{6}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Layer-wise linear probes on the frozen encoders}{6}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Is the SI gap overfitting? A pre-registered test}{7}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Why does the BiGRU lose? A second pre-registered study}{7}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Does augmentation help? A third pre-registered study}{8}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Is the encoder the bottleneck? A fourth pre-registered study}{9}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Can clean levers push further? A fifth pre-registered study}{9}{subsection.4.9}%
+\contentsline {section}{\numberline {5}Analysis (C)}{10}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Which emotions are easiest and hardest?}{10}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}When does fusion help?}{11}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Error analysis: five systematic failure cases}{12}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Separability of the temporal, contextual and fusion blocks}{14}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Robustness to noise and the value of speaker normalisation}{15}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Conclusions and limitations}{16}{section.6}%

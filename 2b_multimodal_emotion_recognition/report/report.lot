@@ -1,0 +1,13 @@
+\contentsline {table}{\numberline {1}{\ignorespaces The three pipelines, block by block}}{3}{table.1}%
+\contentsline {table}{\numberline {2}{\ignorespaces Design choices and the alternatives tested}}{4}{table.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces Main comparison of the three pipelines}}{5}{table.3}%
+\contentsline {table}{\numberline {4}{\ignorespaces Paired significance tests (unseen speaker)}}{5}{table.4}%
+\contentsline {table}{\numberline {5}{\ignorespaces Hand-crafted prosody baseline}}{6}{table.5}%
+\contentsline {table}{\numberline {6}{\ignorespaces Layer-wise linear probes on the frozen encoders}}{6}{table.6}%
+\contentsline {table}{\numberline {7}{\ignorespaces Speech front-end ablation}}{6}{table.7}%
+\contentsline {table}{\numberline {8}{\ignorespaces Study 1: linear model on pooled features}}{7}{table.8}%
+\contentsline {table}{\numberline {9}{\ignorespaces Study 2: head capacity}}{8}{table.9}%
+\contentsline {table}{\numberline {10}{\ignorespaces Study 4: frozen speech encoders}}{9}{table.10}%
+\contentsline {table}{\numberline {11}{\ignorespaces Study 5: Whisper encoder, pitch augmentation and self-training}}{10}{table.11}%
+\contentsline {table}{\numberline {12}{\ignorespaces Per-class F1 on the unseen speaker}}{10}{table.12}%
+\contentsline {table}{\numberline {13}{\ignorespaces Punctuation in Whisper transcripts by emotion}}{11}{table.13}%

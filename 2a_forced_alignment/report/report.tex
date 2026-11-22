@@ -3,10 +3,25 @@
 \usepackage{mathptmx}  % Times text and math (Type 1)
 \usepackage{graphicx,booktabs,xcolor,float,tabularx,amsmath}
 \usepackage[safe]{tipa}
-\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{hyperref}
+\definecolor{linkblue}{RGB}{0,62,138}
+\hypersetup{colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue}
+\makeatletter
+% section headings: "1. Title" with a normal word space, compact spacing
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname.\hspace{0.45em}}
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.4ex \@plus -0.6ex \@minus -0.2ex}{1.0ex \@plus 0.2ex}{\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-1.9ex \@plus -0.5ex \@minus -0.2ex}{0.7ex \@plus 0.2ex}{\normalfont\normalsize\bfseries}}
+% captions: one size everywhere, bold label
+\setlength\abovecaptionskip{5pt}\setlength\belowcaptionskip{3pt}
+\long\def\@makecaption#1#2{\vskip\abovecaptionskip
+  \sbox\@tempboxa{\small\textbf{#1.}\ #2}%
+  \ifdim\wd\@tempboxa>\hsize {\small\textbf{#1.}\ #2\par}\else\global\@minipagefalse\hb@xt@\hsize{\hfil\box\@tempboxa\hfil}\fi
+  \vskip\belowcaptionskip}
+\makeatother
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}\setlength{\intextsep}{8pt plus 2pt minus 2pt}
 \setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
 \graphicspath{{../analysis/figures/}}
-\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\code}[1]{\texttt{#1}}
 
 \title{\vspace{-1.2cm}Forced Alignment with the Montreal Forced Aligner\\\large Assignment 2a: pipeline, models, and alignment analysis}
 \author{Yash Tyagi\\[2pt]\small Code, TextGrid outputs and setup instructions:\\\footnotesize\url{https://github.com/ashdev-7/iiith-fastspeech2-a2/tree/main/2a_forced_alignment}}
@@ -37,7 +52,7 @@ The samples are untouched: sample counts, rate and the header's recorded min/max
 \code{mfa validate} then reported no unreadable audio, no missing transcripts, no OOVs and no phones without acoustic models.
 
 \section{Dictionaries and acoustic models}
-\begin{table}[H]\centering\small
+\begin{table}[tb]\centering\small
 \begin{tabularx}{\linewidth}{@{}p{2.75cm}p{3.7cm}p{5.25cm}X@{}}\toprule
 Experiment & Acoustic model & Dictionary & Purpose\\\midrule
 \code{arpa\_base} & \code{english\_us\_arpa} 3.0 & \code{english\_us\_arpa} 3.0 + G2P for OOVs & primary system\\
@@ -52,7 +67,8 @@ G2P is MFA's Pynini-based pair n-gram model~\cite{pynini}; its output is plausib
 The wide beam (\code{--beam 100 --retry\_beam 400}) is there because 25--31\,s utterances are the usual cause of beam failures at the defaults. All 6 files aligned in every experiment. Both pretrained dictionaries are byte-identical (MD5) to the official MFA releases.
 
 \section{Results}
-\begin{table}[H]\centering\small
+Table~\ref{tab:stats} summarises every experiment, and Fig.~\ref{fig:praat} shows two learner prompts as drawn by Praat; Section~\ref{sec:obs} explains the differences.
+\begin{table}[tb]\centering\small
 \resizebox{\linewidth}{!}{\begin{tabular}{@{}llrrrrrr@{}}\toprule
 Experiment & Speaker & Phones & Silence \% & Mean phone (ms) & Phones $\le$30\,ms & Speech log-lik. & Word bound.\ $\Delta$ vs base\\\midrule
 arpa\_base & f2b & 1025 & 10.7 & 73.7 & 8.1\% & $-46.99$ & --\\
@@ -64,23 +80,23 @@ arpa\_g2p\_custom & f2b & 1014 & 10.8 & 74.5 & 9.0\% & $-47.84$ & 4.7\,ms\\
 arpa\_adapted & f2b & 1025 & 10.7 & 73.8 & 8.0\% & $\mathbf{-46.14}$ & 0.1\,ms\\
            & isle & 38 & 59.8 & 132.1 & 0.0\% & $\mathbf{-47.40}$ & 0.0\,ms\\\bottomrule
 \end{tabular}}
-\caption{\small Alignment statistics (\code{analysis/summary\_by\_experiment.csv}, \code{agreement\_vs\_arpa\_base.csv}, \code{mfa\_quality\_by\_experiment.csv}).
+\caption{Alignment statistics (\code{analysis/summary\_by\_experiment.csv}, \code{agreement\_vs\_arpa\_base.csv}, \code{mfa\_quality\_by\_experiment.csv}).\label{tab:stats}
 $\Delta$ = mean absolute difference of word start/end times against \code{arpa\_base}, pooled over all word boundaries. Log-likelihoods (MFA's \code{alignment\_analysis.csv}) are only comparable within the ARPA models (n/c = not comparable).}
 \end{table}
 
-\begin{figure}[H]\centering
-\includegraphics[width=0.49\linewidth]{praat_arpa_base_ISLE_SESS0131_BLOCKD02_01_sprt1.pdf}\hfill
-\includegraphics[width=0.49\linewidth]{praat_mfa_ipa_ISLE_SESS0131_BLOCKD02_03_sprt1.pdf}
-\vspace{-2mm}\caption{\small Drawn by \textbf{Praat} 6.1~\cite{praat} (\code{scripts/praat/draw\_alignment.praat}, run headless through parselmouth~\cite{parselmouth} by \code{scripts/praat/run\_praat.py}): waveform, spectrogram, word and phone tiers. Left: \code{arpa\_base} on \textit{``I said white not bait''}. Right: \code{mfa\_ipa} on \textit{``I said bad not bed''}, whose final \textit{d} spans 2.5\,s of silence (Error~1). The TextGrids open directly in Praat (\code{View \& Edit}).}
+\begin{figure}[tb]\centering
+\includegraphics[width=\linewidth]{praat_arpa_base_ISLE_SESS0131_BLOCKD02_01_sprt1.pdf}\\[2pt]
+\includegraphics[width=\linewidth]{praat_mfa_ipa_ISLE_SESS0131_BLOCKD02_03_sprt1.pdf}
+\caption{Drawn by \textbf{Praat} 6.1~\cite{praat} (\code{scripts/praat/draw\_alignment.praat}, run headless through parselmouth~\cite{parselmouth} by \code{scripts/praat/run\_praat.py}): waveform, spectrogram, word and phone tiers. Top: \code{arpa\_base} on \textit{``I said white not bait''}. Bottom: \code{mfa\_ipa} on \textit{``I said bad not bed''}, whose final \textit{d} spans 2.5\,s of silence (Error~1). The TextGrids open directly in Praat (\code{View \& Edit}).}\label{fig:praat}
 \end{figure}
 
-\section{Observations}
+\section{Observations}\label{sec:obs}
 \textbf{How boundaries are placed.} Word boundaries coincide with phone boundaries, because a word interval is exactly the span of its phones, and every boundary sits on MFA's 10\,ms frame grid (all times are multiples of 0.01\,s).
-In Fig.~1 (left), the pauses between the learner's words are correctly left empty (silence), and each word-final /t/ in \textit{white} and \textit{bait} spans the silent closure plus the visible release burst.
+In Fig.~1 (top), the pauses between the learner's words are correctly left empty (silence), and each word-final /t/ in \textit{white} and \textit{bait} spans the silent closure plus the visible release burst.
 In the read news speech (Fig.~2), phones are short (median 70\,ms against 120\,ms for the slow, careful L2 speech), and function words get compressed: the five shortest words are all \textit{a} (40--60\,ms).
 
 \textbf{Error 1: the IPA model absorbs pauses into words.} \code{english\_mfa} stretched the last word of two ISLE prompts over the trailing silence:
-\textit{bait} runs from 1.70 to 4.13\,s and \textit{bed} from 1.47 to 4.50\,s (Fig.~1, right). It also swallowed the 160\,ms pause after \textit{white} and moved the \textit{not}/\textit{bait} boundary 100\,ms early.
+\textit{bait} runs from 1.70 to 4.13\,s and \textit{bed} from 1.47 to 4.50\,s (Fig.~1, bottom). It also swallowed the 160\,ms pause after \textit{white} and moved the \textit{not}/\textit{bait} boundary 100\,ms early.
 On the news speech it absorbed a 250\,ms inter-phrase pause into \textit{he} (Fig.~2, 7.79--8.04\,s). The three ARPA models put silence in all these places.
 This explains its outlier statistics on ISLE: 23\% silence instead of 60\%, a mean phone of 260\,ms, and the largest phone-duration deviation (3.99).
 \emph{Praat confirms these stretches are silence} (\code{analysis/praat\_measurements.csv}): the extra 1.88\,s of \textit{bait} and 2.46\,s of \textit{bed} are 24--26\,dB below the speech and 0\% voiced, and the 0.25\,s absorbed into \textit{he} is 12\,dB below and unvoiced.
@@ -111,7 +127,7 @@ An aligner-independent pause reference (\code{scripts/reference\_check.py}) mark
 On ISLE, the ARPA models put $\le$1\% of that pause time inside words at every threshold; \code{english\_mfa} puts 35--56\% there.
 This confirms Error~1 without trusting any aligner. The same reference is \emph{too coarse} to rank aligners at the 10--20\,ms level: its edges move with the threshold, and on the news speech it also catches low-energy stretches inside words (stop closures, weak fricatives), equally for every model.
 
-\textbf{Hand-labelled reference} (\code{hand\_labels/}, \code{analysis/hand\_label\_check.md}). The author marked 60 words (120 boundaries: all 15 ISLE words, 45 random news words) by hand, twice, in a tool that shows no aligner output (\code{scripts/marking\_tool.py}; the raw marks of both passes are in \code{hand_labels/kit/}).
+\textbf{Hand-labelled reference} (\code{hand\_labels/}, \code{analysis/hand\_label\_check.md}). The author marked 60 words (120 boundaries: all 15 ISLE words, 45 random news words) by hand, twice, in a tool that shows no aligner output (\code{scripts/marking\_tool.py}; the raw marks of both passes are in \code{hand\_labels/kit/}).
 The passes differ by a median of 11\,ms (mean 35\,ms), and pass~2 is 27\,ms later on average. This single-annotator imprecision is as large as the aligners' errors against the mean of the passes (ARPA models: median 22.5--26.3\,ms, 76--77\% within 50\,ms), and the 120 boundaries are not independent (they share words and utterances).
 The reference therefore cannot rank the ARPA variants, whose differences are 1--10\,ms, and we draw no statistical conclusion from it. What it does resolve is gross error: \code{english\_mfa} is similar on the news speech, but ends ISLE \textit{bed} and \textit{bait} 2.4 and 1.9\,s late (Error~1), the only gross errors.
 The two passes were separate sessions with a night's sleep between them (our protocol had planned a full day), so they may agree slightly more closely than fully independent passes would.
@@ -120,9 +136,9 @@ The two passes were separate sessions with a night's sleep between them (our pro
 With 97\,s of data the Gaussians move only slightly, and the segmentation was already stable.
 Note that \code{mfa adapt --output\_directory} exports the \emph{pre}-adaptation alignment (its log says ``Alignment already done, skipping''), so the pipeline re-aligns explicitly with the adapted model.
 
-\begin{figure}[H]\centering
-\includegraphics[width=0.85\linewidth]{overlay_F2BJRLP2_06s.png}
-\vspace{-6mm}\caption{\small Word boundaries of all four experiments over one spectrogram. News speech: the ARPA models agree to within 10--20\,ms, and \code{english\_mfa} absorbs the pause before \textit{he}. (The \textit{bed} error is shown by Praat in Fig.~1.)}
+\begin{figure}[tb]\centering
+\includegraphics[width=\linewidth]{fig_overlay.pdf}
+\caption{Word boundaries of all four experiments over one spectrogram (news speech, 6--10\,s of \code{F2BJRLP2}): the ARPA models agree to within 10--20\,ms, and \code{english\_mfa} absorbs the pause before \textit{he}. (The \textit{bed} error is shown by Praat in Fig.~1.)}
 \end{figure}
 
 \textbf{Sanity checks: does our preparation change the answer, and how repeatable is MFA?} (\code{run\_pipeline.py --stages sanity}, \code{analysis/sanity\_checks.md}).
@@ -138,14 +154,14 @@ On the news speech, the second acoustic model agrees with it to a median of 10\,
 The disagreements are concentrated in pause handling on the short L2 prompts, where the spectrogram and energy evidence favour the ARPA model.
 The hand-labelled reference confirms the main finding at its resolution: the only gross boundary errors are \code{english\_mfa}'s pause absorptions. It is too coarse to rank the ARPA variants.
 
-\begin{figure}[H]\centering
-\includegraphics[width=0.65\linewidth]{phone_duration_hist.png}
-\vspace{-3mm}\caption{\small Phone-duration distributions of all experiments (non-silence phones, clipped at 0.3\,s). The mass at $\le$30\,ms is the near-skipped phones of Error~2; the \code{english\_mfa} tail beyond 0.25\,s is its pause-absorption error.}
+\begin{figure}[tb]\centering
+\includegraphics{fig_phone_durations.pdf}
+\caption{Phone-duration distributions of all experiments (non-silence phones, clipped at 0.3\,s). The mass at $\le$30\,ms is the near-skipped phones of Error~2; the \code{english\_mfa} tail beyond 0.25\,s is its pause-absorption error.}
 \end{figure}
 
 \textbf{Deliverables and extra credit.} TextGrids are in \code{outputs/<experiment>/} and figures in \code{analysis/figures/}.
 The extra-credit items are a custom G2P-generated dictionary, two pretrained acoustic models plus an adapted one, and a fully automated one-command pipeline. To reproduce everything: \code{conda env create -f environment.yml \&\& conda activate mfa \&\& python scripts/run\_pipeline.py}.
-\begin{thebibliography}{9}\small\setlength\itemsep{0pt}
+\begin{thebibliography}{9}\footnotesize\setlength\itemsep{0pt}
 \bibitem{mfa} M.~McAuliffe, M.~Socolof, S.~Mihuc, M.~Wagner, and M.~Sonderegger, ``Montreal Forced Aligner: Trainable text-speech alignment using Kaldi,'' in \emph{Proc. Interspeech}, 2017, pp.~498--502.
 \bibitem{kaldi} D.~Povey et al., ``The Kaldi speech recognition toolkit,'' in \emph{Proc. IEEE ASRU}, 2011.
 \bibitem{pynini} K.~Gorman, ``Pynini: A Python library for weighted finite-state grammar compilation,'' in \emph{Proc. ACL Workshop on Statistical NLP and Weighted Automata}, 2016.
