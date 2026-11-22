@@ -1,12 +1,12 @@
 # Hand-labelled reference (two blind passes)
 
-60 words, 120 boundaries (`gold/targets.csv`).
+60 words, 120 boundaries (`hand_labels/targets.csv`).
 
 ## Annotator consistency (precision of the reference)
 
 |pass1 - pass2|: median 11.3 ms, mean 35.2 ms, 63 % within 20 ms, max 195 ms.
 
-## Aligner error against the reference (gold = mean of the two passes)
+## Aligner error against the reference (reference = mean of the two passes)
 
 | experiment        |   boundaries |   median_abs_ms |   mean_abs_ms |   within_20ms |   within_50ms |   max_abs_ms |
 |:------------------|-------------:|----------------:|--------------:|--------------:|--------------:|-------------:|

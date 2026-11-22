@@ -1,13 +1,13 @@
-"""Build a blind annotation kit for a small hand-labelled reference (gold standard).
+"""Build a blind annotation kit for a small hand-labelled reference .
 
 Targets: all 15 words of the 3 ISLE prompts plus 45 words drawn at random (fixed seed) from the news
 speech, i.e. 60 words and 120 boundaries (first planned as 12 news words; enlarged to 45 before any
 marking was done, to narrow the confidence intervals). Random drawing means nobody chose the "easy" words.
 For each target the kit gives only the word and its location rounded DOWN to the whole second
 (so the annotator need not search 30 s of audio), never an aligner boundary.
-The empty TextGrids contain a single tier "gold"; no aligner output is visible while annotating.
+The empty TextGrids contain a single tier "reference"; no aligner output is visible while annotating.
 
-    python scripts/make_gold_kit.py          -> gold/kit/  (see gold/ANNOTATION_PROTOCOL.md)
+    python scripts/make_label_kit.py          -> hand_labels/kit/  (see hand_labels/ANNOTATION_PROTOCOL.md)
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from analyze_alignments import read_textgrid  # noqa: E402
 
-KIT = ROOT / "gold" / "kit"
+KIT = ROOT / "hand_labels" / "kit"
 N_NEWS = 45
 SEED = 2026
 
@@ -30,7 +30,7 @@ SEED = 2026
 def empty_textgrid(dur: float) -> str:
     return ('File type = "ooTextFile"\nObject class = "TextGrid"\n\n'
             f"xmin = 0\nxmax = {dur}\ntiers? <exists>\nsize = 1\nitem []:\n"
-            '    item [1]:\n        class = "IntervalTier"\n        name = "gold"\n'
+            '    item [1]:\n        class = "IntervalTier"\n        name = "reference"\n'
             f"        xmin = 0\n        xmax = {dur}\n        intervals: size = 1\n"
             f'        intervals [1]:\n            xmin = 0\n            xmax = {dur}\n            text = ""\n')
 
@@ -47,7 +47,7 @@ def main():
     news = df[~df.file.str.startswith("ISLE")].sample(N_NEWS, random_state=SEED)
     tgt = pd.concat([isle, news]).sort_values(["file", "word_index"])
     tgt["search_from_s"] = np.floor(tgt._start).astype(int)
-    tgt.drop(columns="_start").to_csv(ROOT / "gold" / "targets.csv", index=False)
+    tgt.drop(columns="_start").to_csv(ROOT / "hand_labels" / "targets.csv", index=False)
     with open(KIT / "words_to_mark.txt", "w", encoding="utf-8") as f:
         for file, g in tgt.groupby("file", sort=False):
             f.write(f"{file}.wav\n")

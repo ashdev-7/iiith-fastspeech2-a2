@@ -1,4 +1,4 @@
-# Guided hand marking for gold/ANNOTATION_PROTOCOL.md (one pass).
+# Guided hand marking for hand_labels/ANNOTATION_PROTOCOL.md (one pass).
 #
 # Praat: Open > Open Praat script... > this file > Run (Ctrl+R). Choose the pass.
 # For every listed word the script opens the right file, zooms to where the word is, and waits.
@@ -7,7 +7,7 @@
 # saves the TextGrid into kit/pass1 or kit/pass2. It never shows an aligner boundary.
 # Files already finished are skipped, so you can stop (close the pause window) and run it again later.
 
-form: "Hand marking (gold reference)"
+form: "Hand marking (reference)"
     choice: "Pass", 1
         option: "1"
         option: "2"
@@ -44,7 +44,7 @@ while row <= nrows
         if nlab > 0
             removeObject: tg
             selectObject: sound
-            tg = To TextGrid: "gold", ""
+            tg = To TextGrid: "reference", ""
         endif
         fileDone = 0
         while not fileDone
@@ -133,7 +133,7 @@ while row <= nrows
             if answer = 1
                 removeObject: tg
                 selectObject: sound
-                tg = To TextGrid: "gold", ""
+                tg = To TextGrid: "reference", ""
             else
                 selectObject: tg
                 Save as text file: tgPath$

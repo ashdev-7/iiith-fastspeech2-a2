@@ -51,9 +51,9 @@ for (const [f, b64] of Object.entries(DATA.audio)) {
 }
 const W = DATA.targets;           // [{file, word_index, word, search_from_s}]
 let pass = null, marks = [], idx = 0, view = null, drag = null, ctx = null, playing = null;
-let rate = 0.5; try { rate = parseFloat(localStorage.getItem("gold_rate")) || 0.5; } catch (e) {}
+let rate = 0.5; try { rate = parseFloat(localStorage.getItem("marks_rate")) || 0.5; } catch (e) {}
 
-function key() { return "gold_marks_pass" + pass + "_n" + W.length; }
+function key() { return "marks_pass" + pass + "_n" + W.length; }
 function save() { try { localStorage.setItem(key(), JSON.stringify({marks, idx})); } catch (e) {} }
 function load() {
   try { const s = JSON.parse(localStorage.getItem(key()) || "null"); if (s) { marks = s.marks; idx = s.idx; return; } } catch (e) {}
@@ -142,7 +142,7 @@ function showWord() {
   document.getElementById("playSel").onclick = playSel;
   document.getElementById("playView").onclick = () => play(view[0], view[1]);
   document.getElementById("stop").onclick = stopAudio;
-  document.querySelectorAll("button.rate").forEach(bt => bt.onclick = () => { rate = parseFloat(bt.dataset.r); try { localStorage.setItem("gold_rate", rate); } catch (e) {} document.querySelectorAll("button.rate").forEach(o => o.classList.toggle("primary", o === bt)); });
+  document.querySelectorAll("button.rate").forEach(bt => bt.onclick = () => { rate = parseFloat(bt.dataset.r); try { localStorage.setItem("marks_rate", rate); } catch (e) {} document.querySelectorAll("button.rate").forEach(o => o.classList.toggle("primary", o === bt)); });
   document.getElementById("zin").onclick = () => zoom(0.5);
   document.getElementById("zout").onclick = () => zoom(2);
   document.getElementById("zstart").onclick = () => zoomOn("start");
@@ -299,7 +299,7 @@ function doneScreen() {
     marks: W.map((t, i) => ({ file: t.file, word_index: t.word_index, word: t.word, start: marks[i].start, end: marks[i].end,
                               touches_prev: !!marks[i].touches_prev, marked_at: marks[i].saved })) };
   const blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
-  const url = URL.createObjectURL(blob), name = "gold_pass" + pass + "_marks.json";
+  const url = URL.createObjectURL(blob), name = "pass" + pass + "_marks.json";
   app.innerHTML = `<div class="card"><h1>Pass ${pass} finished</h1>
     <p>Your marks are being downloaded as <b>${name}</b> (to your Downloads folder). If nothing downloaded, click the button.</p>
     <div class="row"><a href="${url}" download="${name}" id="dl"><button class="primary big">Download ${name}</button></a>

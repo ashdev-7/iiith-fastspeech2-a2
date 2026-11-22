@@ -162,13 +162,13 @@ Agreement between aligners measures consistency, not accuracy. Two references th
   that pause time inside words at every threshold, and `english_mfa` puts 35–56 % there. This confirms the pause-absorption error.
   Edge positions move with the threshold, so this reference is too coarse to rank aligners at 10–20 ms
   (`analysis/reference_check.md`).
-* **Blind hand-labelled reference** (`gold/ANNOTATION_PROTOCOL.md`). It covers 60 words (120 boundaries): all ISLE words plus 45
+* **Blind hand-labelled reference** (`hand_labels/ANNOTATION_PROTOCOL.md`). It covers 60 words (120 boundaries): all ISLE words plus 45
   random news words. Each was marked by hand by the author, twice, in a browser tool (`scripts/marking_tool.py`) that shows no aligner output, and
-  `python scripts/score_gold.py` reports the annotator's own pass-to-pass consistency (the reference's precision) and each
-  experiment's error against it (`analysis/gold_check.md`). The passes differ by a median of 11 ms; against their mean the
+  `python scripts/score_hand_labels.py` reports the annotator's own pass-to-pass consistency (the reference's precision) and each
+  experiment's error against it (`analysis/hand_label_check.md`). The passes differ by a median of 11 ms; against their mean the
   ARPA models' median error is 22.5–26.3 ms, about as large as the annotator's own imprecision, so the reference cannot rank them; it resolves gross errors only, and `english_mfa`'s only gross errors
   are its pause absorptions on ISLE (*bed*, *bait*: 2.4 and 1.9 s). The two passes were separate sessions with a night's sleep between them (the protocol had planned a full day).
-  The kit (`gold/kit/`) is built by `scripts/make_gold_kit.py`.
+  The kit (`hand_labels/kit/`) is built by `scripts/make_label_kit.py`.
 
 ## Repository layout
 
@@ -184,9 +184,9 @@ corpus_untouched/            the provided files as given, in MFA's folder layout
 models/                      speaker-adapted acoustic model (git-ignored, 88 MB; rebuilt by the adapt stage)
 analysis/                    CSV tables and figures (praat_*.pdf are drawn by Praat itself)
 scripts/                     prepare_corpus.py, run_pipeline.py, analyze_alignments.py, sanity_checks.py,
-                             ipa_dict_check.py, reference_check.py, make_gold_kit.py, score_gold.py,
+                             ipa_dict_check.py, reference_check.py, make_label_kit.py, score_hand_labels.py,
                              praat/draw_alignment.praat, praat/run_praat.py
-gold/                        blind hand-labelling protocol and kit (two passes)
+hand_labels/                 blind hand-labelling protocol and kit (two passes)
 report/                      report.tex / report.pdf
 logs/                        one log per MFA command
 ```

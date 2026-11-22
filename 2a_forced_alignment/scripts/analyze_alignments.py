@@ -1,5 +1,5 @@
-"""Inspect and compare MFA alignments (no gold reference is available, so all
-checks are reference-free or cross-model).
+"""Inspect and compare MFA alignments (these checks are reference-free or cross-model;
+the hand-labelled reference is scored separately by scripts/score_hand_labels.py).
 
 Outputs (analysis/):
   intervals_<exp>.csv            every word / phone interval of every file

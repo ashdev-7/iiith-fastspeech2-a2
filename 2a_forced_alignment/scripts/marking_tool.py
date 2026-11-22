@@ -1,12 +1,12 @@
-"""Browser alternative to Praat for the blind hand-marking passes (gold/ANNOTATION_PROTOCOL.md).
+"""Browser alternative to Praat for the blind hand-marking passes (hand_labels/ANNOTATION_PROTOCOL.md).
 
     python scripts/marking_tool.py build
-        -> gold/kit/marking_tool.html (self-contained: the six recordings and the target words are
+        -> hand_labels/kit/marking_tool.html (self-contained: the six recordings and the target words are
            embedded; it shows no aligner output). Open it in a browser, mark, and it downloads
-           gold_passN_marks.json.
-    python scripts/marking_tool.py convert <gold_passN_marks.json> [...]
-        -> gold/kit/passN/<file>.TextGrid, the same files the Praat route produces, so
-           scripts/score_gold.py reads them unchanged. Boundaries are moved to the nearest zero crossing
+           passN_marks.json.
+    python scripts/marking_tool.py convert <passN_marks.json> [...]
+        -> hand_labels/kit/passN/<file>.TextGrid, the same files the Praat route produces, so
+           scripts/score_hand_labels.py reads them unchanged. Boundaries are moved to the nearest zero crossing
            (protocol rule 7; only if one lies within 2.5 ms, otherwise the click is kept); a word marked "no pause" shares its start
            boundary with the previous word's end (rule 6).
 """
@@ -22,7 +22,7 @@ import pandas as pd
 import soundfile as sf
 
 ROOT = Path(__file__).resolve().parents[1]
-KIT = ROOT / "gold" / "kit"
+KIT = ROOT / "hand_labels" / "kit"
 
 
 def wav_path(file: str, speaker: str) -> Path:
@@ -30,7 +30,7 @@ def wav_path(file: str, speaker: str) -> Path:
 
 
 def build():
-    tgt = pd.read_csv(ROOT / "gold" / "targets.csv")
+    tgt = pd.read_csv(ROOT / "hand_labels" / "targets.csv")
     audio, sentences, sr = {}, {}, None
     for (file, spk), _ in tgt.groupby(["file", "speaker"], sort=False):
         x, sr_f = sf.read(wav_path(file, spk), dtype="int16")
@@ -64,7 +64,7 @@ def nearest_zero_crossing(x: np.ndarray, sr: int, t: float) -> float:
 def write_textgrid(path: Path, xmax: float, ivs: list[tuple[float, float, str]]):
     lines = ['File type = "ooTextFile"', 'Object class = "TextGrid"', "", "xmin = 0", f"xmax = {xmax!r}",
              "tiers? <exists>", "size = 1", "item []:", "    item [1]:", '        class = "IntervalTier"',
-             '        name = "gold"', "        xmin = 0", f"        xmax = {xmax!r}",
+             '        name = "reference"', "        xmin = 0", f"        xmax = {xmax!r}",
              f"        intervals: size = {len(ivs)}"]
     for n, (a, b, t) in enumerate(ivs, 1):
         lines += [f"        intervals [{n}]:", f"            xmin = {a!r}", f"            xmax = {b!r}",
@@ -76,10 +76,10 @@ def convert(path: str):
     d = json.loads(Path(path).read_text(encoding="utf-8"))
     p = int(d["pass"])
     assert p in (1, 2)
-    tgt = pd.read_csv(ROOT / "gold" / "targets.csv")
+    tgt = pd.read_csv(ROOT / "hand_labels" / "targets.csv")
     m = pd.DataFrame(d["marks"])
     assert len(m) == len(tgt) and (m.file.values == tgt.file.values).all() \
-        and (m.word_index.values == tgt.word_index.values).all(), "marks do not match gold/targets.csv"
+        and (m.word_index.values == tgt.word_index.values).all(), "marks do not match hand_labels/targets.csv"
     assert m.start.notna().all() and m.end.notna().all(), "some words are not marked"
     for (file, spk), g in tgt.groupby(["file", "speaker"], sort=False):
         x, sr = sf.read(wav_path(file, spk), dtype="int16")

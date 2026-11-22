@@ -36,15 +36,15 @@ boundary.
    to the nearest zero crossing).
 
 ## Easiest way: the browser tool (recommended)
-`python scripts/marking_tool.py build` writes `gold/kit/marking_tool.html` (the six recordings are
+`python scripts/marking_tool.py build` writes `hand_labels/kit/marking_tool.html` (the six recordings are
 embedded; it shows no aligner output). Open it in a browser. Each word gets one screen with the
 waveform and a spectrogram: click the start, click the end, play to check, zoom to fine-tune, **Next**.
-Progress is kept in the browser. At the end it downloads `gold_passN_marks.json`; then
-`python scripts/marking_tool.py convert gold_passN_marks.json` writes `kit/passN/*.TextGrid`
+Progress is kept in the browser. At the end it downloads `passN_marks.json`; then
+`python scripts/marking_tool.py convert passN_marks.json` writes `kit/passN/*.TextGrid`
 (boundaries moved to a zero crossing only if one lies within 2.5 ms), the same files the Praat routes give.
 
 ## Guided Praat script
-In Praat: **Open → Open Praat script…** → `gold/kit/mark.praat` → **Run** (Ctrl+R) → choose pass 1 or 2.
+In Praat: **Open → Open Praat script…** → `hand_labels/kit/mark.praat` → **Run** (Ctrl+R) → choose pass 1 or 2.
 For each word the script opens the right file, zooms to where the word is and waits. Drag across the word
 (rules 4–5), then click **Save word**. Tick **Touches previous word** when there is no pause (rule 6).
 The script snaps boundaries to zero crossings (rule 7), writes the label, and saves each finished file
@@ -52,19 +52,19 @@ into `kit/pass1` or `kit/pass2`. Close its pause window to stop; finished files 
 
 ## Manual way in Praat (about 45–60 min per pass)
 1. Open Praat. *Open → Read from file…* → `corpus/<speaker>/<file>.wav`. Then *Open → Read from file…* →
-   `gold/kit/pass1/<file>.TextGrid` (an empty tier called `gold`).
+   `hand_labels/kit/pass1/<file>.TextGrid` (an empty tier called `reference`).
 2. Select both objects in the object list (Ctrl+click), then click **View & Edit**.
 3. Go to the second given in `words_to_mark.txt` and find the word by listening.
-4. Click at the word start on the **gold** tier (the top-right circle on the tier adds a boundary there),
+4. Click at the word start on the **reference** tier (the top-right circle on the tier adds a boundary there),
    or click in the waveform and press **Enter**. Do the same at the word end.
 5. Click inside the new interval and type the word exactly as listed (lower case).
 6. Repeat for every listed word of the file, **in the listed order**. Leave everything else empty.
-7. Save: *File → Save TextGrid as text file…* and **overwrite** `gold/kit/pass1/<file>.TextGrid`.
-8. Do the same for all 6 files. A day later, repeat with `gold/kit/pass2/`.
+7. Save: *File → Save TextGrid as text file…* and **overwrite** `hand_labels/kit/pass1/<file>.TextGrid`.
+8. Do the same for all 6 files. A day later, repeat with `hand_labels/kit/pass2/`.
 
 ## Then
 ```
-python scripts/score_gold.py      # -> analysis/gold_check.md, analysis/gold_errors.csv
+python scripts/score_hand_labels.py      # -> analysis/hand_label_check.md, analysis/hand_label_errors.csv
 ```
 The script checks that every listed word was labelled, in order. It reports:
 * your own consistency (pass 1 vs. pass 2);

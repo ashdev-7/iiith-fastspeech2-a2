@@ -8,7 +8,7 @@ size = 1
 item []:
     item [1]:
         class = "IntervalTier"
-        name = "gold"
+        name = "reference"
         xmin = 0
         xmax = 4.125
         intervals: size = 9
