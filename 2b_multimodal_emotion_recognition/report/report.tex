@@ -386,9 +386,8 @@ The confidences are also \emph{high} (0.84--0.96): errors are confident, not bor
 
 \subsection{Separability of the temporal, contextual and fusion blocks}
 \begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{tsne_blocks_sd.png}\\[2pt]
-\includegraphics[width=\linewidth]{tsne_blocks_si.png}
-\caption{t-SNE~\cite{tsne} of test-set block outputs (attention-pooled embeddings), coloured by true emotion. Top: SD (seed 0). Bottom: SI, train OAF $\to$ test YAF. Silhouette is cosine, in the original 256-d space.}\label{fig:tsne}
+\includegraphics[width=0.92\linewidth]{tsne_required_blocks.png}
+\caption{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, train OAF $\to$ test YAF). Silhouette: cosine, computed in the original 256-d space. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
 \end{figure}
 
 \begin{center}\small

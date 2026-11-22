@@ -213,6 +213,40 @@ def separability(df_idx):
     return pd.DataFrame(rows)
 
 
+def separability_required(df_idx):
+    """The figure the assignment asks for: one panel per required block (temporal = speech, contextual = text,
+    fusion), for the seen-speaker (SD) and unseen-speaker (SI) protocols. Same runs, embeddings and t-SNE
+    settings as separability(); print-sized labels."""
+    blocks = [("speech", "wavlm", "temporal", "Temporal block\n(speech: WavLM + BiGRU)"),
+              ("text", "gt", "contextual", "Contextual block\n(text: DistilRoBERTa + BiGRU)"),
+              ("fusion", "gated_wavlm_gt", "fusion", "Fusion block\n(gated fusion)")]
+    protos = (("sd", "sd_fold0_seed0", "Seen speakers (SD)"), ("si", "si_fold0_seed0", "Unseen speaker (SI)"))
+    fig, axes = plt.subplots(2, 3, figsize=(13, 8.6))
+    for r, (proto, run, pname) in enumerate(protos):
+        for c, (pipe, var, key, title) in enumerate(blocks):
+            ax = axes[r, c]
+            z = np.load(RUNS_DIR / pipe / var / run / "test_embeddings.npz")
+            X, y = z[key], z["label"]
+            Z = TSNE(n_components=2, perplexity=30, init="pca", random_state=0).fit_transform(X)
+            sil = silhouette_score(X, y, metric="cosine")
+            for e_i, e in enumerate(EMOTIONS):
+                m = y == e_i
+                ax.scatter(Z[m, 0], Z[m, 1], s=9, c=PALETTE[e], alpha=0.8, linewidths=0, label=EMOTION_NAMES[e])
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.text(0.02, 0.02, f"silhouette = {sil:.2f}", transform=ax.transAxes, fontsize=12,
+                    bbox=dict(facecolor="white", edgecolor="0.7", alpha=0.9))
+            if r == 0:
+                ax.set_title(title, fontsize=14)
+            if c == 0:
+                ax.set_ylabel(pname, fontsize=14)
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=7, fontsize=12, markerscale=3, frameon=False)
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.savefig(PLOTS_DIR / "tsne_required_blocks.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
 # ------------------------------------------------------------------ fusion analysis
 def paired_predictions(pipe_a, var_a, pipe_b, var_b, proto):
     out = []
@@ -440,6 +474,7 @@ def main():
     fusion_analysis(runs)
     significance()
     print(separability(df_idx).round(3).to_string(index=False))
+    separability_required(df_idx)
 
 
 if __name__ == "__main__":
