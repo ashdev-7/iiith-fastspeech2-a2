@@ -9,7 +9,7 @@ We treat this as the central fact to analyse rather than something to hide.
 We confirm it empirically in three ways: a trained text model (\S\ref{sec:exp}), a zero-shot emotion classifier, and the learned fusion gates.
 We then add an \emph{ASR-transcript} condition (Whisper-small~\cite{whisper}), where the text is produced from the audio and can carry prosodic traces (punctuation), to study \emph{when} text and fusion help.
 
-\section{Architecture decisions (A)}
+\section{Architecture decisions (A)}\label{sec:arch}
 \begin{table}[H]\centering\small
 \caption[The three pipelines, block by block]{The three pipelines, block by block. The reasons for each choice follow in the text, and Table~\ref{tab:choices} lists the alternatives tested.}\label{tab:arch}
 \renewcommand{\arraystretch}{1.25}

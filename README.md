@@ -7,6 +7,8 @@ Both parts of Assignment 2. Each folder is self-contained, with its own README (
 | **2a** | [`2a_forced_alignment/`](2a_forced_alignment) | Forced alignment with the Montreal Forced Aligner: data preparation, pretrained and custom (G2P) dictionaries, three acoustic models plus speaker adaptation, TextGrid outputs, Praat inspection, error analysis | [`report/report.pdf`](2a_forced_alignment/report/report.pdf) |
 | **2b** | [`2b_multimodal_emotion_recognition/`](2b_multimodal_emotion_recognition) | Emotion recognition on TESS with speech-only, text-only and multimodal (fusion) pipelines; 176 training runs of the 11 variants under three evaluation protocols (324 with the ablation and study runs); analysis of easy and hard emotions, when fusion helps, failure cases and cluster separability | [`report/report.pdf`](2b_multimodal_emotion_recognition/report/report.pdf) |
 
+**Both reports in one PDF:** [`combined_report/Assignment2_Yash_Tyagi.pdf`](combined_report/Assignment2_Yash_Tyagi.pdf) (cover, one table of contents, lists of figures and tables; Part 2a, then Part 2b, each with its own references). It is built from the same LaTeX sources as the two reports above (`cd combined_report && pdflatex Assignment2_Yash_Tyagi.tex`, three times), and `python combined_report/check_combined.py` confirms that every caption, figure and word of both reports is in it.
+
 ## Quick start
 
 ```bash

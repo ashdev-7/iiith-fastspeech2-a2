@@ -120,7 +120,8 @@ def test_summary_table_recomputes():
 def test_report_delta_column_recomputes():
     """The report's 'word boundary difference vs arpa_base' column, pooled over all word boundaries."""
     import re
-    lines = (ROOT / "report" / "report.tex").read_text(encoding="utf-8").splitlines()
+    lines = [ln for f in ("report.tex", "body.tex")   # the report text lives in body.tex
+             for ln in (ROOT / "report" / f).read_text(encoding="utf-8").splitlines()]
     for exp in ("mfa_ipa", "arpa_g2p_custom", "arpa_adapted"):
         label = exp.replace("_", r"\_")
         i = [k for k, ln in enumerate(lines) if ln.startswith(label + " ") and "& f2b" in ln][0]

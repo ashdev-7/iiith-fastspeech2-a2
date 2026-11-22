@@ -1,0 +1,128 @@
+% Combined report for Assignment 2 (parts 2a and 2b) - the single PDF uploaded through the submission form.
+% The text of each part is NOT copied here: it is \input from the same body files that build the standalone
+% reports (2a_forced_alignment/report/body.tex, 2b_multimodal_emotion_recognition/report/{summary,body}.tex),
+% so the combined and the standalone reports cannot differ.
+%   pdflatex Assignment2_Yash_Tyagi.tex   (run three times, for the contents and the lists)
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=1.9cm]{geometry}
+\usepackage{mathptmx}  % Times text and math (Type 1)
+\usepackage{graphicx,booktabs,xcolor,float,tabularx,amsmath,amssymb}
+\usepackage[safe]{tipa}
+\usepackage[bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=0]{hyperref}
+\definecolor{linkblue}{RGB}{0,62,138}
+\hypersetup{colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue,
+  pdftitle={Assignment 2: Forced Alignment (2a) and Multimodal Emotion Recognition (2b)},pdfauthor={Yash Tyagi}}
+\makeatletter
+% section headings: "2a.1. Title", compact spacing (identical to the standalone reports)
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname.\hspace{0.45em}}
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.4ex \@plus -0.6ex \@minus -0.2ex}{1.0ex \@plus 0.2ex}{\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-1.9ex \@plus -0.5ex \@minus -0.2ex}{0.7ex \@plus 0.2ex}{\normalfont\normalsize\bfseries}}
+% captions: one size everywhere, bold label
+\setlength\abovecaptionskip{5pt}\setlength\belowcaptionskip{3pt}
+\long\def\@makecaption#1#2{\vskip\abovecaptionskip
+  \sbox\@tempboxa{\small\textbf{#1.}\ #2}%
+  \ifdim\wd\@tempboxa>\hsize {\small\textbf{#1.}\ #2\par}\else\global\@minipagefalse\hb@xt@\hsize{\hfil\box\@tempboxa\hfil}\fi
+  \vskip\belowcaptionskip}
+% contents and lists: room for part-prefixed numbers such as 2b.4.5 and 2b.13
+\renewcommand*\l@section[2]{\ifnum\c@tocdepth>\z@\addpenalty\@secpenalty\addvspace{0.5em\@plus\p@}%
+  \setlength\@tempdima{2.6em}\begingroup\parindent\z@\rightskip\@pnumwidth\parfillskip-\@pnumwidth
+  \leavevmode\bfseries\advance\leftskip\@tempdima\hskip-\leftskip#1\nobreak\hfil\nobreak\hb@xt@\@pnumwidth{\hss#2}\par\endgroup\fi}
+\renewcommand*\l@subsection{\@dottedtocline{2}{2.6em}{3.4em}}
+\renewcommand*\l@figure{\@dottedtocline{1}{0em}{3.0em}}
+\renewcommand*\l@table{\@dottedtocline{1}{0em}{3.0em}}
+\renewcommand*\l@part[2]{\addpenalty{-\@highpenalty}\addvspace{1.6em\@plus\p@}%
+  \begingroup\parindent\z@\rightskip\@pnumwidth\parfillskip-\@pnumwidth
+  {\leavevmode\large\bfseries#1\hfil\hb@xt@\@pnumwidth{\hss#2}}\par\nobreak\endgroup}
+\makeatother
+% every section starts on a new page, except the first section right below a part heading
+\newif\ifafterpart
+\let\oldsection\section
+\renewcommand\section{\ifafterpart\global\afterpartfalse\else\clearpage\fi\oldsection}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\pp}{\,pp}
+\newcommand{\best}[1]{\textbf{#1}}
+\DeclareRobustCommand{\S}{\ensuremath{\mathsection}}  % Type 1 section sign
+\renewcommand{\labelitemi}{$\bullet$}                    % Type 1 bullet
+\newcommand{\partdir}{}
+% 2a figures and tables stay where they are written (they float in the 4-page standalone report)
+\newenvironment{placedfigure}{\begin{figure}[H]}{\end{figure}}
+\newenvironment{placedtable}{\begin{table}[H]}{\end{table}}
+\newcommand{\refshook}{\addcontentsline{toc}{section}{References}}  % each part's reference list in the contents
+
+% \assignmentpart{tag}{title}{folder in the repository}{figure folder}
+\newcommand{\assignmentpart}[4]{%
+  \clearpage
+  \setcounter{section}{0}\setcounter{figure}{0}\setcounter{table}{0}%
+  \renewcommand{\thesection}{#1.\arabic{section}}\renewcommand{\theHsection}{#1.\arabic{section}}%
+  \renewcommand{\thefigure}{#1.\arabic{figure}}\renewcommand{\theHfigure}{#1.\arabic{figure}}%
+  \renewcommand{\thetable}{#1.\arabic{table}}\renewcommand{\theHtable}{#1.\arabic{table}}%
+  \graphicspath{{#4}}%
+  \phantomsection\addcontentsline{toc}{part}{Assignment #1: #2}%
+  \addtocontents{lof}{\protect\addvspace{9pt}\protect\noindent\protect\textbf{Assignment #1: #2}\protect\par\protect\addvspace{3pt}}%
+  \addtocontents{lot}{\protect\addvspace{9pt}\protect\noindent\protect\textbf{Assignment #1: #2}\protect\par\protect\addvspace{3pt}}%
+  \begin{center}
+    {\LARGE\bfseries Assignment #1}\\[5pt]
+    {\Large #2}\\[7pt]
+    {\small Code, outputs and setup instructions: \url{https://github.com/ashdev-7/iiith-fastspeech2-a2/tree/main/#3}}
+  \end{center}
+  \vspace{2pt}\hrule\vspace{8pt}
+  \global\afterparttrue}
+
+\begin{document}
+\sloppy
+
+% ------------------------------------------------------------------ cover
+\pagenumbering{alph}  % the cover gets its own page anchor (no clash with page 1 of the body)
+\begin{titlepage}
+\centering
+\vspace*{3.2cm}
+{\Huge\bfseries Assignment 2\par}
+\vspace{0.9cm}
+{\Large\renewcommand{\arraystretch}{1.35}%
+\begin{tabular}{@{}l@{\hspace{0.8em}}l@{}}
+\textbf{2a} & Forced Alignment with the Montreal Forced Aligner\\
+\textbf{2b} & Multimodal Emotion Recognition on TESS:\\
+            & \large speech, text and fusion pipelines
+\end{tabular}\par}
+\vspace{1.6cm}
+{\Large Yash Tyagi\par}
+\vspace{0.4cm}
+{\large Research Assistant application, IIIT Hyderabad\par}
+\vspace{0.3cm}
+{\large November 2026\par}
+\vspace{1.4cm}
+{\normalsize Code, outputs, results and setup instructions:\\[3pt]
+\url{https://github.com/ashdev-7/iiith-fastspeech2-a2}\par}
+\vfill
+\begin{minipage}{0.84\linewidth}\small\raggedright
+This document contains the reports of Assignment 2a and Assignment 2b. Each part is self-contained and ends with its
+own references. Section, figure and table numbers carry their part (for example, Section~2b.4, Figure~2a.1,
+Table~2b.3). The same two reports are also in the repository as separate PDFs:
+\code{2a\_forced\_alignment/report/report.pdf} and \code{2b\_multimodal\_emotion\_recognition/report/report.pdf}.
+\end{minipage}
+\vspace{1.0cm}
+\end{titlepage}
+
+% ------------------------------------------------------------------ contents and lists (roman page numbers)
+\pagenumbering{roman}
+\setcounter{tocdepth}{2}
+{\setlength{\parskip}{1pt}\tableofcontents}
+{\setlength{\parskip}{1pt}\listoffigures
+\let\section\oldsection\vspace{1.2em}\listoftables}
+
+% ------------------------------------------------------------------ Assignment 2a
+\clearpage
+\pagenumbering{arabic}
+\assignmentpart{2a}{Forced Alignment with the Montreal Forced Aligner}{2a_forced_alignment}{../2a_forced_alignment/analysis/figures/}
+\input{../2a_forced_alignment/report/body}
+
+% ------------------------------------------------------------------ Assignment 2b
+\renewcommand{\partdir}{../2b_multimodal_emotion_recognition/report/}
+\assignmentpart{2b}{Multimodal Emotion Recognition on TESS}{2b_multimodal_emotion_recognition}{../2b_multimodal_emotion_recognition/Results/plots/}
+\input{../2b_multimodal_emotion_recognition/report/summary}
+\global\afterpartfalse
+\input{../2b_multimodal_emotion_recognition/report/body}
+
+\end{document}

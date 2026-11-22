@@ -1,6 +1,6 @@
 """Cell-by-cell check of every hand-typed table in the 2b report against the file it comes from.
 
-Each table row of report.tex is located by its label, its numbers are parsed in order, and compared with
+Each table row of the report (report.tex, summary.tex, body.tex) is located by its label, its numbers are parsed in order, and compared with
 the values recomputed from Results/ (or runs/) at the precision printed in the report.
 
     python tests/report_tables_check.py        (exit code 1 on any mismatch)
@@ -17,7 +17,8 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 R = ROOT / "Results"
-TEX = (ROOT / "report" / "report.tex").read_text(encoding="utf-8").splitlines()
+TEX = [l for f in ("report.tex", "summary.tex", "body.tex")   # the report text lives in these three files
+       for l in (ROOT / "report" / f).read_text(encoding="utf-8").splitlines()]
 FAILS, CHECKED = [], [0]
 
 

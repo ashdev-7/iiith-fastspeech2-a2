@@ -1,0 +1,15 @@
+% Assignment 2b report: the page-1 overview box (shared with combined_report/).
+\begin{center}\fbox{\begin{minipage}{0.96\linewidth}\small
+\textbf{At a glance} (section numbers refer to this report).\\[1pt]
+\textbf{A. Architecture} (\S\ref{sec:arch}). Frozen WavLM-Base+ (speech) and emotion-tuned DistilRoBERTa (text) features feed a BiGRU with attention pooling (temporal / contextual block); a gated multimodal unit fuses the two (fusion block), and an MLP classifies.\\[2pt]
+\textbf{B. Comparison} (\S\ref{sec:main}; test accuracy \%, mean over runs; chance = 14.29\%).\par\vspace{1pt}
+{\centering\begin{tabular}{@{}lccc@{}}\toprule
+Pipeline & Random split & Seen speakers (SD) & Unseen speaker (SI)\\\midrule
+Speech (WavLM + BiGRU) & 99.86 & 99.90 & 58.48\\
+Text (DistilRoBERTa + BiGRU) & 13.81 & 14.29 & 14.29\\
+Fusion (gated, speech + text) & 100.00 & 99.95 & 56.77\\\bottomrule
+\end{tabular}\par}\vspace{2pt}
+Speech carries the emotion. Text cannot: in TESS every word is spoken in all seven emotions, so the transcript holds no information about the emotion and text alone scores exactly chance. Fusion therefore matches speech but does not beat it. The real difficulty is a new speaker: 99.9\% falls to 58.5\%.\\[2pt]
+\textbf{C. Analysis} (\S\ref{sec:analysis}). Easiest emotions: neutral, sad and fear; hardest: happy and angry (\S\ref{sec:easy}). Fusion helps only where speech is uncertain and the text comes from Whisper, whose punctuation carries prosody (+5.7\pp{} net, \S\ref{sec:whenfusion}). Five failure cases (\S\ref{sec:errors}). Separability of all three blocks (Fig.~\ref{fig:tsne}, \S\ref{sec:separability}).\\[2pt]
+\textbf{Beyond the brief} (\S\ref{sec:prereg}--\ref{sec:final}). Five studies, each planned and committed before it was run, raise unseen-speaker accuracy to 75.7\% (linear head on frozen WavLM-Large, normalised with the unseen speaker's unlabelled clips~$\dagger$); all five use the same two speakers, so this is likely optimistic. A control shows that an encoder trained on data containing TESS scores 99.9\% on the ``unseen'' speaker, so such encoders are excluded from every result.
+\end{minipage}}\end{center}
