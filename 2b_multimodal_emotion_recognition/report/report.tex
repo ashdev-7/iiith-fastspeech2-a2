@@ -17,6 +17,9 @@
   \ifdim\wd\@tempboxa>\hsize {\small\textbf{#1.}\ #2\par}\else\global\@minipagefalse\hb@xt@\hsize{\hfil\box\@tempboxa\hfil}\fi
   \vskip\belowcaptionskip}
 \makeatother
+% every section (and the references) starts on a new page
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
 \setlength{\textfloatsep}{10pt plus 2pt minus 2pt}\setlength{\intextsep}{8pt plus 2pt minus 2pt}
 \setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
 \graphicspath{{../Results/plots/}}
@@ -50,7 +53,7 @@ Speech carries the emotion. Text cannot: in TESS every word is spoken in all sev
 \textbf{Beyond the brief} (\S4.5--4.9). Five studies, each planned and committed before it was run, raise unseen-speaker accuracy to 75.7\% (linear head on frozen WavLM-Large, normalised with the unseen speaker's unlabelled clips~$\dagger$); all five use the same two speakers, so this is likely optimistic. A control shows that an encoder trained on data containing TESS scores 99.9\% on the ``unseen'' speaker, so such encoders are excluded from every result.
 \end{minipage}}\end{center}
 
-{\setlength{\parskip}{1pt}\tableofcontents
+{\let\section\oldsection\setlength{\parskip}{1pt}\tableofcontents
 \listoffigures
 \listoftables}
 \clearpage
