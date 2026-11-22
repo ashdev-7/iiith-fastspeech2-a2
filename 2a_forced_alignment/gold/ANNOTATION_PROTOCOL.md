@@ -78,7 +78,7 @@ The script checks that every listed word was labelled, in order. It reports:
 | 1 | browser tool | 2026-11-21 21:10 | 2026-11-21 22:16 | `kit/pass1_marks.json` |
 | 2 | browser tool | 2026-11-22 07:09 | 2026-11-22 10:38 | `kit/pass2_marks.json` |
 
-**Deviation from rule 2 (our own rule; the assignment sets none).** Pass 2 was done after a night's sleep, about 9 hours after pass 1, not the planned full day. Pass 2 was
+**Deviation from rule 2 (our own rule; the assignment sets none).** The two passes were separate sessions with a night's sleep between them, not the planned full day (exact times in the table above). Pass 2 was
 done without looking at pass 1, and no marks were edited after scoring. A shorter gap can make the passes agree
 more closely than fully independent passes would, so the reported pass-to-pass difference (median 11 ms) is, if
 anything, an optimistic estimate of the reference's precision. Pass 2 lies on average 27 ms later than pass 1;

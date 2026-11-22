@@ -91,7 +91,7 @@ def accuracy_tables(runs: pd.DataFrame, df_idx):
             p = d[d.protocol == proto]
             r[f"{proto.upper()} Acc"] = pm(p.accuracy)
             r[f"{proto.upper()} Macro-F1"] = pm(p.macro_f1)
-            r[f"{proto.upper()} runs"] = len(p)
+            r[f"{proto.upper()} runs"] = str(len(p))          # str: fillna("-") below would make it 5.0
         table.append(r)
     for z in zero_shot_rows(df_idx):
         r = next((t for t in table if t["Model"] == z["model"]), None)
@@ -111,8 +111,8 @@ def accuracy_tables(runs: pd.DataFrame, df_idx):
         d = runs[(runs.pipeline == pipe) & (runs.variant == var) & (runs.protocol == "si")]
         if d.empty:
             continue
-        rows.append({"Model": name, "train OAF → test YAF": pm(d[d.fold == 0].accuracy),
-                     "train YAF → test OAF": pm(d[d.fold == 1].accuracy)})
+        rows.append({"Model": name, "test YAF (trained on OAF)": pm(d[d.fold == 0].accuracy),
+                     "test OAF (trained on YAF)": pm(d[d.fold == 1].accuracy)})
     t2 = pd.DataFrame(rows)
     t2.to_csv(RESULTS_DIR / "accuracy_si_by_direction.csv", index=False)
     lines += [t2.to_markdown(index=False), ""]

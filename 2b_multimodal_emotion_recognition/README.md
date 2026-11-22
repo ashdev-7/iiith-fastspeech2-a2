@@ -1,10 +1,10 @@
-# Multimodal Emotion Recognition on TESS (speech · text · fusion)
+# Multimodal Emotion Recognition on TESS (speech, text and fusion)
 
 Three emotion-recognition systems built from the functional blocks in the assignment
 (preprocessing, feature extraction, temporal/contextual modelling, fusion where both modalities are used, classifier),
 evaluated on the **Toronto Emotional Speech Set** (2 speakers × 7 emotions × 200 words = 2800 clips).
 
-**Report:** [`report/report.pdf`](report/report.pdf) · **Tables:** [`Results/accuracy_tables.md`](Results/accuracy_tables.md) · **Plots:** [`Results/plots/`](Results/plots)
+**Report:** [`report/report.pdf`](report/report.pdf) | **Tables:** [`Results/accuracy_tables.md`](Results/accuracy_tables.md) | **Plots:** [`Results/plots/`](Results/plots)
 
 ## Results (176 runs, Kaggle T4 GPU; full log in `logs/kaggle_run_v2.log`)
 

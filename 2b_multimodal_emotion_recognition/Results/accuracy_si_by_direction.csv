@@ -1,4 +1,4 @@
-Model,train OAF → test YAF,train YAF → test OAF
+Model,test YAF (trained on OAF),test OAF (trained on YAF)
 Speech: log-Mel + BiGRU (baseline),43.45 ± 8.68,39.69 ± 1.90
 Speech: WavLM + BiGRU,53.02 ± 2.51,63.93 ± 9.78
 Speech: WavLM + BiGRU + speaker norm (†),56.26 ± 7.87,56.81 ± 3.95
