@@ -20,13 +20,18 @@
 \vspace{-0.7cm}
 
 \begin{center}\fbox{\begin{minipage}{0.96\linewidth}\small
-\textbf{Summary.} We build three pipelines on frozen encoders: speech (WavLM-Base+ $\to$ BiGRU $\to$ attention), text (emotion-tuned DistilRoBERTa $\to$ BiGRU $\to$ attention) and fusion (gated multimodal unit; concatenation and cross-attention as ablations).
-All 11 variants are trained and tested 16 times each (176 runs, plus 48 ablation runs) under three protocols, and every pairwise comparison is tested on identical splits.
-\textbf{(1)} The usual random split is saturated: every speech-based model scores 99.5--100\%. Under leave-one-speaker-out (SI), the realistic setting, the trained neural models reach 42--63\% with large seed variance.
-\textbf{(2)} TESS's transcripts are label-independent by design, so text alone sits at exactly chance (14.29\%). Whisper transcripts reach 30.1\% (SD, $p<10^{-4}$) because ASR punctuation leaks prosody: 72\% of pleasant-surprise transcripts end in ``!''.
-\textbf{(3)} Fusion never helps significantly across runs. Where speech is uncertain, Whisper-text fusion gains +5.7\pp{} \emph{after} removing a regression-to-the-mean artefact that accounts for half of the raw +11.8\pp; ground-truth text gives no net gain.
-\textbf{(4)} The bottleneck is speaker shift: the trained BiGRU overfits the one training speaker. A \emph{pre-registered} low-capacity model (all-layer pooled WavLM + logistic regression, every choice fixed in advance) reaches 66.0\% SI (70.6\% with label-free speaker normalisation~$\dagger$) vs.\ 58.5\%. A second pre-registered study (80 runs) shows that the linear head beats the BiGRU on identical normalised inputs by 10--18\pp{} in both directions, robust to seed noise. Speaker normalisation helps the linear head but not the BiGRU, and it works from a 40-word enrolment sample. A third pre-registered study shows that speed-perturbation augmentation makes the BiGRU more stable but not better; with it, the linear head reaches 72.0\%~$\dagger$. A fourth shows that frozen WavLM-Large adds +3.6\pp{} in both directions (75.7\%~$\dagger$), while an encoder trained on data that includes TESS scores 99.9\% on the ``unseen'' speaker: a leakage trap we measure, and exclude. A fifth finds that Whisper-large-v3, pitch augmentation and self-training each help in one direction at most, so 75.7\%~$\dagger$ stands.
-\textbf{Statistics are reported conservatively:} the 6 SI runs come from only 2 transfer directions, and after Holm correction for 24 comparisons no run-level difference between the 11 trained variants is significant.
+\textbf{At a glance} (section numbers refer to this report).\\[1pt]
+\textbf{A. Architecture} (\S2). Frozen WavLM-Base+ (speech) and emotion-tuned DistilRoBERTa (text) features $\to$ BiGRU with attention pooling (temporal / contextual block) $\to$ gated multimodal unit (fusion) $\to$ MLP classifier.\\[2pt]
+\textbf{B. Comparison} (\S4.1; test accuracy \%, mean over runs; chance = 14.29\%).\par\vspace{1pt}
+{\centering\begin{tabular}{@{}lccc@{}}\toprule
+Pipeline & Random split & Seen speakers (SD) & Unseen speaker (SI)\\\midrule
+Speech (WavLM + BiGRU) & 99.86 & 99.90 & 58.48\\
+Text (DistilRoBERTa + BiGRU) & 13.81 & 14.29 & 14.29\\
+Fusion (gated, speech + text) & 100.00 & 99.95 & 56.77\\\bottomrule
+\end{tabular}\par}\vspace{2pt}
+Speech carries the emotion. Text cannot: in TESS every word is spoken in all seven emotions, so the transcript holds no information about the emotion and text alone scores exactly chance. Fusion therefore matches speech but does not beat it. The real difficulty is a new speaker: 99.9\% falls to 58.5\%.\\[2pt]
+\textbf{C. Analysis} (\S5). Easiest emotions: neutral, sad and fear; hardest: happy and angry (\S5.1). Fusion helps only where speech is uncertain and the text comes from Whisper, whose punctuation carries prosody (+5.7\pp{} net, \S5.2). Five failure cases (\S5.3). Separability of all three blocks (Fig.~\ref{fig:tsne}, \S5.4).\\[2pt]
+\textbf{Beyond the brief} (\S4.5--4.9). Five studies, each planned and committed before it was run, raise unseen-speaker accuracy to 75.7\% (linear head on frozen WavLM-Large, with label-free speaker normalisation~$\dagger$). A control shows that an encoder trained on data containing TESS scores 99.9\% on the ``unseen'' speaker, so such encoders are excluded from every result.
 \end{minipage}}\end{center}
 
 \input{sections/architecture}
