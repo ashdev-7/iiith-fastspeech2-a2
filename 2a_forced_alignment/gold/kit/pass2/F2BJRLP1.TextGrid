@@ -11,8 +11,92 @@ item []:
         name = "gold"
         xmin = 0
         xmax = 25.309125
-        intervals: size = 1
+        intervals: size = 22
         intervals [1]:
-            xmin = 0
+            xmin = 0.0
+            xmax = 2.372312799043062
+            text = ""
+        intervals [2]:
+            xmin = 2.372312799043062
+            xmax = 3.099715045797414
+            text = "massachusetts"
+        intervals [3]:
+            xmin = 3.099715045797414
+            xmax = 3.4832430555555556
+            text = "supreme"
+        intervals [4]:
+            xmin = 3.4832430555555556
+            xmax = 4.972351351351351
+            text = ""
+        intervals [5]:
+            xmin = 4.972351351351351
+            xmax = 5.129985314685315
+            text = "j"
+        intervals [6]:
+            xmin = 5.129985314685315
+            xmax = 5.7863828125
+            text = ""
+        intervals [7]:
+            xmin = 5.7863828125
+            xmax = 6.1480791015625
+            text = "leader"
+        intervals [8]:
+            xmin = 6.1480791015625
+            xmax = 9.334413340336134
+            text = ""
+        intervals [9]:
+            xmin = 9.334413340336134
+            xmax = 9.958634733606557
+            text = "seventy"
+        intervals [10]:
+            xmin = 9.958634733606557
+            xmax = 12.179079326923077
+            text = ""
+        intervals [11]:
+            xmin = 12.179079326923077
+            xmax = 12.597618644067797
+            text = "march"
+        intervals [12]:
+            xmin = 12.597618644067797
+            xmax = 13.287438344594594
+            text = ""
+        intervals [13]:
+            xmin = 13.287438344594594
+            xmax = 13.370832786396182
+            text = "be"
+        intervals [14]:
+            xmin = 13.370832786396182
+            xmax = 14.818901785714287
+            text = ""
+        intervals [15]:
+            xmin = 14.818901785714287
+            xmax = 15.127395127118643
+            text = "governor"
+        intervals [16]:
+            xmin = 15.127395127118643
+            xmax = 16.726200000000002
+            text = ""
+        intervals [17]:
+            xmin = 16.726200000000002
+            xmax = 17.031282828282826
+            text = "during"
+        intervals [18]:
+            xmin = 17.031282828282826
+            xmax = 18.79310031847134
+            text = ""
+        intervals [19]:
+            xmin = 18.79310031847134
+            xmax = 18.985456917475727
+            text = "and"
+        intervals [20]:
+            xmin = 18.985456917475727
+            xmax = 24.49954166666667
+            text = ""
+        intervals [21]:
+            xmin = 24.49954166666667
+            xmax = 24.583319661458333
+            text = "to"
+        intervals [22]:
+            xmin = 24.583319661458333
             xmax = 25.309125
             text = ""

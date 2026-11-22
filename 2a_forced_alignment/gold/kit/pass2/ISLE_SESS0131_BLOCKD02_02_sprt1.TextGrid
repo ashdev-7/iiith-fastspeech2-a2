@@ -11,8 +11,36 @@ item []:
         name = "gold"
         xmin = 0
         xmax = 3.875
-        intervals: size = 1
+        intervals: size = 8
         intervals [1]:
-            xmin = 0
+            xmin = 0.0
+            xmax = 0.6166651581520239
+            text = ""
+        intervals [2]:
+            xmin = 0.6166651581520239
+            xmax = 0.723403624766646
+            text = "i"
+        intervals [3]:
+            xmin = 0.723403624766646
+            xmax = 0.9848478260869565
+            text = "said"
+        intervals [4]:
+            xmin = 0.9848478260869565
+            xmax = 1.4232678571428572
+            text = "new"
+        intervals [5]:
+            xmin = 1.4232678571428572
+            xmax = 1.7294184882252293
+            text = "not"
+        intervals [6]:
+            xmin = 1.7294184882252293
+            xmax = 1.75703125
+            text = ""
+        intervals [7]:
+            xmin = 1.75703125
+            xmax = 2.1319608333333337
+            text = "no"
+        intervals [8]:
+            xmin = 2.1319608333333337
             xmax = 3.875
             text = ""

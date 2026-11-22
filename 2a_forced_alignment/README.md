@@ -161,8 +161,11 @@ Agreement between aligners measures consistency, not accuracy. Two references th
   Edge positions move with the threshold, so this reference is too coarse to rank aligners at 10–20 ms
   (`analysis/reference_check.md`).
 * **Blind hand-labelled reference** (`gold/ANNOTATION_PROTOCOL.md`). It covers 60 words (120 boundaries): all ISLE words plus 45
-  random news words. Each is marked twice in Praat, blind to every aligner output. `python scripts/score_gold.py` then reports
-  the annotator's own pass-to-pass consistency (the reference's precision) and each experiment's error against it.
+  random news words. Each was marked twice in a browser tool (`scripts/marking_tool.py`) that shows no aligner output, and
+  `python scripts/score_gold.py` reports the annotator's own pass-to-pass consistency (the reference's precision) and each
+  experiment's error against it (`analysis/gold_check.md`). The passes differ by a median of 11 ms; against their mean the
+  ARPA models' median error is 22.5–26.3 ms with no significant difference between them, and `english_mfa`'s only gross errors
+  are its pause absorptions on ISLE (*bed*, *bait*: 2.4 and 1.9 s). The passes were 9 h apart instead of the planned day.
   The kit (`gold/kit/`) is built by `scripts/make_gold_kit.py`.
 
 ## Repository layout

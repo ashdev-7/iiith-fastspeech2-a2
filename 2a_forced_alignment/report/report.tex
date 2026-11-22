@@ -91,7 +91,7 @@ Not every disagreement is an \code{english\_mfa} error: at \textit{led} (18.16--
 
 \textbf{Error 2: very short, near-skipped phones.} 8--12\% of phones in the fast news speech last $\le$30\,ms, the shortest being a single 10\,ms frame.
 The most frequent are \code{T} (15), \code{N} (14) and \code{AH0} (8): flapped or unreleased /t/, syllabic or assimilated /n/, and reduced schwas.
-The aligner cannot delete a dictionary phone, so a phone the speaker actually elided is squeezed into the minimum duration. These are most likely \emph{skipped phonemes}, although without a hand-labelled reference we cannot confirm each one.
+The aligner cannot delete a dictionary phone, so a phone the speaker actually elided is squeezed into the minimum duration. These are most likely \emph{skipped phonemes}, although without phone-level hand labels we cannot confirm each one.
 The IPA model, with its finer allophone set (e.g.\ separate flap and syllabic phones), produces more of them (11.9\%).
 
 \textbf{Error 3: wrong pronunciations from a G2P-only dictionary.} Without the curated lexicon, the aligner sometimes picks bad G2P variants:
@@ -104,22 +104,26 @@ That is a typical spelling pronunciation for L2 speakers, and it shows how pronu
 Whether the learner said \textit{bad} as \code{B AE1 D} or as \code{B EH1 D}, the aligner still labels the vowel \code{AE1}.
 Spotting minimal-pair errors would need free phone recognition or goodness-of-pronunciation scoring on top of the alignment.
 
-\textbf{Automatic checks without a gold reference.} An energy check (\code{energy\_flags.csv}) flags words longer than 0.25\,s whose frames are mostly within 6\,dB of the file's noise floor.
+\textbf{Automatic checks independent of any aligner.} An energy check (\code{energy\_flags.csv}) flags words longer than 0.25\,s whose frames are mostly within 6\,dB of the file's noise floor.
 It catches both IPA errors. Its other flags (\textit{court}, \textit{act}, \textit{clerk} in all models) are mostly words that end in a stop closure, a known false-positive type.
 An aligner-independent pause reference (\code{scripts/reference\_check.py}) marks every stretch of $\ge$150\,ms within 6, 9 or 12\,dB of the noise floor in Praat's intensity contour.
 On ISLE, the ARPA models put $\le$1\% of that pause time inside words at every threshold; \code{english\_mfa} puts 35--56\% there.
 This confirms Error~1 without trusting any aligner. The same reference is \emph{too coarse} to rank aligners at the 10--20\,ms level: its edges move with the threshold, and on the news speech it also catches low-energy stretches inside words (stop closures, weak fricatives), equally for every model.
+
+\textbf{Hand-labelled reference} (\code{gold/}, \code{analysis/gold\_check.md}). We marked 60 words (120 boundaries: all 15 ISLE words, 45 random news words) twice by hand, in a tool that shows no aligner output.
+The passes differ by a median of 11\,ms (mean 35\,ms; pass~2 is 27\,ms later on average), so the reference resolves errors of tens of milliseconds, not the 1--10\,ms differences between ARPA variants.
+Against the mean of the passes, the ARPA models' median error is 22.5--26.3\,ms (76--77\% within 50\,ms), with no significant paired difference (Wilcoxon $p\ge0.26$). \code{english\_mfa} is similar on the news speech, but ends ISLE \textit{bed} and \textit{bait} 2.4 and 1.9\,s late (Error~1), the only gross errors.
+Deviation from the protocol: the passes were 9\,h apart, not a day, so they may agree more closely than independent passes would.
 
 \textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers ($-46.99\rightarrow-46.14$ and $-48.52\rightarrow-47.40$) but its boundary changes (99.3\% of word boundaries identical on the news speech and 100\% on ISLE, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
 With 97\,s of data the Gaussians move only slightly, and the segmentation was already stable.
 Note that \code{mfa adapt --output\_directory} exports the \emph{pre}-adaptation alignment (its log says ``Alignment already done, skipping''), so the pipeline re-aligns explicitly with the adapted model.
 
 \begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{overlay_F2BJRLP2_06s.png}
+\includegraphics[width=0.85\linewidth]{overlay_F2BJRLP2_06s.png}
 \vspace{-6mm}\caption{\small Word boundaries of all four experiments over one spectrogram. News speech: the ARPA models agree to within 10--20\,ms, and \code{english\_mfa} absorbs the pause before \textit{he}. (The \textit{bed} error is shown by Praat in Fig.~1.)}
 \end{figure}
 
-\pagebreak[4]
 \textbf{Sanity checks: does our preparation change the answer, and how repeatable is MFA?} (\code{run\_pipeline.py --stages sanity}, \code{analysis/sanity\_checks.md}).
 \emph{Noise floor:} re-running the identical \code{arpa\_base} setup twice leaves 99.3--100\% of word boundaries identical, with differences of at most one 10\,ms frame (phones: $\le$20\,ms). Differences of this size are not meaningful.
 \emph{Untouched input:} aligning the provided files exactly as given (SPHERE audio, original transcript text) gives the same word boundaries for every word whose text we did not change (98.4\% identical, max 10\,ms, i.e.\ at the noise floor).
@@ -131,10 +135,10 @@ By contrast, the G2P-only dictionary changes boundaries well beyond the noise fl
 \textbf{Conclusion.} The \code{english\_us\_arpa} acoustic model with its curated dictionary plus G2P for OOVs gives the most reliable alignment of this data.
 On the news speech, the second acoustic model agrees with it to a median of 10\,ms (83--88\% of boundaries within 20\,ms), which suggests the boundaries are stable.
 The disagreements are concentrated in pause handling on the short L2 prompts, where the spectrogram and energy evidence favour the ARPA model.
-There is no hand-labelled reference, so agreement between systems measures consistency, not accuracy.
+The hand-labelled reference confirms this at its resolution: no ARPA variant is measurably better than another, and the only gross boundary errors are \code{english\_mfa}'s pause absorptions.
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.62\linewidth]{phone_duration_hist.png}
+\includegraphics[width=0.5\linewidth]{phone_duration_hist.png}
 \vspace{-3mm}\caption{\small Phone-duration distributions of all experiments (non-silence phones, clipped at 0.3\,s). The mass at $\le$30\,ms is the near-skipped phones of Error~2; the \code{english\_mfa} tail beyond 0.25\,s is its pause-absorption error.}
 \end{figure}
 
