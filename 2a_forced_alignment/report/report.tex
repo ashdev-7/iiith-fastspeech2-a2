@@ -113,7 +113,7 @@ This confirms Error~1 without trusting any aligner. The same reference is \emph{
 \textbf{Hand-labelled reference} (\code{gold/}, \code{analysis/gold\_check.md}). We marked 60 words (120 boundaries: all 15 ISLE words, 45 random news words) twice by hand, in a tool that shows no aligner output.
 The passes differ by a median of 11\,ms (mean 35\,ms; pass~2 is 27\,ms later on average), so the reference resolves errors of tens of milliseconds, not the 1--10\,ms differences between ARPA variants.
 Against the mean of the passes, the ARPA models' median error is 22.5--26.3\,ms (76--77\% within 50\,ms), with no significant paired difference (Wilcoxon $p\ge0.26$). \code{english\_mfa} is similar on the news speech, but ends ISLE \textit{bed} and \textit{bait} 2.4 and 1.9\,s late (Error~1), the only gross errors.
-Deviation from the protocol: the passes were 9\,h apart, not a day, so they may agree more closely than independent passes would.
+The passes were done before and after a night's sleep (9\,h apart; our protocol planned a day), so they may agree slightly more closely than fully independent passes would.
 
 \textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers ($-46.99\rightarrow-46.14$ and $-48.52\rightarrow-47.40$) but its boundary changes (99.3\% of word boundaries identical on the news speech and 100\% on ISLE, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
 With 97\,s of data the Gaussians move only slightly, and the segmentation was already stable.
