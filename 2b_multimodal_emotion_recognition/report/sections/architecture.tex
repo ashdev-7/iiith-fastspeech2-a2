@@ -13,11 +13,11 @@ We then add an \emph{ASR-transcript} condition (Whisper-small~\cite{whisper}), w
 \begin{table}[H]\centering\small
 \begin{tabularx}{\linewidth}{@{}p{2.3cm}XX@{}}\toprule
 Block & Speech pipeline & Text pipeline\\\midrule
-Preprocessing & resample 24.4$\to$16\,kHz, mono, DC removal, trim leading/trailing silence (30\,dB, 50\,ms margin), peak-normalise, keep variable length (pad + mask) & lower-case, remove symbols, keep \texttt{. , ? !} as separate tokens, RoBERTa byte-level BPE\\
-Feature extraction & frozen \textbf{WavLM-Base+}; hidden states of 7 layers (0,2,\dots,12) at 40\,ms $\Rightarrow$ $T\times7\times768$ & frozen \textbf{emotion-tuned DistilRoBERTa}; all 7 hidden states $\Rightarrow$ $N\times7\times768$\\
-Temporal / contextual modelling & softmax layer weighting $\to$ LayerNorm $\to$ Linear(768,256) $\to$ \textbf{2-layer BiGRU} $\to$ \textbf{additive attention pooling}; time masking & layer weighting $\to$ Linear(768,256) $\to$ \textbf{BiGRU} $\to$ attention pooling\\
+Preprocessing & resample from 24.4 to 16\,kHz, mono, DC removal, trim leading/trailing silence (30\,dB, 50\,ms margin), peak-normalise, keep variable length (pad + mask) & lower-case, remove symbols, keep \texttt{. , ? !} as separate tokens, RoBERTa byte-level BPE\\
+Feature extraction & frozen \textbf{WavLM-Base+}; hidden states of 7 layers (0,2,\dots,12) at 40\,ms, shape $T\times7\times768$ & frozen \textbf{emotion-tuned DistilRoBERTa}; all 7 hidden states, shape $N\times7\times768$\\
+Temporal / contextual modelling & in order: softmax layer weighting, LayerNorm, Linear(768,256), \textbf{2-layer BiGRU}, \textbf{additive attention pooling}; time masking & in order: layer weighting, Linear(768,256), \textbf{BiGRU}, attention pooling\\
 Fusion & \multicolumn{2}{p{12.5cm}}{\textbf{Gated Multimodal Unit}: $h=z\odot\tanh(W_s s)+(1-z)\odot\tanh(W_t t)$, $z=\sigma(W_z[s;t])$, with modality dropout ($p{=}0.2$). Ablations: concatenation, bidirectional cross-modal attention.}\\
-Classifier & \multicolumn{2}{p{12.5cm}}{MLP $256\to128\to7$ (GELU, dropout 0.3), cross-entropy with label smoothing~\cite{labelsmooth} 0.05.}\\\bottomrule
+Classifier & \multicolumn{2}{p{12.5cm}}{MLP with layer sizes 256, 128 and 7 (GELU, dropout 0.3), cross-entropy with label smoothing~\cite{labelsmooth} 0.05.}\\\bottomrule
 \end{tabularx}\end{table}
 
 \textbf{Preprocessing.} 16\,kHz is the rate WavLM was pre-trained on, and emotion cues (F0, energy, spectral tilt, voice quality) lie well below 8\,kHz.
@@ -51,7 +51,7 @@ Plain concatenation treats both modalities as equally reliable.
 The GMU learns an input-dependent, per-dimension gate $z$, so it can rely on speech when the text is uninformative.
 Exactly that is needed for TESS, where text is uninformative by construction and the gate is directly interpretable (mean $z$ = reliance on speech).
 Modality dropout~\cite{moddrop}, which zeroes one modality for 20\% of training samples, keeps both branches trained and makes the model robust to a missing or degraded modality.
-Bidirectional cross-attention~\cite{mult} (frames$\leftrightarrow$tokens) and concatenation are evaluated as ablations.
+Bidirectional cross-attention~\cite{mult} (frames attend to tokens and tokens to frames) and concatenation are evaluated as ablations.
 
 \textbf{Training.} AdamW~\cite{adamw} (lr $10^{-3}$, weight decay $10^{-2}$), one-cycle schedule~\cite{onecycle}, batch 32, at most 40 epochs, gradient clipping 1.0.
 Early stopping (patience 8) on validation accuracy, with ties broken by validation loss (min $\Delta=10^{-3}$).
@@ -63,7 +63,7 @@ We report that protocol for comparability, alongside two stricter ones:
 \begin{itemize}\setlength\itemsep{1pt}
 \item \textbf{RAND: random clip-level split} (stratified by speaker $\times$ emotion, 70/15/15). 5 seeds. Optimistic; reported only so the numbers can be compared with the literature.
 \item \textbf{SD: speaker-dependent, word-disjoint.} Both speakers are in every split, but all 14 recordings of a word go to exactly one split (140/30/30 words = 1960/420/420 clips). 5 seeds (different word partitions and initialisations).
-\item \textbf{SI: speaker-independent, leave-one-speaker-out.} Train and validate on one speaker (170/30 words), test on all 1400 clips of the \emph{unseen} speaker. 2 directions $\times$ 3 seeds.
+\item \textbf{SI: speaker-independent, leave-one-speaker-out.} Train and validate on one speaker (170/30 words), test on all 1400 clips of the \emph{unseen} speaker. 2 directions $\times$ 3 seeds. We name each direction by its test speaker: ``test YAF'' means trained on OAF and tested on YAF, and ``test OAF'' the reverse.
 This is the realistic setting, and model selection cannot peek at the target speaker. (The only analysis that reads a choice off the test speaker, the best probe layer, is flagged as optimistic.)
 \end{itemize}
 The test sets are evaluated once by \code{test.py}, after training has finished. We report mean $\pm$ std over runs; classes are balanced, so accuracy equals unweighted average recall (UAR).

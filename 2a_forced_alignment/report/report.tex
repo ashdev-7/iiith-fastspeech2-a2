@@ -1,5 +1,6 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[margin=2cm]{geometry}
+\usepackage{mathptmx}  % Times text and math (Type 1)
 \usepackage{graphicx,booktabs,xcolor,float,tabularx,amsmath}
 \usepackage[safe]{tipa}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
@@ -18,8 +19,8 @@
 
 \section{Setup and data preparation}
 \textbf{Tooling.} MFA 3.4.4~\cite{mfa} (Kaldi-based~\cite{kaldi}; conda-forge, run through a portable micromamba environment on Windows 11), Python 3.11.
-The whole pipeline is a single re-runnable script (\code{scripts/run\_pipeline.py}): prepare $\rightarrow$ download models $\rightarrow$ find OOVs $\rightarrow$
-build dictionaries (G2P) $\rightarrow$ \code{mfa validate} $\rightarrow$ align (3 configurations) $\rightarrow$ adapt + re-align $\rightarrow$ analysis/figures.
+The whole pipeline is a single re-runnable script (\code{scripts/run\_pipeline.py}): it prepares the corpus, downloads the models, finds OOVs,
+builds the dictionaries (G2P), runs \code{mfa validate}, aligns three configurations, adapts and re-aligns, and writes the analysis and figures.
 
 \textbf{Dataset.} 6 utterances, 97.2\,s in total, all 16\,kHz mono 16-bit:
 3 long read news paragraphs from the BU Radio News corpus~\cite{buradio} (speaker \textit{f2b}, 25--31\,s, 228 words) and
@@ -31,8 +32,8 @@ The corpus was arranged in MFA's layout, with one folder per speaker and a \code
 MFA's audio reader (libsndfile) decodes them correctly, so conversion is not strictly required; we rewrite them as standard RIFF/WAVE so that tools trusting the extension read them too.
 The samples are untouched: sample counts, rate and the header's recorded min/max match exactly, and every sample is identical (\code{analysis/sanity\_checks.md}), so no timing can change.
 (ii) The transcripts needed normalisation so that every token is a lexical word. Each change is logged in \code{corpus/normalization\_log.tsv}:
-\code{seventy- six}$\rightarrow$\code{seventy six} (numbers broken across lines), the acronyms read letter by letter
-\code{S.J.C.'s}$\rightarrow$\code{s j c's} and \code{WBUR's}$\rightarrow$\code{w b u r's}, \code{de-politicize}$\rightarrow$\code{depoliticize}; punctuation was dropped and the text lower-cased.
+\code{seventy- six} became \code{seventy six} (numbers broken across lines), the acronyms read letter by letter
+\code{S.J.C.'s} became \code{s j c's} and \code{WBUR's} became \code{w b u r's}, \code{de-politicize} became \code{depoliticize}; punctuation was dropped and the text lower-cased.
 \code{mfa validate} then reported no unreadable audio, no missing transcripts, no OOVs and no phones without acoustic models.
 
 \section{Dictionaries and acoustic models}
@@ -95,9 +96,9 @@ The aligner cannot delete a dictionary phone, so a phone the speaker actually el
 The IPA model, with its finer allophone set (e.g.\ separate flap and syllabic phones), produces more of them (11.9\%).
 
 \textbf{Error 3: wrong pronunciations from a G2P-only dictionary.} Without the curated lexicon, the aligner sometimes picks bad G2P variants:
-\textit{the}$\rightarrow$\code{TH IY0}, \textit{w}$\rightarrow$\code{V}, \textit{j}$\rightarrow$\code{JH}, \textit{of}$\rightarrow$\code{AA1 F}, \textit{these}$\rightarrow$\code{TH IY1 Z} (45 differing tokens in \code{pronunciation\_diffs.csv}).
-Word boundaries stay close (median 0\,ms, mean 4.8\,ms), but phone labels become wrong and the likelihood on native speech drops ($-46.99\rightarrow-47.84$).
-For the L2 learner, though, the G2P dictionary fits slightly \emph{better} ($-48.52\rightarrow-48.35$), and the aligner chose \textit{said}~\code{S EY1 D} instead of the lexicon's \code{S EH1 D}.
+\textit{the} as \code{TH IY0}, \textit{w} as \code{V}, \textit{j} as \code{JH}, \textit{of} as \code{AA1 F}, \textit{these} as \code{TH IY1 Z} (45 differing tokens in \code{pronunciation\_diffs.csv}).
+Word boundaries stay close (median 0\,ms, mean 4.8\,ms), but phone labels become wrong and the likelihood on native speech drops (from $-46.99$ to $-47.84$).
+For the L2 learner, though, the G2P dictionary fits slightly \emph{better} (from $-48.52$ to $-48.35$), and the aligner chose \textit{said}~\code{S EY1 D} instead of the lexicon's \code{S EH1 D}.
 That is a typical spelling pronunciation for L2 speakers, and it shows how pronunciation variants matter for non-native speech.
 
 \textbf{Error 4 (a limitation of forced alignment): it cannot detect mispronunciations.} Alignment is \emph{forced} to the canonical phone sequence.
@@ -115,7 +116,7 @@ The passes differ by a median of 11\,ms (mean 35\,ms; pass~2 is 27\,ms later on 
 Against the mean of the passes, the ARPA models' median error is 22.5--26.3\,ms (76--77\% within 50\,ms), with no significant paired difference (Wilcoxon $p\ge0.26$). \code{english\_mfa} is similar on the news speech, but ends ISLE \textit{bed} and \textit{bait} 2.4 and 1.9\,s late (Error~1), the only gross errors.
 The passes were done before and after a night's sleep (9\,h apart; our protocol planned a day), so they may agree slightly more closely than fully independent passes would.
 
-\textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers ($-46.99\rightarrow-46.14$ and $-48.52\rightarrow-47.40$) but its boundary changes (99.3\% of word boundaries identical on the news speech and 100\% on ISLE, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
+\textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers (from $-46.99$ to $-46.14$ and from $-48.52$ to $-47.40$) but its boundary changes (99.3\% of word boundaries identical on the news speech and 100\% on ISLE, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
 With 97\,s of data the Gaussians move only slightly, and the segmentation was already stable.
 Note that \code{mfa adapt --output\_directory} exports the \emph{pre}-adaptation alignment (its log says ``Alignment already done, skipping''), so the pipeline re-aligns explicitly with the adapted model.
 
@@ -138,7 +139,7 @@ The disagreements are concentrated in pause handling on the short L2 prompts, wh
 The hand-labelled reference confirms this at its resolution: no ARPA variant is measurably better than another, and the only gross boundary errors are \code{english\_mfa}'s pause absorptions.
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.5\linewidth]{phone_duration_hist.png}
+\includegraphics[width=0.65\linewidth]{phone_duration_hist.png}
 \vspace{-3mm}\caption{\small Phone-duration distributions of all experiments (non-silence phones, clipped at 0.3\,s). The mass at $\le$30\,ms is the near-skipped phones of Error~2; the \code{english\_mfa} tail beyond 0.25\,s is its pause-absorption error.}
 \end{figure}
 

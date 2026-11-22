@@ -28,7 +28,7 @@ MFA depends on Kaldi binaries (`kalpy`) that are only distributed through conda-
 # any conda flavour works: Miniforge, Miniconda, Anaconda or a portable micromamba
 conda env create -f environment.yml          # or:  conda create -n mfa -c conda-forge montreal-forced-aligner=3.4.4
 conda activate mfa
-mfa version                                  # -> 3.4.4
+mfa version                                  # prints 3.4.4
 ```
 
 > Used here on Windows 11 with portable **micromamba** (`micromamba create -n mfa -c conda-forge montreal-forced-aligner python=3.11`)
@@ -61,8 +61,8 @@ MFA wants one folder per speaker, with a `.lab` (or `.txt`) transcript next to e
 
 ```
 corpus/
-├── f2b/             F2BJRLP1.wav  F2BJRLP1.lab  … (BU Radio News, speaker f2b)
-└── isle_sess0131/   ISLE_SESS0131_BLOCKD02_01_sprt1.wav  …01_sprt1.lab  …
+├── f2b/             F2BJRLP1.wav  F2BJRLP1.lab  ... (BU Radio News, speaker f2b)
+└── isle_sess0131/   ISLE_SESS0131_BLOCKD02_01_sprt1.wav  ...01_sprt1.lab  ...
 ```
 
 What the script does, and why:
@@ -72,8 +72,8 @@ What the script does, and why:
   strictly required; they are rewritten as standard RIFF/WAVE (for tools that trust the extension) with every
   sample unchanged (verified by the `sanity` stage). All files are 16 kHz / mono / 16-bit, so there is no resampling.
 * **Text normalisation**, logged in `corpus/normalization_log.tsv`:
-  `seventy- six → seventy six` (numbers split across line breaks), `S.J.C.'s → s j c's`,
-  `WBUR's → w b u r's` (acronyms read letter by letter), `de-politicize → depoliticize`, punctuation
+  `seventy- six` became `seventy six` (numbers split across line breaks), `S.J.C.'s` became `s j c's`,
+  `WBUR's` became `w b u r's` (acronyms read letter by letter), `de-politicize` became `depoliticize`, punctuation
   removed, lower-cased.
 
 ## 3. Dictionaries: OOVs, G2P and a custom dictionary
@@ -90,7 +90,7 @@ mfa g2p dictionaries/corpus_wordlist.txt english_us_arpa dictionaries/g2p_custom
 | Dictionary | OOV words | G2P pronunciation |
 |---|---|---|
 | english_us_arpa | dukakis, maffy, melnicove, depoliticize | `D UW0 K AA1 K IH0 S`, `M AE1 F IY0`, `M EH1 L N IH0 K OW2 V`, `D EH2 P AH0 L IH1 T IH0 S AY2 Z` |
-| english_mfa | the same four, plus judgeships | `d ɐ cʰ æ c ɪ s`, `m æ fʲ i`, `m ɛ ɫ ɲ ɪ kʰ ow v`, … |
+| english_mfa | the same four, plus judgeships | `d ɐ cʰ æ c ɪ s`, `m æ fʲ i`, `m ɛ ɫ ɲ ɪ kʰ ow v`, ... |
 
 ## 4. Run forced alignment
 
@@ -110,7 +110,7 @@ are 25–31 s long; with narrow beams, long utterances are the usual cause of "c
 ### Or run everything with one command
 
 ```bash
-python scripts/run_pipeline.py            # prepare → models → oov → dict → validate → align → adapt → analyze → sanity
+python scripts/run_pipeline.py            # stages in order: prepare, models, oov, dict, validate, align, adapt, analyze, sanity
 python scripts/run_pipeline.py --stages align analyze
 python scripts/run_pipeline.py --stages sanity        # data-preparation and repeatability checks only
 ```
@@ -118,8 +118,8 @@ python scripts/run_pipeline.py --stages sanity        # data-preparation and rep
 The `sanity` stage checks the data preparation and MFA itself:
 * **audio identity**: every corpus `.wav` carries exactly the provided samples (the three `F2B*.wav` files are
   NIST SPHERE; libsndfile/MFA can read them as-is, and we rewrite them as RIFF without changing a sample);
-* **untouched input**: the `arpa_base` setup run on the provided files exactly as given (`corpus_untouched/` →
-  `outputs/arpa_untouched/`). Word boundaries are identical to `arpa_base` for every word whose text we did not edit,
+* **untouched input**: the `arpa_base` setup run on the provided files exactly as given (input `corpus_untouched/`,
+  output `outputs/arpa_untouched/`). Word boundaries are identical to `arpa_base` for every word whose text we did not edit,
   up to MFA's run-to-run noise. Only `WBUR's` and `de-politicize` differ: untouched, they become `spn` (no phones);
 * **repeatability**: `arpa_base` re-run twice (`outputs/repeatability/run{1,2}/`): ≤10 ms word / ≤20 ms phone
   differences between identical runs, which is the noise floor against which every comparison is judged.
@@ -128,7 +128,7 @@ Results: `analysis/sanity_checks.md` (+ `sanity_*.csv`).
 
 The `ipa_dict` stage (`--stages ipa_dict`) re-aligns with the `english_mfa` acoustic model and the **full v3.0.0**
 `english_mfa` dictionary (all variants, with probabilities) instead of MFA's default v3.1.0 dictionary, which keeps a
-single pronunciation per word (e.g. *said* → `s aj d`). The download is verified against the release's MD5.
+single pronunciation per word (e.g. *said* as `s aj d`). The download is verified against the release's MD5.
 Result (`analysis/ipa_dict_check.md`): the pronunciations become correct (`s ɛ d`), but the silence absorbed into
 *bait*/*bed* on the ISLE prompts is unchanged, so that error comes from the acoustic model, not the lexicon; on the
 news speech the full dictionary moves `english_mfa` closer to `english_us_arpa` (95.2 % vs 88.2 % of word boundaries within 20 ms).

@@ -1,4 +1,4 @@
-# Assignment 2 — Speech Processing
+# Assignment 2: Speech Processing
 
 Both parts of Assignment 2. Each folder is self-contained, with its own README (setup and commands), code, outputs and report.
 
@@ -38,4 +38,4 @@ python prepare_data.py --all && python run_all.py
 
 - Speech carries the emotion. Text is at chance by construction: in TESS every word is spoken in all seven emotions.
 - Fusion therefore matches speech but does not beat it; it helps only where speech is uncertain and the text comes from Whisper, whose punctuation carries prosody.
-- The real difficulty is a new speaker (99.9 % → 58.5 %). Five additional studies, each planned before it was run, raise this to 75.7 % with frozen WavLM-Large, and show that encoders trained on data containing TESS score 99.9 % on the "unseen" speaker, so they are excluded.
+- The real difficulty is a new speaker (from 99.9 % to 58.5 %). Five additional studies, each planned before it was run, raise this to 75.7 % with frozen WavLM-Large, and show that encoders trained on data containing TESS score 99.9 % on the "unseen" speaker, so they are excluded.

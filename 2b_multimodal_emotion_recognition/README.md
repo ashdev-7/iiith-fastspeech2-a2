@@ -1,7 +1,7 @@
 # Multimodal Emotion Recognition on TESS (speech · text · fusion)
 
 Three emotion-recognition systems built from the functional blocks in the assignment
-(preprocessing → feature extraction → temporal/contextual modelling → [fusion] → classifier),
+(preprocessing, feature extraction, temporal/contextual modelling, fusion where both modalities are used, classifier),
 evaluated on the **Toronto Emotional Speech Set** (2 speakers × 7 emotions × 200 words = 2800 clips).
 
 **Report:** [`report/report.pdf`](report/report.pdf) · **Tables:** [`Results/accuracy_tables.md`](Results/accuracy_tables.md) · **Plots:** [`Results/plots/`](Results/plots)
@@ -37,7 +37,7 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
 * **The bottleneck is speaker shift: the BiGRU overfits the training speaker** (100 % on its held-out words, 58.5 % on the other speaker).
   A **pre-registered** low-capacity model ([plan](analysis/PREREGISTRATION_si_linear.md), committed before the run) reaches **66.0 % SI**
   (70.6 % with label-free speaker normalisation †): [`si_linear.md`](Results/si_linear.md).
-  A post-hoc check over C = 1e-5 … 10 ([`c_sensitivity.md`](Results/c_sensitivity.md)) keeps it at 63.5–68.1 % (66.7–72.7 % †), so it is not an artefact of the tie-broken C.
+  A post-hoc check over C from 1e-5 to 10 ([`c_sensitivity.md`](Results/c_sensitivity.md)) keeps it at 63.5–68.1 % (66.7–72.7 % †), so it is not an artefact of the tie-broken C.
   A second pre-registered study (80 runs, [`capacity_study.md`](Results/capacity_study.md)): on identical normalised inputs the
   linear head beats the BiGRU by 10–18 pp in both directions (robust to seed noise). Normalisation helps the linear head but not
   the BiGRU, and it works from a 40-word unlabelled enrolment sample (within 0.6 pp of using the whole test set).
@@ -56,7 +56,7 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
   semitones) and self-training on the unseen speaker's unlabelled clips. None improves both directions (Whisper −2.0 / +2.5 pp,
   pitch −2.7 / +0.3 pp, self-training +2.4 / −8.4 pp), and the primary combination is worse (73.6 %), so **75.7 % stands**
   as the best clean result. Its inductive variant (40-word enrolment) matches the transductive one within 0.1 pp.
-  Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.5 → 54.8 % at 0 dB, vs. 58.5 → 28.0 % without it).
+  Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (from 56.5 % to 54.8 % at 0 dB, against a fall from 58.5 % to 28.0 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 
 Additional studies: speech front-end ablation ([`ablation_speech.md`](Results/ablation_speech.md): all 13 WavLM layers at 20 ms gives no gain, -3.5 pp SI, n.s.; freeing the layer weights moves them to the *lowest* layers and does not help SI), hand-crafted 44-feature prosody baseline ([`prosody_baseline.md`](Results/prosody_baseline.md)),
@@ -69,11 +69,11 @@ ASR transcript statistics ([`asr_transcript_stats.md`](Results/asr_transcript_st
 
 | Block | Speech pipeline | Text pipeline |
 |---|---|---|
-| Preprocessing | resample 24.4→16 kHz, mono, DC removal, trim silence (30 dB, 50 ms margin), peak-normalise, variable length + masking | lower-case, remove symbols, keep `. , ? !` as tokens, RoBERTa BPE tokenisation |
-| Feature extraction | frozen **WavLM-Base+** hidden states (7 layers: 0, 2, …, 12; 40 ms frames) → *time_steps × 7 × 768*. Baseline: 80-d log-Mel | frozen **emotion-tuned DistilRoBERTa** (`j-hartmann/emotion-english-distilroberta-base`) hidden states → *tokens × 7 × 768* |
-| Temporal / contextual modelling | learnable softmax layer weighting → LayerNorm → Linear(768→256) → **2-layer BiGRU** → **additive attention pooling** (+ time masking) | layer weighting → Linear(768→256) → **BiGRU** → attention pooling |
+| Preprocessing | resample from 24.4 to 16 kHz, mono, DC removal, trim silence (30 dB, 50 ms margin), peak-normalise, variable length + masking | lower-case, remove symbols, keep `. , ? !` as tokens, RoBERTa BPE tokenisation |
+| Feature extraction | frozen **WavLM-Base+** hidden states (7 layers: 0, 2, ..., 12; 40 ms frames), shape *time_steps × 7 × 768*. Baseline: 80-d log-Mel | frozen **emotion-tuned DistilRoBERTa** (`j-hartmann/emotion-english-distilroberta-base`) hidden states, shape *tokens × 7 × 768* |
+| Temporal / contextual modelling | in order: learnable softmax layer weighting, LayerNorm, Linear(768, 256), **2-layer BiGRU**, **additive attention pooling** (with time masking) | in order: layer weighting, Linear(768, 256), **BiGRU**, attention pooling |
 | Fusion | **Gated Multimodal Unit** (default): `h = z⊙tanh(W_s s) + (1−z)⊙tanh(W_t t)`, `z = σ(W[s;t])`, trained with modality dropout. Ablations: concatenation, bidirectional cross-modal attention | |
-| Classifier | MLP 256 → 128 → 7, label smoothing 0.05 | same |
+| Classifier | MLP with layer sizes 256, 128 and 7, label smoothing 0.05 | same |
 
 ## Evaluation protocols (no leakage)
 
@@ -106,8 +106,8 @@ python models/text_pipeline/test.py
 python models/fusion_pipeline/train.py                 # --fusion gated | concat | xattn   --transcripts gt | asr
 python models/fusion_pipeline/test.py
 # single run: add  --protocol si --fold 0 --seed 0
-python analysis/make_results.py                        # tables + plots -> Results/
-python analysis/error_analysis.py                      # failure cases -> Results/error_analysis.md
+python analysis/make_results.py                        # writes tables and plots to Results/
+python analysis/error_analysis.py                      # writes failure cases to Results/error_analysis.md
 python analysis/layer_probe.py                         # linear probes per frozen layer
 python analysis/prosody_baseline.py                    # hand-crafted prosody baseline
 python analysis/noise_robustness.py                    # test-time noise (needs checkpoints + GPU)

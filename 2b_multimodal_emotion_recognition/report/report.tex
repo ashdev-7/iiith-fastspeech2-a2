@@ -1,5 +1,6 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[margin=1.9cm]{geometry}
+\usepackage{mathptmx}  % Times text and math (Type 1)
 \usepackage{graphicx,booktabs,xcolor,float,tabularx,amsmath,amssymb}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
 \setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
@@ -21,7 +22,7 @@
 
 \begin{center}\fbox{\begin{minipage}{0.96\linewidth}\small
 \textbf{At a glance} (section numbers refer to this report).\\[1pt]
-\textbf{A. Architecture} (\S2). Frozen WavLM-Base+ (speech) and emotion-tuned DistilRoBERTa (text) features $\to$ BiGRU with attention pooling (temporal / contextual block) $\to$ gated multimodal unit (fusion) $\to$ MLP classifier.\\[2pt]
+\textbf{A. Architecture} (\S2). Frozen WavLM-Base+ (speech) and emotion-tuned DistilRoBERTa (text) features feed a BiGRU with attention pooling (temporal / contextual block); a gated multimodal unit fuses the two (fusion block), and an MLP classifies.\\[2pt]
 \textbf{B. Comparison} (\S4.1; test accuracy \%, mean over runs; chance = 14.29\%).\par\vspace{1pt}
 {\centering\begin{tabular}{@{}lccc@{}}\toprule
 Pipeline & Random split & Seen speakers (SD) & Unseen speaker (SI)\\\midrule
@@ -65,9 +66,9 @@ This holds even for SD, where the test \emph{words} are unseen, so the models ar
 Under RAND the same speaker and word appear in train and test, so those numbers say little about generalisation.
 This is why most of our analysis uses SI.
 \emph{(ii) SI is hard and noisy.} With only one speaker to learn from, accuracy falls to 42--63\%, with large seed variance (std 5--11\pp).
-It also depends on direction: speech-only scores 53.0\% for OAF$\to$YAF and 63.9\% for YAF$\to$OAF (\code{accuracy\_si\_by\_direction.csv}).
+It also depends on direction: speech-only scores 53.0\% for test YAF and 63.9\% for test OAF (\code{accuracy\_si\_by\_direction.csv}).
 \emph{(iii) Self-supervised features matter most where it counts.} WavLM beats log-Mel by $+16.9$\pp{} under SI (95\% CI $\pm$13.2; paired $t$ $p=0.022$, Wilcoxon $p=0.031$, McNemar $p<10^{-6}$), but by only 0.2--0.4\pp{} under RAND and SD.
-It is the only gain that is \emph{consistent}: positive in all 6 runs and in both directions (+9.6\pp{} OAF$\to$YAF, +24.2\pp{} YAF$\to$OAF). It is nominally significant, but \emph{not} after Holm correction for the 24 comparisons (adjusted $p=0.18$ within SI; \code{robustness\_checks.md}).
+It is the only gain that is \emph{consistent}: positive in all 6 runs and in both directions (+9.6\pp{} on test YAF, +24.2\pp{} on test OAF). It is nominally significant, but \emph{not} after Holm correction for the 24 comparisons (adjusted $p=0.18$ within SI; \code{robustness\_checks.md}).
 \emph{(iv) Text.} With ground-truth transcripts, both the trained text model and the zero-shot emotion classifier are at chance in every protocol.
 The trained model's validation loss stays at $\ln 7$, and the zero-shot model predicts ``neutral'' for 91\% of clips.
 With Whisper transcripts, the trained text model is far above chance: 30.1\% SD ($t_4=14.6$, $p<10^{-4}$) and 23.5\% SI ($t_5=4.8$, $p=0.003$).
@@ -91,7 +92,7 @@ We therefore base conclusions on the run-level test.
 Even so, it shows that fusion changes many decisions in both directions (740--1180 fixes \emph{and} 760--1020 breaks): it is not a near-copy of the speech model.
 \textbf{The run-level test is itself optimistic.} The 6 SI runs are 2 directions $\times$ 3 seeds, and seeds within a direction share both speakers, so the effective sample size is closer to 2 than to 6.
 We therefore also check every SI comparison per direction (\code{robustness\_checks.md}): only WavLM vs.\ log-Mel has the same sign in both.
-Cross-attention's $+4.9$\pp{} is $+13.0$\pp{} for OAF$\to$YAF and $-3.1$\pp{} for YAF$\to$OAF, and speaker normalisation's $-1.9$\pp{} is $+3.2$ / $-7.1$\pp.
+Cross-attention's $+4.9$\pp{} is $+13.0$\pp{} for test YAF and $-3.1$\pp{} for test OAF, and speaker normalisation's $-1.9$\pp{} is $+3.2$ / $-7.1$\pp.
 \textbf{Conclusion:} with two speakers, the only robust architectural finding is that self-supervised features beat hand-crafted ones under SI.
 No fusion variant can be distinguished from speech-only.
 
@@ -152,7 +153,7 @@ layer logits: no decay, 10$\times$ lr & 99.86 $\pm$ 0.13 & 59.45 $\pm$ 6.51 & $+
 \end{figure}
 
 \subsection{Is the SI gap overfitting? A pre-registered test}\label{sec:prereg}
-The BiGRU fits the training speaker perfectly (100\% on held-out words of that speaker) and transfers poorly, with seed-to-seed swings of up to 19\pp{} on the same test speaker (55.6--74.7\% for YAF$\to$OAF).
+The BiGRU fits the training speaker perfectly (100\% on held-out words of that speaker) and transfers poorly, with seed-to-seed swings of up to 19\pp{} on the same test speaker (55.6--74.7\% for test OAF).
 This is overfitting to the \emph{speaker}, not to the clips.
 We tested one fix and wrote the plan down \emph{before} running it, committed to git ahead of the results (\code{analysis/PREREGISTRATION\_si\_linear.md}): a low-capacity model whose every choice is fixed in advance.
 It uses mean and std over time of all 7 cached WavLM layers (no layer selection; 10\,752 dims), StandardScaler, and L2 logistic regression.
@@ -160,14 +161,14 @@ $C$ is chosen by word-grouped 5-fold cross-validation on the \emph{training} spe
 \begin{table}[H]\centering\small
 \caption{Pre-registered SI experiment (\code{Results/si\_linear.md}). The linear model is deterministic, so there is one run per direction; the BiGRU shows mean [min, max] over its 3 seeds.}\label{tab:prereg}
 \begin{tabular}{@{}lccc@{}}\toprule
-Model & OAF$\to$YAF & YAF$\to$OAF & mean\\\midrule
+Model & Test YAF & Test OAF & mean\\\midrule
 WavLM + BiGRU (Table~\ref{tab:main}) & 53.0 [51.1, 55.9] & 63.9 [55.6, 74.7] & 58.5\\
 \textbf{all-layer linear} (pre-registered) & \textbf{68.4} & 63.5 & \textbf{66.0}\\\midrule
 WavLM + BiGRU + speaker norm $\dagger$ & 56.3 & 56.8 & 56.5\\
 \textbf{all-layer linear + speaker norm} $\dagger$ (pre-registered secondary) & \textbf{75.3} & \textbf{66.0} & \textbf{70.6}\\\bottomrule
 \end{tabular}\end{table}
 The first pre-registered hypothesis is supported, but not uniformly.
-The linear model beats 5 of the 6 BiGRU runs (exact McNemar $p\le0.011$ for each), by $+15.4$\pp{} for OAF$\to$YAF. For YAF$\to$OAF it ties the BiGRU's mean ($-0.4$\pp), and one lucky BiGRU seed (74.7\%) beats it.
+The linear model beats 5 of the 6 BiGRU runs (exact McNemar $p\le0.011$ for each), by $+15.4$\pp{} for test YAF. For test OAF it ties the BiGRU's mean ($-0.4$\pp), and one lucky BiGRU seed (74.7\%) beats it.
 With speaker normalisation, it beats all 6 runs of its BiGRU counterpart in both directions ($+14.1$\pp{} on average).
 Its main practical gain is \emph{stability}: no seed lottery.
 Two disclosures: the training-speaker CV scores 100\% for every $C$, so it cannot discriminate, and ties fall to the strongest regularisation in the grid ($C=0.001$, the first value; a code default, not written in the plan).
@@ -182,7 +183,7 @@ Every hyper-parameter was fixed in advance. Retrained seeds 0--2 reproduce the o
 \begin{table}[H]\centering\small
 \caption{Head-capacity study (SI; \code{Results/capacity\_study.md}). Neural heads: mean [min, max] over 10 seeds, and the accuracy of the seed ensemble (averaged posteriors). $\dagger$ = transductive speaker normalisation.}\label{tab:capacity}
 \begin{tabular}{@{}lrcccc@{}}\toprule
-Head & params & OAF$\to$YAF & YAF$\to$OAF & mean & ensemble\\\midrule
+Head & params & Test YAF & Test OAF & mean & ensemble\\\midrule
 B1 BiGRU (main) & 858k & 57.2 [44.9, 72.1] & 61.5 [53.6, 74.7] & 59.3 & 62.9\\
 B2 BiGRU + norm $\dagger$ & 858k & 57.3 [43.5, 72.8] & 55.7 [48.6, 62.6] & 56.5 & 59.4\\
 B3 small BiGRU + norm $\dagger$ (dim 64, dropout 0.5) & 93k & 61.4 [52.6, 70.3] & 60.3 [52.6, 70.9] & 60.9 & 66.3\\
@@ -232,7 +233,7 @@ A first run stopped at that last check (a packaging error) after printing accura
 \begin{table}[H]\centering\small
 \caption{Encoder study (SI, A-L1n recipe, $\dagger$; \code{Results/backbone\_study.md}). $\Delta$ = difference from WavLM-Base+ with the 95\% word-bootstrap CI. LC rows are a leakage control, never a candidate.}\label{tab:backbones}
 \begin{tabular}{@{}lccccc@{}}\toprule
-Encoder & OAF$\to$YAF & YAF$\to$OAF & mean & $\Delta$ OAF$\to$YAF & $\Delta$ YAF$\to$OAF\\\midrule
+Encoder & Test YAF & Test OAF & mean & $\Delta$ test YAF & $\Delta$ test OAF\\\midrule
 B: WavLM-Base+ (= A-L1n) & 76.4 & 67.7 & 72.0 & -- & --\\
 WL: WavLM-Large & \textbf{80.0} & \textbf{71.4} & \textbf{75.7} & +3.6 [2.6, 4.7] & +3.6 [2.6, 4.6]\\
 HL: HuBERT-Large & 75.8 & 66.6 & 71.2 & $-0.6$ [$-1.8$, 0.6] & $-1.1$ [$-2.0$, $-0.1$]\\
@@ -263,7 +264,7 @@ Runs 1 and 3 ran out of memory before computing any result, and run~2 never star
 \begin{table}[H]\centering\small
 \caption{Study 5 (SI, $\dagger$; \code{Results/final\_study.md}). $\Delta$ = difference from the reference R, with the 95\% word-bootstrap CI.}\label{tab:final}
 \begin{tabular}{@{}lccccc@{}}\toprule
-Model & OAF$\to$YAF & YAF$\to$OAF & mean & $\Delta$ OAF$\to$YAF & $\Delta$ YAF$\to$OAF\\\midrule
+Model & Test YAF & Test OAF & mean & $\Delta$ test YAF & $\Delta$ test OAF\\\midrule
 R: A-L1n, WavLM-Large (study 4) & 80.0 & 71.4 & \textbf{75.7} & -- & --\\
 W3: A-L1n, Whisper-large-v3 & 78.0 & 73.9 & 75.9 & $-2.0$ [$-2.9$, $-1.2$] & +2.5 [1.4, 3.6]\\
 P: R + pitch copies & 77.3 & 71.6 & 74.5 & $-2.7$ [$-3.5$, $-2.0$] & +0.3 [$-0.6$, 1.2]\\
@@ -272,12 +273,12 @@ ENS2: P on both encoders (descriptive) & 77.8 & 73.6 & 75.7 & & \\
 FINAL (primary): S on ENS2 & 75.6 & 71.6 & 73.6 & $-4.4$ [$-5.3$, $-3.5$] & +0.2 [$-0.7$, 1.1]\\\bottomrule
 \end{tabular}\end{table}
 \begin{itemize}\setlength\itemsep{1pt}
-\item \textbf{H1 (primary), not supported:} FINAL is 4.4\pp{} worse for OAF$\to$YAF and equal for YAF$\to$OAF.
+\item \textbf{H1 (primary), not supported:} FINAL is 4.4\pp{} worse for test YAF and equal for test OAF.
 \item \textbf{H2:} no lever helps in both directions. Whisper and self-training each help in one direction and hurt in the other. Pitch augmentation hurts one direction and is neutral in the other. Every non-zero difference survives the Holm correction ($p<0.001$).
 \item \textbf{H3, supported:} FINAL with a 40-word enrolment is within 0.1\pp{} of the transductive version.
 \end{itemize}
 By the registered rule, A-L1n with WavLM-Large (75.7\%~$\dagger$) remains the best system. Whisper's 75.9\% mean is not promoted: its gain and loss split by direction, and the rule forbids choosing on the test speaker.
-A post-hoc diagnostic (\code{Results/final\_selftrain\_diagnostic.csv}) explains the failure of self-training. The pseudo-labels of the first two rounds are 93--100\% correct. In the third round, which labels 75\% of the pool, accuracy drops to 79--94\%, and lowest (79--82\%) for YAF$\to$OAF, where self-training hurts most: the refitted model learns its own errors.
+A post-hoc diagnostic (\code{Results/final\_selftrain\_diagnostic.csv}) explains the failure of self-training. The pseudo-labels of the first two rounds are 93--100\% correct. In the third round, which labels 75\% of the pool, accuracy drops to 79--94\%, and lowest (79--82\%) for test OAF, where self-training hurts most: the refitted model learns its own errors.
 Across studies 1--5, no clean lever beyond the larger encoder improved both directions.
 
 % =====================================================================
@@ -370,7 +371,7 @@ Under noise (\S\ref{sec:noise}), where speech degrades, the fusion models did \e
 
 \subsection{Error analysis: five systematic failure cases}
 695 of 2800 SI test clips are misclassified by the gated fusion model in \emph{every} seed. Most of these errors are systematic, not random.
-The most frequent pairs are happy$\to$angry (123), pleasant surprise$\to$happy (118), angry$\to$fear (91) and happy$\to$pleasant surprise (75).
+The most frequent confusions (true class predicted as another) are happy as angry (123), pleasant surprise as happy (118), angry as fear (91) and happy as pleasant surprise (75).
 For each case below, we compare the clip's prosody with \emph{the same speaker's} average for the true and predicted classes (\code{Results/error\_analysis.md}):
 
 \begin{figure}[H]\centering
@@ -378,11 +379,11 @@ For each case below, we compare the clip's prosody with \emph{the same speaker's
 \caption{Five clips misclassified by GMU fusion in all SI seeds: log-Mel spectrogram with F0 (left) and mean posterior (right; orange = predicted, green = true).}\label{fig:errors}
 \end{figure}
 \begin{enumerate}\setlength\itemsep{1pt}
-\item \textbf{YAF\_puff\_happy $\to$ angry (p = 0.96).} F0 median (294\,Hz) and energy ($-16.2$\,dB) are close to YAF's \emph{happy} means (280\,Hz, $-15.9$\,dB) and far from angry (237\,Hz, $-18.0$\,dB); the F0 range fits both classes (218 vs.\ 202/216\,Hz), and the duration is shorter than either (1.42\,s). Its own prosody points to the correct class rather than the predicted one, so this is a pure \emph{cross-speaker mapping} error. The region the OAF-trained model calls ``angry'' covers YAF's happy, the most frequent confusion overall (123 clips).
-\item \textbf{YAF\_witch\_ps $\to$ happy (0.96).} Median F0 (296\,Hz) and energy are closer to happy than to pleasant surprise. The very wide F0 range (523\,Hz) is partly pitch-tracker octave jumps on a creaky ending (Fig.~\ref{fig:errors}). Both classes are high-arousal with rising contours, and what separates them is valence, which acoustics encode weakly.
-\item \textbf{OAF\_moon\_angry $\to$ fear (0.94).} This is the one case where global prosody clearly favours the prediction. The F0 median (290\,Hz) equals OAF-fear's (291\,Hz vs.\ 268\,Hz for angry), the range is compressed (99\,Hz vs.\ 209\,Hz angry, 148\,Hz fear) and the contour is flat and tense. Prosodically the clip \emph{is} the speaker's fear profile, so the label itself is arguably ambiguous.
-\item \textbf{OAF\_chair\_happy $\to$ pleasant surprise (0.84).} The utterance-level functionals do not favour surprise (F0 range 265\,Hz, smaller than both class means, and lower energy). But the target word carries a large rise-fall in F0 (peak $\approx$400\,Hz at 1.8\,s), the archetypal surprise contour. The model follows this \emph{local} cue on the final word, as attention pooling allows.
-\item \textbf{OAF\_life\_ps $\to$ disgust (0.95).} Median F0 (201\,Hz) and energy match OAF-ps (203\,Hz), not disgust (183\,Hz). Only the long duration (2.24\,s, close to disgust's 2.34\,s) and the slow, low middle section point to disgust. The surprise rise is confined to the last word and is irregular (voicing breaks), so the model weights the slow delivery more heavily than the final rise.
+\item \textbf{YAF\_puff\_happy, predicted angry (p = 0.96).} F0 median (294\,Hz) and energy ($-16.2$\,dB) are close to YAF's \emph{happy} means (280\,Hz, $-15.9$\,dB) and far from angry (237\,Hz, $-18.0$\,dB); the F0 range fits both classes (218 vs.\ 202/216\,Hz), and the duration is shorter than either (1.42\,s). Its own prosody points to the correct class rather than the predicted one, so this is a pure \emph{cross-speaker mapping} error. The region the OAF-trained model calls ``angry'' covers YAF's happy, the most frequent confusion overall (123 clips).
+\item \textbf{YAF\_witch\_ps, predicted happy (0.96).} Median F0 (296\,Hz) and energy are closer to happy than to pleasant surprise. The very wide F0 range (523\,Hz) is partly pitch-tracker octave jumps on a creaky ending (Fig.~\ref{fig:errors}). Both classes are high-arousal with rising contours, and what separates them is valence, which acoustics encode weakly.
+\item \textbf{OAF\_moon\_angry, predicted fear (0.94).} This is the one case where global prosody clearly favours the prediction. The F0 median (290\,Hz) equals OAF-fear's (291\,Hz vs.\ 268\,Hz for angry), the range is compressed (99\,Hz vs.\ 209\,Hz angry, 148\,Hz fear) and the contour is flat and tense. Prosodically the clip \emph{is} the speaker's fear profile, so the label itself is arguably ambiguous.
+\item \textbf{OAF\_chair\_happy, predicted pleasant surprise (0.84).} The utterance-level functionals do not favour surprise (F0 range 265\,Hz, smaller than both class means, and lower energy). But the target word carries a large rise-fall in F0 (peak $\approx$400\,Hz at 1.8\,s), the archetypal surprise contour. The model follows this \emph{local} cue on the final word, as attention pooling allows.
+\item \textbf{OAF\_life\_ps, predicted disgust (0.95).} Median F0 (201\,Hz) and energy match OAF-ps (203\,Hz), not disgust (183\,Hz). Only the long duration (2.24\,s, close to disgust's 2.34\,s) and the slow, low middle section point to disgust. The surprise rise is confined to the last word and is irregular (voicing breaks), so the model weights the slow delivery more heavily than the final rise.
 \end{enumerate}
 \textbf{Common pattern.} Only one of the five errors (case 3) is explained by the clip's global prosody resembling the predicted class.
 In the others, the speaker-relative functionals favour the \emph{true} class or are mixed, and the error comes from (a) the class regions learned on the other speaker not lining up with this speaker's (cases 1 and 2, matching the displaced clusters in Fig.~\ref{fig:tsne}), or (b) a single salient local cue (a final rise or a slow segment) overriding the rest (cases 4 and 5).
@@ -392,7 +393,7 @@ The confidences are also \emph{high} (0.84--0.96): errors are confident, not bor
 \subsection{Separability of the temporal, contextual and fusion blocks}
 \begin{figure}[H]\centering
 \includegraphics[width=0.92\linewidth]{tsne_required_blocks.png}
-\caption{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, train OAF $\to$ test YAF). Silhouette: cosine, computed in the original 256-d space. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
+\caption{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, trained on OAF, tested on YAF). Silhouette: cosine, computed in the original 256-d space. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
 \end{figure}
 
 \begin{center}\small
@@ -406,7 +407,7 @@ Silhouettes are computed for one run per protocol (the runs shown in Fig.~\ref{f
 \textbf{Temporal block (speech).} Under SD, the seven emotions form tight, well-separated clusters (silhouette 0.95).
 Under SI, the unseen speaker's emotions still form largely separate clusters (silhouette 0.50; Fig.~\ref{fig:tsne}, bottom left), yet this run's accuracy is only 52.1\%.
 The representation therefore does separate much of the new speaker's emotions. What fails is that the clusters are \emph{displaced} relative to the decision boundaries learned on the training speaker.
-This is consistent with a domain shift: label-free speaker normalisation raises the silhouette (0.50$\to$0.57), and the pre-registered linear model with speaker normalisation reaches 75.3\% in this direction (\S\ref{sec:prereg}).
+This is consistent with a domain shift: label-free speaker normalisation raises the silhouette (from 0.50 to 0.57), and the pre-registered linear model with speaker normalisation reaches 75.3\% in this direction (\S\ref{sec:prereg}).
 \textbf{Contextual block (text).} With ground-truth text the embeddings are an unstructured cloud (silhouette $\approx$0): the text block encodes words, not emotion.
 With Whisper text, groups appear, but they are groups of \emph{transcript forms} (ending in ``!'' vs.\ ``.'', comma or no comma), each mixing several emotions; hence the negative silhouette.
 \textbf{Fusion block.} Fusion clusters are as tight as speech (0.99 SD) and are organised by the speech geometry.
@@ -432,7 +433,7 @@ SI & Speech WavLM & 58.5 & 52.5 & 41.6 & 35.6 & 28.0\\
 \end{tabular}\end{center}
 Without normalisation, accuracy degrades steadily, and at 0\,dB the SI models are only 2$\times$ chance.
 With label-free per-speaker normalisation of the WavLM features, the statistics are re-estimated on each speaker's (noisy, unlabelled) test audio, i.e.\ test-time CMVN.
-The SD model then keeps 87--90\% at 0\,dB, and the SI model is essentially \emph{flat} from clean to 0\,dB (56.5$\to$54.8\%), even slightly \emph{better} at 10--20\,dB than on clean audio.
+The SD model then keeps 87--90\% at 0\,dB, and the SI model is essentially \emph{flat} from clean to 0\,dB (from 56.5 to 54.8\%), even slightly \emph{better} at 10--20\,dB than on clean audio.
 Stationary white noise mostly shifts and scales the feature distribution, which per-speaker standardisation removes.
 The same mechanism removes some of the speaker shift.
 This is transductive: it needs a batch of unlabelled audio from the test speaker and condition. That is cheap in practice, but it is why we report it separately ($\dagger$) and never in the main comparison.
