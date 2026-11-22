@@ -11,8 +11,168 @@ item []:
         name = "gold"
         xmin = 0
         xmax = 30.7068125
-        intervals: size = 1
+        intervals: size = 41
         intervals [1]:
-            xmin = 0
+            xmin = 0.0
+            xmax = 0.24065482954545453
+            text = ""
+        intervals [2]:
+            xmin = 0.24065482954545453
+            xmax = 0.3418306313993174
+            text = "the"
+        intervals [3]:
+            xmin = 0.3418306313993174
+            xmax = 0.3448741941260745
+            text = ""
+        intervals [4]:
+            xmin = 0.3448741941260745
+            xmax = 0.7158690476190476
+            text = "author"
+        intervals [5]:
+            xmin = 0.7158690476190476
+            xmax = 1.099576
+            text = ""
+        intervals [6]:
+            xmin = 1.099576
+            xmax = 1.2505753676470588
+            text = "than"
+        intervals [7]:
+            xmin = 1.2505753676470588
+            xmax = 6.7851239901256735
+            text = ""
+        intervals [8]:
+            xmin = 6.7851239901256735
+            xmax = 7.427809272090678
+            text = "administrative"
+        intervals [9]:
+            xmin = 7.427809272090678
+            xmax = 9.326229026845638
+            text = ""
+        intervals [10]:
+            xmin = 9.326229026845638
+            xmax = 9.484347058823529
+            text = "give"
+        intervals [11]:
+            xmin = 9.484347058823529
+            xmax = 9.51225381097561
+            text = ""
+        intervals [12]:
+            xmin = 9.51225381097561
+            xmax = 10.00815625
+            text = "hennessy"
+        intervals [13]:
+            xmin = 10.00815625
+            xmax = 10.177601851851852
+            text = ""
+        intervals [14]:
+            xmin = 10.177601851851852
+            xmax = 10.316128472222223
+            text = "of"
+        intervals [15]:
+            xmin = 10.316128472222223
+            xmax = 11.707176630434782
+            text = ""
+        intervals [16]:
+            xmin = 11.707176630434782
+            xmax = 11.826827586206896
+            text = "court"
+        intervals [17]:
+            xmin = 11.826827586206896
+            xmax = 12.421017728365385
+            text = ""
+        intervals [18]:
+            xmin = 12.421017728365385
+            xmax = 12.85027048611111
+            text = "began"
+        intervals [19]:
+            xmin = 12.85027048611111
+            xmax = 12.860886574074074
+            text = ""
+        intervals [20]:
+            xmin = 12.860886574074074
+            xmax = 13.284525815217393
+            text = "decade"
+        intervals [21]:
+            xmin = 13.284525815217393
+            xmax = 18.47958333333333
+            text = ""
+        intervals [22]:
+            xmin = 18.47958333333333
+            xmax = 18.753061224489798
+            text = "hundred"
+        intervals [23]:
+            xmin = 18.753061224489798
+            xmax = 22.58120588235294
+            text = ""
+        intervals [24]:
+            xmin = 22.58120588235294
+            xmax = 22.67016180268595
+            text = "the"
+        intervals [25]:
+            xmin = 22.67016180268595
+            xmax = 23.041761544585988
+            text = ""
+        intervals [26]:
+            xmin = 23.041761544585988
+            xmax = 23.427934027777777
+            text = "massive"
+        intervals [27]:
+            xmin = 23.427934027777777
+            xmax = 23.551079545454545
+            text = ""
+        intervals [28]:
+            xmin = 23.551079545454545
+            xmax = 23.79849861111111
+            text = "budget"
+        intervals [29]:
+            xmin = 23.79849861111111
+            xmax = 23.899715411658452
+            text = ""
+        intervals [30]:
+            xmin = 23.899715411658452
+            xmax = 24.409642113095238
+            text = "deficit"
+        intervals [31]:
+            xmin = 24.409642113095238
+            xmax = 24.82550072674419
+            text = ""
+        intervals [32]:
+            xmin = 24.82550072674419
+            xmax = 25.16641176470588
+            text = "hennessy"
+        intervals [33]:
+            xmin = 25.16641176470588
+            xmax = 25.902977134146344
+            text = ""
+        intervals [34]:
+            xmin = 25.902977134146344
+            xmax = 26.33976664624183
+            text = "colleagues"
+        intervals [35]:
+            xmin = 26.33976664624183
+            xmax = 26.34625379554656
+            text = ""
+        intervals [36]:
+            xmin = 26.34625379554656
+            xmax = 26.545896909594095
+            text = "the"
+        intervals [37]:
+            xmin = 26.545896909594095
+            xmax = 26.550708661417325
+            text = ""
+        intervals [38]:
+            xmin = 26.550708661417325
+            xmax = 26.777737268518518
+            text = "bar"
+        intervals [39]:
+            xmin = 26.777737268518518
+            xmax = 27.77993565270936
+            text = ""
+        intervals [40]:
+            xmin = 27.77993565270936
+            xmax = 27.9151875
+            text = "to"
+        intervals [41]:
+            xmin = 27.9151875
             xmax = 30.7068125
             text = ""

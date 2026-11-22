@@ -11,8 +11,48 @@ item []:
         name = "gold"
         xmin = 0
         xmax = 4.125
-        intervals: size = 1
+        intervals: size = 11
         intervals [1]:
-            xmin = 0
+            xmin = 0.0
+            xmax = 0.45169391025641026
+            text = ""
+        intervals [2]:
+            xmin = 0.45169391025641026
+            xmax = 0.5562689502288329
+            text = "i"
+        intervals [3]:
+            xmin = 0.5562689502288329
+            xmax = 0.5572549619932432
+            text = ""
+        intervals [4]:
+            xmin = 0.5572549619932432
+            xmax = 0.799597675879397
+            text = "said"
+        intervals [5]:
+            xmin = 0.799597675879397
+            xmax = 0.8977099358974359
+            text = ""
+        intervals [6]:
+            xmin = 0.8977099358974359
+            xmax = 1.3208464805825242
+            text = "white"
+        intervals [7]:
+            xmin = 1.3208464805825242
+            xmax = 1.492598619416081
+            text = ""
+        intervals [8]:
+            xmin = 1.492598619416081
+            xmax = 1.6319751059322034
+            text = "not"
+        intervals [9]:
+            xmin = 1.6319751059322034
+            xmax = 1.8296471354166668
+            text = ""
+        intervals [10]:
+            xmin = 1.8296471354166668
+            xmax = 2.2443989068369574
+            text = "bait"
+        intervals [11]:
+            xmin = 2.2443989068369574
             xmax = 4.125
             text = ""

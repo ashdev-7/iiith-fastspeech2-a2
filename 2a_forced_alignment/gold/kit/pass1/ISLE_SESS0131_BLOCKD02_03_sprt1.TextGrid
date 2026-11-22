@@ -11,8 +11,44 @@ item []:
         name = "gold"
         xmin = 0
         xmax = 4.5
-        intervals: size = 1
+        intervals: size = 10
         intervals [1]:
-            xmin = 0
+            xmin = 0.0
+            xmax = 0.231404296875
+            text = ""
+        intervals [2]:
+            xmin = 0.231404296875
+            xmax = 0.31889278898582335
+            text = "i"
+        intervals [3]:
+            xmin = 0.31889278898582335
+            xmax = 0.5106266025641025
+            text = "said"
+        intervals [4]:
+            xmin = 0.5106266025641025
+            xmax = 0.6812801724137931
+            text = ""
+        intervals [5]:
+            xmin = 0.6812801724137931
+            xmax = 0.9257052752293577
+            text = "bad"
+        intervals [6]:
+            xmin = 0.9257052752293577
+            xmax = 1.025626893939394
+            text = ""
+        intervals [7]:
+            xmin = 1.025626893939394
+            xmax = 1.4562588272525
+            text = "not"
+        intervals [8]:
+            xmin = 1.4562588272525
+            xmax = 1.497761217948718
+            text = ""
+        intervals [9]:
+            xmin = 1.497761217948718
+            xmax = 2.040362642579052
+            text = "bed"
+        intervals [10]:
+            xmin = 2.040362642579052
             xmax = 4.5
             text = ""

@@ -1,0 +1,547 @@
+{
+ "pass": 1,
+ "tool": "marking_tool.html",
+ "finished": "2026-11-21T22:16:48.441Z",
+ "marks": [
+  {
+   "file": "F2BJRLP1",
+   "word_index": 5,
+   "word": "massachusetts",
+   "start": 2.3668207305074405,
+   "end": 2.9509245458339928,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:10:33.591Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 6,
+   "word": "supreme",
+   "start": 3.006756734758196,
+   "end": 3.460437304286504,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:12:46.405Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 12,
+   "word": "j",
+   "start": 4.973995296690102,
+   "end": 5.130023028181441,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:16:17.151Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 15,
+   "word": "leader",
+   "start": 5.63620194214206,
+   "end": 6.180298646829808,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:18:17.823Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 24,
+   "word": "seventy",
+   "start": 9.33748218270565,
+   "end": 9.950924545833992,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:19:47.083Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 34,
+   "word": "march",
+   "start": 12.166785177313416,
+   "end": 12.622866238595792,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:20:22.325Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 37,
+   "word": "be",
+   "start": 13.209459428661475,
+   "end": 13.382290114063242,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:22:14.024Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 42,
+   "word": "governor",
+   "start": 14.834370464281736,
+   "end": 15.134957254772495,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:23:01.540Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 46,
+   "word": "during",
+   "start": 16.73168554697547,
+   "end": 17.02240388428412,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:24:28.760Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 52,
+   "word": "and",
+   "start": 18.785028361160546,
+   "end": 18.98106320329069,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:25:14.575Z"
+  },
+  {
+   "file": "F2BJRLP1",
+   "word_index": 71,
+   "word": "to",
+   "start": 24.498814523675108,
+   "end": 24.548674830009936,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:26:20.008Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 3,
+   "word": "six",
+   "start": 0.9141624509651348,
+   "end": 1.180209763844746,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:27:15.075Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 20,
+   "word": "hennessy",
+   "start": 9.53831784555458,
+   "end": 10.097617284842944,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:27:49.256Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 21,
+   "word": "to",
+   "start": 10.149182032353405,
+   "end": 10.197190565119971,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:28:30.861Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 27,
+   "word": "court",
+   "start": 11.942923123706231,
+   "end": 12.200418339926577,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:29:01.327Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 33,
+   "word": "step",
+   "start": 14.209459428661475,
+   "end": 14.554320689810105,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:29:33.588Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 44,
+   "word": "and",
+   "start": 18.178520580155197,
+   "end": 18.31987903774564,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:32:24.650Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 48,
+   "word": "appointment",
+   "start": 18.859308246192192,
+   "end": 19.216705101232186,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:33:01.850Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 53,
+   "word": "justice",
+   "start": 20.833570354626833,
+   "end": 21.302453658755756,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:34:28.714Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 55,
+   "word": "nineteen",
+   "start": 21.38015643405371,
+   "end": 21.889580309521158,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:35:20.654Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 58,
+   "word": "that",
+   "start": 23.19345658440595,
+   "end": 23.322279448105036,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:36:00.029Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 63,
+   "word": "president",
+   "start": 24.567923123706233,
+   "end": 25.055014191268484,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:39:12.545Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 65,
+   "word": "the",
+   "start": 25.069532643863774,
+   "end": 25.100723035339108,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:42:18.484Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 70,
+   "word": "hennessy's",
+   "start": 27.283333518658832,
+   "end": 27.793082618596515,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:43:12.834Z"
+  },
+  {
+   "file": "F2BJRLP2",
+   "word_index": 72,
+   "word": "clerk",
+   "start": 28.09167293839769,
+   "end": 28.43647544387772,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:44:31.879Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 0,
+   "word": "the",
+   "start": 0.24004266383282968,
+   "end": 0.3422033347450577,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:45:26.294Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 1,
+   "word": "author",
+   "start": 0.34450567494526474,
+   "end": 0.7156827569830662,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:46:06.379Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 4,
+   "word": "than",
+   "start": 1.100106659582074,
+   "end": 1.251600219309812,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:46:41.377Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 21,
+   "word": "administrative",
+   "start": 6.7850283611605455,
+   "end": 7.427809272090678,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:48:10.903Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 24,
+   "word": "give",
+   "start": 9.326280159168915,
+   "end": 9.484975031369508,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:49:12.829Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 25,
+   "word": "hennessy",
+   "start": 9.513513469516392,
+   "end": 10.00693450072832,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:49:47.498Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 27,
+   "word": "of",
+   "start": 10.17745374015043,
+   "end": 10.31614505703162,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:50:37.044Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 32,
+   "word": "court",
+   "start": 11.707948010942047,
+   "end": 11.826635772503836,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:51:07.809Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 35,
+   "word": "began",
+   "start": 12.420163544692514,
+   "end": 12.849573198882354,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:51:35.945Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 37,
+   "word": "decade",
+   "start": 12.860241761719369,
+   "end": 13.284317134490701,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:52:13.210Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 52,
+   "word": "hundred",
+   "start": 18.479640749951002,
+   "end": 18.7530226726495,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:53:01.073Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 61,
+   "word": "the",
+   "start": 22.5812588272525,
+   "end": 22.66927447065787,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:54:04.305Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 63,
+   "word": "massive",
+   "start": 23.041162833628633,
+   "end": 23.427898236470416,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:55:11.919Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 64,
+   "word": "budget",
+   "start": 23.550586709096084,
+   "end": 23.79796400987936,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:55:56.226Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 65,
+   "word": "deficit",
+   "start": 23.899715411658452,
+   "end": 24.409672747825624,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:56:33.025Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 66,
+   "word": "hennessy",
+   "start": 24.82556893249907,
+   "end": 25.16696294328354,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:57:03.837Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 69,
+   "word": "colleagues",
+   "start": 25.902916013067426,
+   "end": 26.339793628685307,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:58:36.057Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 71,
+   "word": "the",
+   "start": 26.346283714488315,
+   "end": 26.544985697327714,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T21:59:29.760Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 72,
+   "word": "bar",
+   "start": 26.550853439445945,
+   "end": 26.777560399732504,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:02:28.880Z"
+  },
+  {
+   "file": "F2BJRLP3",
+   "word_index": 75,
+   "word": "to",
+   "start": 27.780227540441757,
+   "end": 27.916251716613694,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:02:59.224Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_01_sprt1",
+   "word_index": 0,
+   "word": "i",
+   "start": 0.45215219053185873,
+   "end": 0.5541080766321798,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:04:04.840Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_01_sprt1",
+   "word_index": 1,
+   "word": "said",
+   "start": 0.5590391326981627,
+   "end": 0.7994754275987854,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:04:28.525Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_01_sprt1",
+   "word_index": 2,
+   "word": "white",
+   "start": 0.8984930264298278,
+   "end": 1.3202346510805631,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:07:55.715Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_01_sprt1",
+   "word_index": 3,
+   "word": "not",
+   "start": 1.492598619416081,
+   "end": 1.6330568722500807,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:08:16.917Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_01_sprt1",
+   "word_index": 4,
+   "word": "bait",
+   "start": 1.8310920699121656,
+   "end": 2.2443989068369574,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:08:49.025Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_02_sprt1",
+   "word_index": 0,
+   "word": "i",
+   "start": 0.6291553151743937,
+   "end": 0.734014534370126,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:09:46.353Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_02_sprt1",
+   "word_index": 1,
+   "word": "said",
+   "start": 0.734014534370126,
+   "end": 0.9749510600950994,
+   "touches_prev": true,
+   "marked_at": "2026-11-21T22:11:07.963Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_02_sprt1",
+   "word_index": 2,
+   "word": "new",
+   "start": 0.9749510600950994,
+   "end": 1.3513026946026487,
+   "touches_prev": true,
+   "marked_at": "2026-11-21T22:11:17.040Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_02_sprt1",
+   "word_index": 3,
+   "word": "not",
+   "start": 1.461737536738843,
+   "end": 1.7287294348214233,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:12:12.900Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_02_sprt1",
+   "word_index": 4,
+   "word": "no",
+   "start": 1.760423998970303,
+   "end": 2.129045071161736,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:13:28.152Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_03_sprt1",
+   "word_index": 0,
+   "word": "i",
+   "start": 0.23123614966436337,
+   "end": 0.31869852751668737,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:14:01.432Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_03_sprt1",
+   "word_index": 1,
+   "word": "said",
+   "start": 0.31869852751668737,
+   "end": 0.5120910161767033,
+   "touches_prev": true,
+   "marked_at": "2026-11-21T22:14:14.392Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_03_sprt1",
+   "word_index": 2,
+   "word": "bad",
+   "start": 0.682055779749165,
+   "end": 0.9259910233300428,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:14:38.235Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_03_sprt1",
+   "word_index": 3,
+   "word": "not",
+   "start": 1.0267824701265265,
+   "end": 1.4562588272525,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:16:25.009Z"
+  },
+  {
+   "file": "ISLE_SESS0131_BLOCKD02_03_sprt1",
+   "word_index": 4,
+   "word": "bed",
+   "start": 1.4962659378913048,
+   "end": 2.040362642579052,
+   "touches_prev": false,
+   "marked_at": "2026-11-21T22:16:48.439Z"
+  }
+ ]
+}

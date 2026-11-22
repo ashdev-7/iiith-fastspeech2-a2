@@ -11,8 +11,120 @@ item []:
         name = "gold"
         xmin = 0
         xmax = 28.6474375
-        intervals: size = 1
+        intervals: size = 29
         intervals [1]:
-            xmin = 0
+            xmin = 0.0
+            xmax = 0.9141311553030302
+            text = ""
+        intervals [2]:
+            xmin = 0.9141311553030302
+            xmax = 1.1798608870967742
+            text = "six"
+        intervals [3]:
+            xmin = 1.1798608870967742
+            xmax = 9.538803052325582
+            text = ""
+        intervals [4]:
+            xmin = 9.538803052325582
+            xmax = 10.097373106060607
+            text = "hennessy"
+        intervals [5]:
+            xmin = 10.097373106060607
+            xmax = 10.151196180555555
+            text = ""
+        intervals [6]:
+            xmin = 10.151196180555555
+            xmax = 10.197482804232804
+            text = "to"
+        intervals [7]:
+            xmin = 10.197482804232804
+            xmax = 11.943913063909775
+            text = ""
+        intervals [8]:
+            xmin = 11.943913063909775
+            xmax = 12.199775462962963
+            text = "court"
+        intervals [9]:
+            xmin = 12.199775462962963
+            xmax = 14.209463616427433
+            text = ""
+        intervals [10]:
+            xmin = 14.209463616427433
+            xmax = 14.553685869565218
+            text = "step"
+        intervals [11]:
+            xmin = 14.553685869565218
+            xmax = 18.1783359375
+            text = ""
+        intervals [12]:
+            xmin = 18.1783359375
+            xmax = 18.320520756457565
+            text = "and"
+        intervals [13]:
+            xmin = 18.320520756457565
+            xmax = 18.85909583333333
+            text = ""
+        intervals [14]:
+            xmin = 18.85909583333333
+            xmax = 19.2167353515625
+            text = "appointment"
+        intervals [15]:
+            xmin = 19.2167353515625
+            xmax = 20.834233952702704
+            text = ""
+        intervals [16]:
+            xmin = 20.834233952702704
+            xmax = 21.302438410194178
+            text = "justice"
+        intervals [17]:
+            xmin = 21.302438410194178
+            xmax = 21.38046901260504
+            text = ""
+        intervals [18]:
+            xmin = 21.38046901260504
+            xmax = 21.8904673566879
+            text = "nineteen"
+        intervals [19]:
+            xmin = 21.8904673566879
+            xmax = 23.19351838235294
+            text = ""
+        intervals [20]:
+            xmin = 23.19351838235294
+            xmax = 23.32250245098039
+            text = "that"
+        intervals [21]:
+            xmin = 23.32250245098039
+            xmax = 24.569423725411482
+            text = ""
+        intervals [22]:
+            xmin = 24.569423725411482
+            xmax = 25.05452361111111
+            text = "president"
+        intervals [23]:
+            xmin = 25.05452361111111
+            xmax = 25.069526162790698
+            text = ""
+        intervals [24]:
+            xmin = 25.069526162790698
+            xmax = 25.100217647058823
+            text = "the"
+        intervals [25]:
+            xmin = 25.100217647058823
+            xmax = 27.28399833422175
+            text = ""
+        intervals [26]:
+            xmin = 27.28399833422175
+            xmax = 27.793103870106762
+            text = "hennessy's"
+        intervals [27]:
+            xmin = 27.793103870106762
+            xmax = 28.091787356321838
+            text = ""
+        intervals [28]:
+            xmin = 28.091787356321838
+            xmax = 28.43640504807692
+            text = "clerk"
+        intervals [29]:
+            xmin = 28.43640504807692
             xmax = 28.6474375
             text = ""
