@@ -234,6 +234,36 @@ def main():
                 want += [r.delta_pp, r.ci_lo, r.ci_hi]
         check("Table final", lab, got, want, 1)
 
+    # Table "Design choices and the alternatives tested" (report/sections/architecture.tex)
+    arch = (ROOT / "report" / "sections" / "architecture.tex").read_text(encoding="utf-8").splitlines()
+    runs = pd.read_csv(R / "all_runs.csv")
+    si = runs[runs.protocol == "si"].groupby(["pipeline", "variant"]).accuracy.mean() * 100
+    ab = pd.read_csv(R / "ablation_speech.csv").set_index(["variant", "protocol"])
+    sg = pd.read_csv(R / "significance.csv").set_index(["A", "B", "protocol"])
+    cs = pd.read_csv(R / "capacity_scores.csv").set_index(["model", "direction"])["mean"]
+    ct = pd.read_csv(R / "capacity_tests.csv").set_index(["comparison", "direction"]).delta_pp
+    d0, d1 = "OAF->YAF", "YAF->OAF"
+    lm = sg.loc[("speech/logmel", "speech/wavlm", "si")]
+    xa = sg.loc[("speech/wavlm", "fusion/xattn_wavlm_gt", "si")]
+    choices = [
+        ("WavLM-Base+ features &", [si[("speech", "wavlm")], si[("speech", "logmel")], lm.delta_acc_pp, lm.p_paired_t], [1, 1, 1, 3]),
+        ("7 layers at 40", [ab.loc[("wavlm_full", "si")].acc_mean, ab.loc[("wavlm_full", "si")].delta_pp,
+                            ab.loc[("wavlm_full", "si")].p_paired_t], [1, 1, 2]),
+        ("Learned layer weights &", [ab.loc[("wavlm_lw0x10", "si")].acc_mean, ab.loc[("wavlm_lw0x10", "si")].delta_pp,
+                                     ab.loc[("wavlm_lw0x10", "si")].p_paired_t], [1, 1, 2]),
+        ("BiGRU (256-d) as temporal block", [cs[("B3", d0)], cs[("B3", d1)], cs[("B1", d0)], cs[("B1", d1)],
+                                             ct[("B4 - B3", d0)], ct[("B4 - B3", d1)], ct[("L1n - B2", d0)], ct[("L1n - B2", d1)]],
+         [2, 2, 2, 2, 1, 1, 1, 1]),
+        ("Gated fusion (GMU) &", [si[("fusion", "gated_wavlm_gt")], si[("fusion", "concat_wavlm_gt")],
+                                  si[("fusion", "xattn_wavlm_gt")], xa.delta_acc_pp, xa.p_paired_t], [1, 1, 1, 1, 2]),
+        ("Emotion-tuned DistilRoBERTa + BiGRU &", [si[("text", "gt")]], [2]),
+    ]
+    for lab, want, dec in choices:
+        line = [l for l in arch if l.strip().startswith(lab)][0]
+        body = line.split("&", 1)[1].replace("$-$", "-").replace("$", "")
+        got = [float(x) for x in re.findall(r"-?\d+\.\d+", body)]
+        check("Table choices", lab, got, want, dec)
+
     print(f"{CHECKED[0]} table cells checked, {len(FAILS)} mismatches")
     for f in FAILS:
         print("  MISMATCH", f)

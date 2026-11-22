@@ -53,6 +53,20 @@ Exactly that is needed for TESS, where text is uninformative by construction and
 Modality dropout~\cite{moddrop}, which zeroes one modality for 20\% of training samples, keeps both branches trained and makes the model robust to a missing or degraded modality.
 Bidirectional cross-attention~\cite{mult} (frames attend to tokens and tokens to frames) and concatenation are evaluated as ablations.
 
+\textbf{How each choice was tested.} Validation accuracy chose only the training epoch. Every alternative below was run on the same splits and seeds and is reported; none replaced the main design, so no choice was made on test data. Under RAND and SD every audio variant scores 99.5--100\%, so the alternatives are compared under SI.
+\begin{table}[H]\centering\small
+\caption{Design choices and the alternatives tested (SI accuracy, \%; test YAF / test OAF where two values are given).}\label{tab:choices}
+\begin{tabularx}{\linewidth}{@{}p{3.2cm}p{3.6cm}X@{}}\toprule
+Choice & Alternative tested & Result\\\midrule
+WavLM-Base+ features & 80-d log-Mel, same BiGRU & Choice: 58.5 vs.\ 41.6; better in every one of the 6 runs (+16.9\pp, paired $t$ $p=0.022$, not significant after Holm correction; Table~\ref{tab:sig})\\
+7 layers at 40\,ms & all 13 layers at 20\,ms & 55.0 ($-3.5$\pp, $p=0.40$); SD and RAND unchanged (Table~\ref{tab:ablation})\\
+Learned layer weights & weights freed (no decay, 10$\times$ learning rate) & 59.5 (+1.0\pp, $p=0.75$; Table~\ref{tab:ablation})\\
+BiGRU (256-d) as temporal block & smaller regularised BiGRU (64-d); attentive statistics pooling; linear head with no temporal model & Smaller BiGRU: 61.44 / 60.26 against 57.18 / 61.45 for the main BiGRU (10 seeds each), so not consistently better. Attentive pooling: $-3.2$ / $-4.7$\pp{} against the smaller BiGRU. Linear head: +18.0 / +10.3\pp{} over the BiGRU with the same speaker normalisation, but it has no temporal block, which the assignment requires (Table~\ref{tab:capacity})\\
+Gated fusion (GMU) & concatenation; bidirectional cross-attention & 56.8 / 60.1 / 63.4; no difference is significant after Holm correction, and cross-attention's lead over speech-only (+4.9\pp, $p=0.39$) reverses between directions (Table~\ref{tab:sig})\\
+Emotion-tuned DistilRoBERTa + BiGRU & zero-shot emotion classifier on the same text & Both exactly at chance (14.29\% under SD and SI) on ground-truth transcripts, because the transcript carries no emotion information (Table~\ref{tab:main})\\\bottomrule
+\end{tabularx}
+\end{table}
+
 \textbf{Training.} AdamW~\cite{adamw} (lr $10^{-3}$, weight decay $10^{-2}$), one-cycle schedule~\cite{onecycle}, batch 32, at most 40 epochs, gradient clipping 1.0.
 Early stopping (patience 8) on validation accuracy, with ties broken by validation loss (min $\Delta=10^{-3}$).
 Everything after the frozen encoders is trained end-to-end; the fusion model is trained from scratch, not from unimodal checkpoints.
