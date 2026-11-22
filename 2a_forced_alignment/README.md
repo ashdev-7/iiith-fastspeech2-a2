@@ -13,7 +13,9 @@ plus a speaker-adapted acoustic model**.
 | `arpa_g2p_custom` | `english_us_arpa` | **custom dictionary generated from the transcripts** with the `english_us_arpa` G2P model (2-best prons/word, no lexicon lookup) |
 | `arpa_adapted` | `english_us_arpa` **MAP-adapted on this corpus** (`mfa adapt`) | as `arpa_base` |
 
-Outputs: `outputs/<experiment>/<speaker>/<utterance>.TextGrid` (tiers `words`, `phones`).
+**Submitted alignments (TextGrid files): [`outputs/arpa_base/`](outputs/arpa_base)**, 6 TextGrids with tiers `words` and `phones`.
+The other folders in `outputs/` hold the comparison experiments above, in the same format
+(`outputs/<experiment>/<speaker>/<utterance>.TextGrid`).
 Report: [`report/report.pdf`](report/report.pdf).
 
 ---
