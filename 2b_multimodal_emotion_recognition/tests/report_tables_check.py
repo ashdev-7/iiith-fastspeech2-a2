@@ -219,6 +219,21 @@ def main():
                 want += [r.delta_pp, r.ci_lo, r.ci_hi]
         check("Table backbones", lab, got, want, 1)
 
+    fs = pd.read_csv(R / "final_scores.csv").set_index(["model", "direction"]).acc
+    ft = pd.read_csv(R / "final_tests.csv").set_index(["comparison", "direction"])
+    for lab, m in (("R: A-L1n, WavLM-Large", "A-L1n(WL)"), ("W3: A-L1n, Whisper", "A-L1n(W3)"),
+                   ("P: R + pitch", "AP-L1n(WL)"), ("S: R + self-training", "ST(A-L1n(WL))"),
+                   ("ENS2: P on both", "ENS2"), ("FINAL (primary)", "FINAL")):
+        line = [l for l in TEX if l.strip().startswith(lab)][0]
+        body = line.split("&", 1)[1].replace("\textbf{", "").replace("}", "").replace("$-$", "-")
+        got = [float(x) for x in re.findall(r"-?\d+\.\d+", body)]
+        want = [fs[(m, d)] for d in dirs] + [(fs[(m, dirs[0])] + fs[(m, dirs[1])]) / 2]
+        if m not in ("A-L1n(WL)", "ENS2"):
+            for d in dirs:
+                r = ft.loc[(f"{m} - A-L1n(WL)", d)]
+                want += [r.delta_pp, r.ci_lo, r.ci_hi]
+        check("Table final", lab, got, want, 1)
+
     print(f"{CHECKED[0]} table cells checked, {len(FAILS)} mismatches")
     for f in FAILS:
         print("  MISMATCH", f)

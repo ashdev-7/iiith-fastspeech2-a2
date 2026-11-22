@@ -51,6 +51,11 @@ All rows (including speaker-normalised variants and zero-shot text), macro-F1 an
   whose training data (EmoBox) contains TESS, scores **99.9 %** on the "unseen" speaker, and its own head labels every
   pleasant-surprise clip "other" ([`lc_zero_shot_check.md`](Results/lc_zero_shot_check.md)). Models whose training data may
   contain TESS are therefore excluded from every result.
+  A fifth pre-registered study ([plan](analysis/PREREGISTRATION_si_final.md), [`final_study.md`](Results/final_study.md))
+  tests three clean levers on top of WavLM-Large: the frozen Whisper-large-v3 encoder, pitch-shift augmentation (±2/±4
+  semitones) and self-training on the unseen speaker's unlabelled clips. None improves both directions (Whisper −2.0 / +2.5 pp,
+  pitch −2.7 / +0.3 pp, self-training +2.4 / −8.4 pp), and the primary combination is worse (73.6 %), so **75.7 % stands**
+  as the best clean result. Its inductive variant (40-word enrolment) matches the transductive one within 0.1 pp.
   Label-free per-speaker normalisation also makes SI accuracy **flat under white noise** (56.5 → 54.8 % at 0 dB, vs. 58.5 → 28.0 % without it).
 * Easiest emotions: neutral, sad, fear. Hardest: happy and angry, which are confused with each other, with pleasant surprise and with fear (high arousal, different valence).
 
@@ -110,6 +115,7 @@ python run_all.py --skip-prepare --skip-train --skip-analyses --ablations   # sp
 python analysis/si_linear.py                           # pre-registered SI experiment (CPU, cached features)
 python analysis/c_sensitivity.py                       # post-hoc: how much the linear model depends on C
 python analysis/backbone_features.py && python analysis/backbone_study.py --c_sensitivity   # encoder study (GPU; Kaggle job 'backbones')
+python analysis/final_features.py && python analysis/final_study.py                          # final study (GPU, ~30 GB RAM; jobs 'final', 'final_analysis')
 python analysis/robustness_checks.py                   # Holm correction, per-direction tests, regression-to-mean control
 python analysis/capacity_study.py                      # pre-registered head-capacity study (runs_capacity/, Kaggle job 'capacity')
 python tests/test_invariants.py && python tests/report_tables_check.py   # leakage/alignment tests; table cells vs data
@@ -148,4 +154,4 @@ when saving, because `Results/` did not yet exist (now fixed in `common/config.p
   and all 330 per-run noise accuracies match the log values to within 0.05 pp (`Results/noise_regeneration_check.md`).
   The files in `Results/` are now the regenerated outputs.
 
-Kaggle jobs are built with `kaggle/make_kernel.py` (`full`, `ablation`, `analyses`, `capacity`, `augment`, `noise`, `backbones`).
+Kaggle jobs are built with `kaggle/make_kernel.py` (`full`, `ablation`, `analyses`, `capacity`, `augment`, `noise`, `backbones`, `final`, `final_analysis`).
