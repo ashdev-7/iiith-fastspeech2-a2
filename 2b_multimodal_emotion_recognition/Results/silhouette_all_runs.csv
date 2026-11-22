@@ -1,0 +1,13 @@
+protocol,block,mean,std,count
+sd,speech/wavlm,0.964,0.0116,5
+sd,speech/wavlm_spknorm,0.9707,0.0083,5
+sd,text/gt,-0.0167,0.0,5
+sd,text/asr,-0.2166,0.0527,5
+sd,fusion/gated_wavlm_gt,0.9855,0.0094,5
+sd,fusion/gated_wavlm_asr,0.9535,0.008,5
+si,speech/wavlm,0.5708,0.0436,6
+si,speech/wavlm_spknorm,0.5688,0.0644,6
+si,text/gt,-0.005,0.0,6
+si,text/asr,-0.2202,0.0746,6
+si,fusion/gated_wavlm_gt,0.5399,0.0769,6
+si,fusion/gated_wavlm_asr,0.4661,0.0708,6

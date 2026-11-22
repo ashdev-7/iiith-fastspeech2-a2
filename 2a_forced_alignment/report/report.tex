@@ -9,7 +9,7 @@
 \newcommand{\code}[1]{\texttt{\small #1}}
 
 \title{\vspace{-1.2cm}Forced Alignment with the Montreal Forced Aligner\\\large Assignment 2a: pipeline, models, and alignment analysis}
-\author{Yash Tyagi}
+\author{Yash Tyagi\\[2pt]\small Code, TextGrid outputs and setup instructions:\\\footnotesize\url{https://github.com/ashdev-7/iiith-fastspeech2-a2/tree/main/2a_forced_alignment}}
 \date{November 2026}
 
 \begin{document}
@@ -85,7 +85,7 @@ On the news speech it absorbed a 250\,ms inter-phrase pause into \textit{he} (Fi
 This explains its outlier statistics on ISLE: 23\% silence instead of 60\%, a mean phone of 260\,ms, and the largest phone-duration deviation (3.99).
 \emph{Praat confirms these stretches are silence} (\code{analysis/praat\_measurements.csv}): the extra 1.88\,s of \textit{bait} and 2.46\,s of \textit{bed} are 24--26\,dB below the speech and 0\% voiced, and the 0.25\,s absorbed into \textit{he} is 12\,dB below and unvoiced.
 \emph{It is not the dictionary.} MFA's default \code{english\_mfa} 3.1 dictionary keeps one pronunciation per word, some of them rare variants (\textit{said}~\code{s aj d}, \textit{white}~\code{\textipa{V}aj\textipa{\:t}}).
-With the full 3.0 dictionary (\code{mfa\_ipa\_dict\_v300}) the aligner picks \code{s \textipa{E} d} and \code{w aj t}, but absorbs exactly the same silences into \textit{bait} and \textit{bed}. So the cause lies in the acoustic model's silence handling on these short, mostly silent prompts (60\% silence), not in the lexicon.
+With the full 3.0 dictionary (\code{mfa\_ipa\_dict\_v300}) the aligner picks \code{s \textipa{E} d} and \code{w aj t}, but absorbs exactly the same silences into \textit{bait} and \textit{bed}. So the lexicon is ruled out, and the evidence points to the acoustic model's silence handling on these short, mostly silent prompts (60\% silence); we did not vary its silence settings, so this mechanism is the most likely one, not a proven one.
 Recording noise does not explain it either: by MFA's own estimate the ISLE files are \emph{less} noisy than the news speech (SNR 11.9 vs.\ 8.5\,dB), where the error is rare.
 On the news speech, by contrast, the better dictionary does help: 95.2\% instead of 88.2\% of word boundaries within 20\,ms of \code{arpa\_base} (\code{analysis/ipa\_dict\_check.md}).
 Not every disagreement is an \code{english\_mfa} error: at \textit{led} (18.16--18.34\,s) the stretch it adds is 67\% voiced and only 1.6\,dB below the speech level, so there the ARPA model may cut the word short.
@@ -112,8 +112,8 @@ On ISLE, the ARPA models put $\le$1\% of that pause time inside words at every t
 This confirms Error~1 without trusting any aligner. The same reference is \emph{too coarse} to rank aligners at the 10--20\,ms level: its edges move with the threshold, and on the news speech it also catches low-energy stretches inside words (stop closures, weak fricatives), equally for every model.
 
 \textbf{Hand-labelled reference} (\code{gold/}, \code{analysis/gold\_check.md}). We marked 60 words (120 boundaries: all 15 ISLE words, 45 random news words) twice by hand, in a tool that shows no aligner output.
-The passes differ by a median of 11\,ms (mean 35\,ms; pass~2 is 27\,ms later on average), so the reference resolves errors of tens of milliseconds, not the 1--10\,ms differences between ARPA variants.
-Against the mean of the passes, the ARPA models' median error is 22.5--26.3\,ms (76--77\% within 50\,ms), with no significant paired difference (Wilcoxon $p\ge0.26$). \code{english\_mfa} is similar on the news speech, but ends ISLE \textit{bed} and \textit{bait} 2.4 and 1.9\,s late (Error~1), the only gross errors.
+The passes differ by a median of 11\,ms (mean 35\,ms), and pass~2 is 27\,ms later on average. This single-annotator imprecision is as large as the aligners' errors against the mean of the passes (ARPA models: median 22.5--26.3\,ms, 76--77\% within 50\,ms), and the 120 boundaries are not independent (they share words and utterances).
+The reference therefore cannot rank the ARPA variants, whose differences are 1--10\,ms, and we draw no statistical conclusion from it. What it does resolve is gross error: \code{english\_mfa} is similar on the news speech, but ends ISLE \textit{bed} and \textit{bait} 2.4 and 1.9\,s late (Error~1), the only gross errors.
 The passes were done before and after a night's sleep (9\,h apart; our protocol planned a day), so they may agree slightly more closely than fully independent passes would.
 
 \textbf{Adaptation.} MAP adaptation raises the speech log-likelihood for both speakers (from $-46.99$ to $-46.14$ and from $-48.52$ to $-47.40$) but its boundary changes (99.3\% of word boundaries identical on the news speech and 100\% on ISLE, max 10\,ms) are \emph{indistinguishable from MFA's own run-to-run variation} (below).
@@ -136,7 +136,7 @@ By contrast, the G2P-only dictionary changes boundaries well beyond the noise fl
 \textbf{Conclusion.} The \code{english\_us\_arpa} acoustic model with its curated dictionary plus G2P for OOVs gives the most reliable alignment of this data.
 On the news speech, the second acoustic model agrees with it to a median of 10\,ms (83--88\% of boundaries within 20\,ms), which suggests the boundaries are stable.
 The disagreements are concentrated in pause handling on the short L2 prompts, where the spectrogram and energy evidence favour the ARPA model.
-The hand-labelled reference confirms this at its resolution: no ARPA variant is measurably better than another, and the only gross boundary errors are \code{english\_mfa}'s pause absorptions.
+The hand-labelled reference confirms the main finding at its resolution: the only gross boundary errors are \code{english\_mfa}'s pause absorptions. It is too coarse to rank the ARPA variants.
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.65\linewidth]{phone_duration_hist.png}

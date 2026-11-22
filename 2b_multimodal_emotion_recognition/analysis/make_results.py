@@ -213,6 +213,26 @@ def separability(df_idx):
     return pd.DataFrame(rows)
 
 
+def silhouette_all_runs():
+    """Cosine silhouette of every test run's block embeddings (5 SD runs, 6 SI runs), in the original 256-d
+    space -> Results/silhouette_all_runs.csv (mean, std, n per block and protocol). The t-SNE figures show one
+    run; these are the numbers the report uses."""
+    blocks = [("speech", "wavlm", "temporal"), ("speech", "wavlm_spknorm", "temporal"),
+              ("text", "gt", "contextual"), ("text", "asr", "contextual"),
+              ("fusion", "gated_wavlm_gt", "fusion"), ("fusion", "gated_wavlm_asr", "fusion")]
+    rows = []
+    for proto in ("sd", "si"):
+        for pipe, var, key in blocks:
+            for f in sorted((RUNS_DIR / pipe / var).glob(f"{proto}_fold*_seed*/test_embeddings.npz")):
+                z = np.load(f)
+                rows.append(dict(protocol=proto, block=f"{pipe}/{var}", run=f.parent.name,
+                                 silhouette=silhouette_score(z[key], z["label"], metric="cosine")))
+    d = pd.DataFrame(rows)
+    s = d.groupby(["protocol", "block"], sort=False).silhouette.agg(["mean", "std", "count"]).reset_index()
+    s.round(4).to_csv(RESULTS_DIR / "silhouette_all_runs.csv", index=False)
+    return s
+
+
 def separability_required(df_idx):
     """The figure the assignment asks for: one panel per required block (temporal = speech, contextual = text,
     fusion), for the seen-speaker (SD) and unseen-speaker (SI) protocols. Same runs, embeddings and t-SNE
@@ -475,6 +495,7 @@ def main():
     significance()
     print(separability(df_idx).round(3).to_string(index=False))
     separability_required(df_idx)
+    print(silhouette_all_runs().round(3).to_string(index=False))
 
 
 if __name__ == "__main__":

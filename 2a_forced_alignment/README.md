@@ -166,7 +166,7 @@ Agreement between aligners measures consistency, not accuracy. Two references th
   random news words. Each was marked twice in a browser tool (`scripts/marking_tool.py`) that shows no aligner output, and
   `python scripts/score_gold.py` reports the annotator's own pass-to-pass consistency (the reference's precision) and each
   experiment's error against it (`analysis/gold_check.md`). The passes differ by a median of 11 ms; against their mean the
-  ARPA models' median error is 22.5–26.3 ms with no significant difference between them, and `english_mfa`'s only gross errors
+  ARPA models' median error is 22.5–26.3 ms, about as large as the annotator's own imprecision, so the reference cannot rank them; it resolves gross errors only, and `english_mfa`'s only gross errors
   are its pause absorptions on ISLE (*bed*, *bait*: 2.4 and 1.9 s). The passes were 9 h apart instead of the planned day.
   The kit (`gold/kit/`) is built by `scripts/make_gold_kit.py`.
 

@@ -138,11 +138,14 @@ def main():
     check("Table bins", "speech-only acc.", row("speech-only acc."), list(fg.speech_acc), 1)
     check("Table bins", "fusion (Whisper) acc.", row("fusion (Whisper) acc."), list(fg.fusion_acc), 1)
 
-    sil = pd.read_csv(R / "silhouette_scores.csv")
+    sil = pd.read_csv(R / "silhouette_all_runs.csv")
+    order = ["speech/wavlm", "speech/wavlm_spknorm", "text/gt", "text/asr", "fusion/gated_wavlm_gt", "fusion/gated_wavlm_asr"]
     for p in ("SD", "SI"):
         line = [l for l in TEX if l.strip().startswith(f"{p} & 0.")][0]
         got = [float(x) for x in re.findall(r"-?\d+\.\d+", line.replace("$-$", "-").replace("$", ""))]
-        check("Table silhouette", p, got, list(sil[sil.protocol == p.lower()].silhouette), 3)
+        s = sil[sil.protocol == p.lower()].set_index("block")
+        want = [v for b in order for v in (s.loc[b, "mean"], s.loc[b, "std"])]
+        check("Table silhouette", p, got, want, 2)
 
     noise = (R / "noise_robustness.md").read_text(encoding="utf-8")
     def nrow(proto, name):

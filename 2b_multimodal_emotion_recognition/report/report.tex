@@ -12,7 +12,7 @@
 \renewcommand{\labelitemi}{$\bullet$}  % Type 1 bullet (the default \textbullet is a bitmap font in this TeX install)
 
 \title{\vspace{-1.2cm}Multimodal Emotion Recognition on TESS:\\ speech, text and fusion pipelines\\\large Assignment 2b}
-\author{Yash Tyagi}
+\author{Yash Tyagi\\[2pt]\small Code, results and setup instructions:\\\footnotesize\url{https://github.com/ashdev-7/iiith-fastspeech2-a2/tree/main/2b_multimodal_emotion_recognition}}
 \date{November 2026}
 
 \begin{document}
@@ -32,7 +32,7 @@ Fusion (gated, speech + text) & 100.00 & 99.95 & 56.77\\\bottomrule
 \end{tabular}\par}\vspace{2pt}
 Speech carries the emotion. Text cannot: in TESS every word is spoken in all seven emotions, so the transcript holds no information about the emotion and text alone scores exactly chance. Fusion therefore matches speech but does not beat it. The real difficulty is a new speaker: 99.9\% falls to 58.5\%.\\[2pt]
 \textbf{C. Analysis} (\S5). Easiest emotions: neutral, sad and fear; hardest: happy and angry (\S5.1). Fusion helps only where speech is uncertain and the text comes from Whisper, whose punctuation carries prosody (+5.7\pp{} net, \S5.2). Five failure cases (\S5.3). Separability of all three blocks (Fig.~\ref{fig:tsne}, \S5.4).\\[2pt]
-\textbf{Beyond the brief} (\S4.5--4.9). Five studies, each planned and committed before it was run, raise unseen-speaker accuracy to 75.7\% (linear head on frozen WavLM-Large, with label-free speaker normalisation~$\dagger$). A control shows that an encoder trained on data containing TESS scores 99.9\% on the ``unseen'' speaker, so such encoders are excluded from every result.
+\textbf{Beyond the brief} (\S4.5--4.9). Five studies, each planned and committed before it was run, raise unseen-speaker accuracy to 75.7\% (linear head on frozen WavLM-Large, normalised with the unseen speaker's unlabelled clips~$\dagger$); all five use the same two speakers, so this is likely optimistic. A control shows that an encoder trained on data containing TESS scores 99.9\% on the ``unseen'' speaker, so such encoders are excluded from every result.
 \end{minipage}}\end{center}
 
 \input{sections/architecture}
@@ -67,7 +67,7 @@ Under RAND the same speaker and word appear in train and test, so those numbers 
 This is why most of our analysis uses SI.
 \emph{(ii) SI is hard and noisy.} With only one speaker to learn from, accuracy falls to 42--63\%, with large seed variance (std 5--11\pp).
 It also depends on direction: speech-only scores 53.0\% for test YAF and 63.9\% for test OAF (\code{accuracy\_si\_by\_direction.csv}).
-\emph{(iii) Self-supervised features matter most where it counts.} WavLM beats log-Mel by $+16.9$\pp{} under SI (95\% CI $\pm$13.2; paired $t$ $p=0.022$, Wilcoxon $p=0.031$, McNemar $p<10^{-6}$), but by only 0.2--0.4\pp{} under RAND and SD.
+\emph{(iii) Self-supervised features matter most where it counts.} WavLM beats log-Mel by $+16.9$\pp{} under SI (95\% CI $\pm$13.2; paired $t$ $p=0.022$, Wilcoxon $p=0.031$), but by only 0.2--0.4\pp{} under RAND and SD.
 It is the only gain that is \emph{consistent}: positive in all 6 runs and in both directions (+9.6\pp{} on test YAF, +24.2\pp{} on test OAF). It is nominally significant, but \emph{not} after Holm correction for the 24 comparisons (adjusted $p=0.18$ within SI; \code{robustness\_checks.md}).
 \emph{(iv) Text.} With ground-truth transcripts, both the trained text model and the zero-shot emotion classifier are at chance in every protocol.
 The trained model's validation loss stays at $\ln 7$, and the zero-shot model predicts ``neutral'' for 91\% of clips.
@@ -76,20 +76,19 @@ The zero-shot model is still at chance, so the signal is not lexical emotion; it
 
 \subsection{Paired significance tests}
 \begin{table}[H]\centering\small
-\caption{Paired comparisons (B vs.\ A, identical splits and seeds). $\Delta$ = mean per-run accuracy difference (pp) with 95\% $t$-CI; $p_t$ paired $t$-test over runs; McNemar is exact and pooled over all test clips of all runs (fixes/breaks = clips A got wrong and B right / the reverse). RAND/SD rows are omitted: every $|\Delta|\le0.4$\pp. The full table is in \code{Results/statistics.md}.}\label{tab:sig}
-\begin{tabular}{@{}llrrrrr@{}}\toprule
-A & B (SI protocol) & $\Delta$ (pp) & 95\% CI & $p_t$ & fixes / breaks & $p_\text{McNemar}$\\\midrule
-speech log-Mel & speech WavLM & $+16.90$ & $\pm13.24$ & \textbf{0.022} & 2252 / 832 & $<10^{-6}$\\
-speech WavLM & fusion GMU (GT) & $-1.70$ & $\pm6.62$ & 0.54 & 742 / 885 & $4\times10^{-4}$\\
-speech WavLM & fusion GMU (Whisper) & $-1.33$ & $\pm9.64$ & 0.74 & 813 / 925 & 0.008\\
-speech WavLM & fusion concat (GT) & $+1.64$ & $\pm13.73$ & 0.77 & 1108 / 970 & 0.003\\
-speech WavLM & fusion cross-attn (GT) & $+4.94$ & $\pm13.63$ & 0.39 & 1177 / 762 & $<10^{-6}$\\
-speech WavLM & speech + speaker norm $\dagger$ & $-1.94$ & $\pm11.72$ & 0.69 & 858 / 1021 & $2\times10^{-4}$\\
-fusion GMU (GT) & fusion GMU (Whisper) & $+0.37$ & $\pm8.15$ & 0.91 & 845 / 814 & 0.46\\\bottomrule
+\caption{Paired comparisons (B vs.\ A, identical splits and seeds). $\Delta$ = mean per-run accuracy difference (pp) with 95\% $t$-CI; $p_t$ paired $t$-test over runs; fixes / breaks = test clips that A got wrong and B right / the reverse, summed over all runs (descriptive counts). RAND/SD rows are omitted: every $|\Delta|\le0.4$\pp. The full table is in \code{Results/statistics.md}.}\label{tab:sig}
+\begin{tabular}{@{}llrrrr@{}}\toprule
+A & B (SI protocol) & $\Delta$ (pp) & 95\% CI & $p_t$ & fixes / breaks\\\midrule
+speech log-Mel & speech WavLM & $+16.90$ & $\pm13.24$ & \textbf{0.022} & 2252 / 832\\
+speech WavLM & fusion GMU (GT) & $-1.70$ & $\pm6.62$ & 0.54 & 742 / 885\\
+speech WavLM & fusion GMU (Whisper) & $-1.33$ & $\pm9.64$ & 0.74 & 813 / 925\\
+speech WavLM & fusion concat (GT) & $+1.64$ & $\pm13.73$ & 0.77 & 1108 / 970\\
+speech WavLM & fusion cross-attn (GT) & $+4.94$ & $\pm13.63$ & 0.39 & 1177 / 762\\
+speech WavLM & speech + speaker norm $\dagger$ & $-1.94$ & $\pm11.72$ & 0.69 & 858 / 1021\\
+fusion GMU (GT) & fusion GMU (Whisper) & $+0.37$ & $\pm8.15$ & 0.91 & 845 / 814\\\bottomrule
 \end{tabular}\end{table}
-The pooled McNemar test treats the 8400 clip decisions as independent, but each clip is scored once per seed, so it overstates confidence.
-We therefore base conclusions on the run-level test.
-Even so, it shows that fusion changes many decisions in both directions (740--1180 fixes \emph{and} 760--1020 breaks): it is not a near-copy of the speech model.
+We do not report a McNemar test pooled over runs: it would treat the 8400 clip decisions as independent, but each clip is scored once per seed.
+The fixes / breaks counts are descriptive. They show that fusion changes many decisions in both directions (740--1180 fixes \emph{and} 760--1020 breaks): it is not a near-copy of the speech model.
 \textbf{The run-level test is itself optimistic.} The 6 SI runs are 2 directions $\times$ 3 seeds, and seeds within a direction share both speakers, so the effective sample size is closer to 2 than to 6.
 We therefore also check every SI comparison per direction (\code{robustness\_checks.md}): only WavLM vs.\ log-Mel has the same sign in both.
 Cross-attention's $+4.9$\pp{} is $+13.0$\pp{} for test YAF and $-3.1$\pp{} for test OAF, and speaker normalisation's $-1.9$\pp{} is $+3.2$ / $-7.1$\pp.
@@ -229,7 +228,6 @@ Each is used with the unchanged A-L1n recipe (C fixed at 0.001, no re-tuning).
 The primary model was fixed in advance as the equal-weight ensemble (ENS) of the four encoders including WavLM-Base+, so that no encoder is chosen on the test speaker.
 Excluded by rule: every emotion2vec+ model, because the seed model is fine-tuned with labels on EmoBox~\cite{emobox}, which contains TESS. The larger emotion2vec+ models use undisclosed pseudo-labelled data.
 All registered audits pass: each (speaker, word) pair occurs once in every emotion, so word identity carries no label information; no clip or speaker is shared between training and test; and A-L1n(B), recomputed in the job, gives 100\% identical predictions to study~3.
-A first run stopped at that last check (a packaging error) after printing accuracies but before computing any test; it was re-run unchanged (amendment in the plan).
 \begin{table}[H]\centering\small
 \caption{Encoder study (SI, A-L1n recipe, $\dagger$; \code{Results/backbone\_study.md}). $\Delta$ = difference from WavLM-Base+ with the 95\% word-bootstrap CI. LC rows are a leakage control, never a candidate.}\label{tab:backbones}
 \begin{tabular}{@{}lccccc@{}}\toprule
@@ -247,7 +245,7 @@ LC: its own head, no training & 85.7 & 85.7 & 85.7 & & \\\bottomrule
 \item \textbf{HB2:} WavLM-Large is better in both directions by the same margin (+3.6\pp, Holm $p<0.001$). HuBERT-Large is equivalent within $\pm$2\pp. emotion2vec base is 8.1\pp{} worse in one direction and equal in the other.
 \item \textbf{HB3, supported:} the ensemble with 40-word enrolment statistics is within 0.1\pp{} of the transductive one.
 \end{itemize}
-By the registered reporting rule, the ensemble does not become the best system. The rule did not anticipate one member beating the reference in both directions. We report A-L1n with WavLM-Large (75.7\%~$\dagger$; 80.1 / 71.2\% with 40-word enrolment, on the other 160 words) as the best clean speech model, and state openly that it is the best of three tested encoders; the Holm correction covers that choice. A post-hoc sweep over C (diagnostic only) keeps it between 74.5 and 76.1\%, so the gain does not depend on a lucky C.
+By the registered reporting rule, the ensemble does not become the best system. The rule did not anticipate one member beating the reference in both directions. We report A-L1n with WavLM-Large (75.7\%~$\dagger$; 80.1 / 71.2\% with 40-word enrolment, on the other 160 words) as the best clean speech model, and state openly that it is the best of three tested encoders; the Holm correction covers that choice within this study (not the sequence of studies; Sec.~\ref{sec:concl}). A post-hoc sweep over C (diagnostic only) keeps it between 74.5 and 76.1\%, so the gain does not depend on a lucky C.
 \textbf{Leakage control.} emotion2vec+ seed, whose training data contains TESS, scores 99.9\% on the ``unseen'' speaker with our recipe. With its own classifier and no training on our side it scores 85.7\%: a sample of 112 clips (\code{Results/lc\_zero\_shot\_check.md}) shows every clip of the six shared emotions correct, and every pleasant-surprise clip labelled ``other'', never ``surprised''. This pattern is consistent with training on TESS's own labels (we did not verify EmoBox's label mapping). Unseen-speaker scores on TESS are therefore meaningful only if the encoder's training data is documented to exclude TESS.
 
 \subsection{Can clean levers push further? A fifth pre-registered study}\label{sec:final}
@@ -260,7 +258,6 @@ Study~5 (\code{analysis/PREREGISTRATION\_si\_final.md}, pushed before the run) t
 The primary model, FINAL, applies S to the equal-weight ensemble of the P-augmented WavLM-Large and Whisper models.
 Excluded by rule: other labelled corpora; encoders trained with emotion labels; and any use of TESS's design at test time (each word in all seven emotions, equal class sizes).
 All audits pass. In the inductive variant no scored clip is ever pseudo-labelled (D5), and the reference model, with its features re-extracted, gives 100\% identical predictions to study~4 (C1).
-Runs 1 and 3 ran out of memory before computing any result, and run~2 never started. The fixes changed memory use only and were verified to give identical results (amendments 1--2 in the plan).
 \begin{table}[H]\centering\small
 \caption{Study 5 (SI, $\dagger$; \code{Results/final\_study.md}). $\Delta$ = difference from the reference R, with the 95\% word-bootstrap CI.}\label{tab:final}
 \begin{tabular}{@{}lccccc@{}}\toprule
@@ -393,25 +390,25 @@ The confidences are also \emph{high} (0.84--0.96): errors are confident, not bor
 \subsection{Separability of the temporal, contextual and fusion blocks}
 \begin{figure}[H]\centering
 \includegraphics[width=0.92\linewidth]{tsne_required_blocks.png}
-\caption{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, trained on OAF, tested on YAF). Silhouette: cosine, computed in the original 256-d space. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
+\caption{t-SNE~\cite{tsne} of the test-set outputs of the three required blocks (attention-pooled 256-d embeddings), coloured by true emotion. Top: seen speakers (SD, seed 0). Bottom: unseen speaker (SI, trained on OAF, tested on YAF). Panel silhouettes (cosine, in the original 256-d space) are for the run shown; the table below gives means over all runs. The text panels show few distinct points because every clip of the same word has the same transcript, hence the same embedding. The speaker-normalised and Whisper-transcript variants are in the table below and \code{Results/plots/tsne\_blocks\_*.png}.}\label{fig:tsne}
 \end{figure}
 
 \begin{center}\small
 \begin{tabular}{@{}lcccccc@{}}\toprule
 silhouette & \begin{tabular}[c]{@{}c@{}}temporal\\speech\end{tabular} & \begin{tabular}[c]{@{}c@{}}temporal\\+spk-norm\end{tabular} & \begin{tabular}[c]{@{}c@{}}contextual\\GT text\end{tabular} & \begin{tabular}[c]{@{}c@{}}contextual\\Whisper\end{tabular} & \begin{tabular}[c]{@{}c@{}}fusion\\GMU-GT\end{tabular} & \begin{tabular}[c]{@{}c@{}}fusion\\GMU-Whisper\end{tabular}\\\midrule
-SD & 0.949 & 0.964 & $-0.017$ & $-0.143$ & \textbf{0.988} & 0.967\\
-SI & 0.498 & \textbf{0.569} & $-0.005$ & $-0.157$ & 0.490 & 0.505\\\bottomrule
+SD & 0.96 $\pm$ 0.01 & 0.97 $\pm$ 0.01 & $-0.02$ $\pm$ 0.00 & $-0.22$ $\pm$ 0.05 & 0.99 $\pm$ 0.01 & 0.95 $\pm$ 0.01\\
+SI & 0.57 $\pm$ 0.04 & 0.57 $\pm$ 0.06 & $-0.01$ $\pm$ 0.00 & $-0.22$ $\pm$ 0.07 & 0.54 $\pm$ 0.08 & 0.47 $\pm$ 0.07\\\bottomrule
 \end{tabular}\end{center}
 
-Silhouettes are computed for one run per protocol (the runs shown in Fig.~\ref{fig:tsne}), so they are descriptive.
-\textbf{Temporal block (speech).} Under SD, the seven emotions form tight, well-separated clusters (silhouette 0.95).
-Under SI, the unseen speaker's emotions still form largely separate clusters (silhouette 0.50; Fig.~\ref{fig:tsne}, bottom left), yet this run's accuracy is only 52.1\%.
-The representation therefore does separate much of the new speaker's emotions. What fails is that the clusters are \emph{displaced} relative to the decision boundaries learned on the training speaker.
-This is consistent with a domain shift: label-free speaker normalisation raises the silhouette (from 0.50 to 0.57), and the pre-registered linear model with speaker normalisation reaches 75.3\% in this direction (\S\ref{sec:prereg}).
+Silhouettes are mean $\pm$ std over all test runs (5 SD, 6 SI; \code{Results/silhouette\_all\_runs.csv}); Fig.~\ref{fig:tsne} shows one run of each protocol.
+\textbf{Temporal block (speech).} Under SD, the seven emotions form tight, well-separated clusters (silhouette 0.96).
+Under SI, the unseen speaker's emotions still form largely separate clusters (0.57; Fig.~\ref{fig:tsne}, bottom left), yet the mean accuracy is only 58.5\%.
+The representation therefore separates much of the new speaker's emotions. What fails is that the clusters are \emph{displaced} relative to the decision boundaries learned on the training speaker.
+Label-free speaker normalisation leaves the silhouette unchanged (0.57), consistent with moving the new speaker's clusters rather than reshaping them; it is the linear model with this normalisation that reaches 75.3\% on test YAF (\S\ref{sec:prereg}).
 \textbf{Contextual block (text).} With ground-truth text the embeddings are an unstructured cloud (silhouette $\approx$0): the text block encodes words, not emotion.
 With Whisper text, groups appear, but they are groups of \emph{transcript forms} (ending in ``!'' vs.\ ``.'', comma or no comma), each mixing several emotions; hence the negative silhouette.
-\textbf{Fusion block.} Fusion clusters are as tight as speech (0.99 SD) and are organised by the speech geometry.
-Under SI the clusters stretch into elongated manifolds, consistent with the text dimensions adding word-wise variation along directions orthogonal to emotion.
+\textbf{Fusion block.} Under SD, fusion clusters are as tight as speech (0.99 vs.\ 0.96) and are organised by the speech geometry.
+Under SI they are slightly less separated than speech alone (0.54 with ground-truth text, 0.47 with Whisper text), and the clusters stretch into elongated manifolds, consistent with the text dimensions adding word-wise variation along directions orthogonal to emotion.
 
 \subsection{Robustness to noise and the value of speaker normalisation}\label{sec:noise}
 \begin{figure}[H]\centering
@@ -447,12 +444,12 @@ Fusion adds confidence without adding accuracy.
 Any deployment would need re-calibration on the target speaker (e.g.\ temperature scaling) before the confidence-based gating suggested above could work.
 
 % =====================================================================
-\section{Conclusions and limitations}
+\section{Conclusions and limitations}\label{sec:concl}
 \begin{itemize}\setlength\itemsep{1pt}
 \item \textbf{Best pipeline.} Speech carries essentially all the emotion information in TESS. Among the trained neural variants, fusion matches speech-only; cross-attention's higher SI mean (63.4\% vs.\ 58.5\%) comes from one transfer direction and is not significant. Text alone is useful only through ASR punctuation (2.1$\times$ chance).
 \item \textbf{The real problem is speaker shift.} The BiGRU scores 100\% on unseen words of the training speaker and 58.5\% on the unseen speaker: it overfits the speaker. Three pre-registered studies show that a low-capacity linear head transfers best (66.0\%; 70.6\% with speaker normalisation, which needs only a 40-word unlabelled enrolment sample; 72.0\% with speed augmentation added; 75.7\% with frozen WavLM-Large, the best clean result; Whisper-large-v3, pitch augmentation and self-training did not improve both directions, Sec.~\ref{sec:final}). The linear head beats the BiGRU by 10--18\pp{} on identical inputs in both directions, robust to seed noise; neither normalisation nor augmentation rescues the BiGRU. Probes, t-SNE and the normalisation results all locate the gap in a speaker-dependent \emph{displacement} of otherwise largely separable emotion clusters.
-\item \textbf{Limitations.} TESS has two speakers, both female, reading one carrier phrase. SI results are therefore two transfer directions: seeds within a direction are not independent, and per-direction results are reported for every claim. Among the 11 original variants, no run-level difference survives correction for multiple comparisons. The capacity study's word-level tests are conditional on these two voices: they show consistency across two speakers, not generality over speakers. Conclusions about fusion apply only to text that is label-independent by construction; datasets with semantically emotional text (e.g.\ IEMOCAP, MELD) would test the fusion design properly. The frozen encoders were not fine-tuned (by design, given about 1.2--2k training clips; untested). Encoders fine-tuned with emotion labels are excluded unless their training data is documented to exclude TESS: one that includes it scores 99.9\% on the unseen speaker (Sec.~\ref{sec:backbones}).
-\item \textbf{Reproducibility.} \code{python run\_all.py} reproduces every number and figure. All runs were executed on a Kaggle T4 GPU (\code{logs/kaggle\_run\_v2.log}; ablation: \code{logs/kaggle\_run\_ablation.log}, \code{run\_all.py --ablations}). Three analysis scripts in that job computed and printed their results but crashed when saving, because \code{Results/} did not yet exist (fixed). The layer probes and the prosody baseline were re-run in a separate job (\code{logs/kaggle\_run\_analyses.log}); the re-run agrees with the printed values (prosody identical, probes within 0.05\pp). The noise study needs trained checkpoints, which the first job did not keep, so it was regenerated in its own job (\code{kaggle/make\_kernel.py noise}, \code{logs/kaggle\_run\_noise.log}), with checks registered in advance: all 66 retrained runs give 100\% identical test predictions to the original runs, all Whisper transcripts (clean and noisy) are identical, and every per-run noise accuracy matches the earlier values printed in the log to within 0.05\pp{} (\code{Results/noise\_regeneration\_check.md}). Kaggle jobs are generated by \code{kaggle/make\_kernel.py}. The pre-registered SI experiment and the robustness checks (\code{analysis/si\_linear.py}, \code{analysis/robustness\_checks.py}) run on CPU from the cached features and saved predictions; the cached WavLM store reproduces the Kaggle probe results. The capacity study ran as one Kaggle job (\code{kaggle/make\_kernel.py capacity}, \code{logs/kaggle\_run\_capacity.log}; runs in \code{runs\_capacity/}); so did the augmentation study (\code{augment}, \code{runs\_augment/}) and the encoder study (\code{backbones}, \code{logs/kaggle\_run\_backbones.log}). Study~5 extracted its features in \code{final} (\code{logs/kaggle\_run\_final\_v3\_failed.log}) and ran its analysis on the saved features in \code{final\_analysis} (\code{logs/kaggle\_run\_final\_analysis.log}). Its memory log shows why the earlier attempts were killed: one self-training stage peaks at 29\,GB of the 32\,GB container, so each stage now runs in a fresh process. \code{tests/} holds invariant tests: no speaker or word leakage, label and feature alignment, label-free normalisation, every metric recomputed from predictions. Planted bugs confirm the tests can fail. A cell-by-cell check of every table against its source file is also included. Per-run predictions, metrics, embeddings and training curves for all 176 runs are in \code{runs/}.
+\item \textbf{Limitations.} TESS has two speakers, both female, reading one carrier phrase. SI results are therefore two transfer directions: seeds within a direction are not independent, and per-direction results are reported for every claim. Every SI interval and $p$-value describes variation over words and seeds \emph{for these two speakers}, not over speakers. Studies 2--5 were each planned after seeing the earlier studies' results on the same two test speakers: pre-registration fixes the analysis within each study, but not the sequence, so the best result (75.7\%) is likely optimistic. Among the 11 original variants, no run-level difference survives correction for multiple comparisons. The capacity study's word-level tests are conditional on these two voices: they show consistency across two speakers, not generality over speakers. Conclusions about fusion apply only to text that is label-independent by construction; datasets with semantically emotional text (e.g.\ IEMOCAP, MELD) would test the fusion design properly. The frozen encoders were not fine-tuned (by design, given about 1.2--2k training clips; untested). Encoders fine-tuned with emotion labels are excluded unless their training data is documented to exclude TESS: one that includes it scores 99.9\% on the unseen speaker (Sec.~\ref{sec:backbones}).
+\item \textbf{Reproducibility.} \code{python run\_all.py} reproduces every number and figure. All runs were executed on a Kaggle T4 GPU (\code{logs/kaggle\_run\_v2.log}; ablation: \code{logs/kaggle\_run\_ablation.log}, \code{run\_all.py --ablations}). Three analysis scripts in that job computed and printed their results but crashed when saving, because \code{Results/} did not yet exist (fixed). The layer probes and the prosody baseline were re-run in a separate job (\code{logs/kaggle\_run\_analyses.log}); the re-run agrees with the printed values (prosody identical, probes within 0.05\pp). The noise study needs trained checkpoints, which the first job did not keep, so it was regenerated in its own job (\code{kaggle/make\_kernel.py noise}, \code{logs/kaggle\_run\_noise.log}), with checks registered in advance: all 66 retrained runs give 100\% identical test predictions to the original runs, all Whisper transcripts (clean and noisy) are identical, and every per-run noise accuracy matches the earlier values printed in the log to within 0.05\pp{} (\code{Results/noise\_regeneration\_check.md}). Kaggle jobs are generated by \code{kaggle/make\_kernel.py}. The pre-registered SI experiment and the robustness checks (\code{analysis/si\_linear.py}, \code{analysis/robustness\_checks.py}) run on CPU from the cached features and saved predictions; the cached WavLM store reproduces the Kaggle probe results. The capacity study ran as one Kaggle job (\code{kaggle/make\_kernel.py capacity}, \code{logs/kaggle\_run\_capacity.log}; runs in \code{runs\_capacity/}); so did the augmentation study (\code{augment}, \code{runs\_augment/}) and the encoder study (\code{backbones}, \code{logs/kaggle\_run\_backbones.log}). Study~5 extracted its features in \code{final} (\code{logs/kaggle\_run\_final\_v3\_failed.log}) and ran its analysis on the saved features in \code{final\_analysis} (\code{logs/kaggle\_run\_final\_analysis.log}). Both studies needed a second job before any test was computed: study~4's first job lacked a reference file, and study~5's analysis ran out of memory (one self-training stage peaks at 29\,GB of the 32\,GB container), so each of its stages now runs in a fresh process. Both fixes left the analysis unchanged and are recorded as amendments in the plans. \code{tests/} holds invariant tests: no speaker or word leakage, label and feature alignment, label-free normalisation, every metric recomputed from predictions. Planted bugs confirm the tests can fail. A cell-by-cell check of every table against its source file is also included. Per-run predictions, metrics, embeddings and training curves for all 224 runs (176 main, 48 ablation) are in \code{runs/}.
 \end{itemize}
 
 \begin{thebibliography}{99}\small\setlength\itemsep{0pt}

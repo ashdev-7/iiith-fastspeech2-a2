@@ -81,7 +81,7 @@ We report that protocol for comparability, alongside two stricter ones:
 This is the realistic setting, and model selection cannot peek at the target speaker. (The only analysis that reads a choice off the test speaker, the best probe layer, is flagged as optimistic.)
 \end{itemize}
 The test sets are evaluated once by \code{test.py}, after training has finished. We report mean $\pm$ std over runs; classes are balanced, so accuracy equals unweighted average recall (UAR).
-Comparisons between models are \emph{paired}: they use the same splits and seeds, are summarised as a mean difference with a 95\% $t$-interval, and are tested with paired $t$/Wilcoxon tests over runs and an exact McNemar test over all test clips~\cite{dietterich}.
+Comparisons between models are \emph{paired}: they use the same splits and seeds, are summarised as a mean difference with a 95\% $t$-interval, and are tested with paired $t$/Wilcoxon tests over runs; an exact McNemar test~\cite{dietterich} is used only to compare two single, deterministic runs on the same test clips.
 
 \textbf{Additional studies.}
 (i) \emph{Speaker normalisation} ($\dagger$): label-free per-speaker z-scoring of the frame features, i.e.\ speaker-level CMVN~\cite{cmvn}.
